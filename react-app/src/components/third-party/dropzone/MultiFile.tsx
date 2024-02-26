@@ -17,7 +17,7 @@ const DropzoneWrapper = styled("div")(({ theme }) => ({
   outline: "none",
   padding: theme.spacing(5, 1),
   borderRadius: theme.shape.borderRadius,
-  backgroundColor: theme.palette.background.paper,
+  backgroundColor: theme.palette.grey.A100,
   border: `1px dashed ${theme.palette.secondary.main}`,
   "&:hover": { opacity: 0.72, cursor: "pointer" },
 }))

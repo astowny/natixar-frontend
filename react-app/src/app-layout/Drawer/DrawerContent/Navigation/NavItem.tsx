@@ -40,7 +40,7 @@ const NavItem = ({ item, level, isParents = false }: Props) => {
 
   const downLG = useMediaQuery(theme.breakpoints.down("lg"))
 
-  const { menuOrientation, onChangeRoute } = useConfig()
+  const { menuOrientation, setIsShowExtraHeader } = useConfig()
   let itemTarget: LinkTarget = "_self"
   if (item.target) {
     itemTarget = "_blank"
@@ -73,7 +73,7 @@ const NavItem = ({ item, level, isParents = false }: Props) => {
       : "primary.main"
 
   const handleItemClick = () => {
-    onChangeRoute("")
+    setIsShowExtraHeader(false)
   }
 
   return (

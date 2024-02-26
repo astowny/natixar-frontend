@@ -23,7 +23,7 @@ function getColorStyle({ color, theme }: ExtendedStyleProps) {
 
   return {
     "&:hover": {
-      backgroundColor: lighter,
+      backgroundColor: "transparent",
       "& .icon": {
         borderColor: main,
       },

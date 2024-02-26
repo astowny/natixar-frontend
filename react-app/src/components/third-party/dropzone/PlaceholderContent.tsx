@@ -21,7 +21,7 @@ export default function PlaceholderContent({ type }: { type?: string }) {
         >
           <CardMedia component="img" image={UploadCover} sx={{ width: 150 }} />
           <Stack sx={{ p: 3 }} spacing={1}>
-            <Typography variant="h5">Drag & Drop or Select file</Typography>
+            <Typography variant="h5">Upload Multiple File</Typography>
 
             <Typography color="secondary">
               Drop files here or click&nbsp;

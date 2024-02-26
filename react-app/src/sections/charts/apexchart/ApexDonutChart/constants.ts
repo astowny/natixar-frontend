@@ -45,13 +45,13 @@ export const defaultOptions: ChartProps = {
           },
           value: {
             show: true,
-            fontSize: "12px",
+            fontSize: "14px",
             fontFamily: "Helvetica, Arial, sans-serif",
             fontWeight: "bold",
-            offsetY: -18,
+            offsetY: -22,
           },
           total: {
-            fontSize: "12px",
+            fontSize: "14px",
             fontFamily: "Helvetica, Arial, sans-serif",
             fontWeight: "bold",
             show: true,
@@ -70,7 +70,7 @@ export const defaultOptions: ChartProps = {
       enabled: false,
     },
     style: {
-      fontSize: "12px",
+      fontSize: "14px",
       fontFamily: "Helvetica, Arial, sans-serif",
       fontWeight: "bold",
     },

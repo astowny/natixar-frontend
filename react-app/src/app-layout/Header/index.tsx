@@ -25,7 +25,7 @@ import AppBarStyled from "./AppBarStyled"
 const Header = () => {
   const theme = useTheme()
   const downLG = useMediaQuery(theme.breakpoints.down("lg"))
-  const { menuOrientation, lastRoute } = useConfig()
+  const { menuOrientation, isShowExtraHeader } = useConfig()
 
   const { menuMaster } = useGetMenuMaster()
   const drawerOpen = menuMaster.isDashboardDrawerOpened
@@ -100,7 +100,7 @@ const Header = () => {
         <AppBarStyled open={drawerOpen} {...appBar}>
           {mainHeader}
           {subHeader}
-          {lastRoute !== "" && extraHeader}
+          {isShowExtraHeader && extraHeader}
         </AppBarStyled>
       ) : (
         <AppBar {...appBar}>{mainHeader}</AppBar>

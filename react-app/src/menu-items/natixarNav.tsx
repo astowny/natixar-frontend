@@ -41,6 +41,13 @@ const natixarNav: NavItemType[] = [
         icon: icons.DashboardOutlined,
       },
       {
+        id: "map2",
+        title: <FormattedMessage id="Leaflet Map" />,
+        type: "item",
+        url: "/contributor/map2",
+        icon: icons.DashboardOutlined,
+      },
+      {
         id: "data",
         title: <FormattedMessage id="Data" />,
         type: "item",

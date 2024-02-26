@@ -42,6 +42,7 @@
         ],
         "prettier/prettier": "error",
         "import/prefer-default-export": "off",
+        "@typescript-eslint/default-param-last": "off",
         "prefer-regex-literals": "off",
         "no-unused-vars": "warn",
         "jsx-a11y/anchor-is-valid": "off",

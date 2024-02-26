@@ -49,6 +49,7 @@ const setSession = (serviceToken?: string | null) => {
 const JWTContext = createContext<JWTContextType | null>(null)
 
 export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
+  // @ts-ignore
   const [state, dispatch] = useReducer(authReducer, initialState)
 
   useEffect(() => {

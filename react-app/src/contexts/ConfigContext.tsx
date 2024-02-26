@@ -24,7 +24,7 @@ const initialState: CustomizationProps = {
   onChangeMiniDrawer: () => {},
   onChangeMenuOrientation: () => {},
   onChangeFontFamily: () => {},
-  onChangeRoute: () => {},
+  setIsShowExtraHeader: () => {},
 }
 
 // ==============================|| CONFIG CONTEXT & PROVIDER ||============================== //
@@ -83,10 +83,10 @@ function ConfigProvider({ children }: ConfigProviderProps) {
     })
   }
 
-  const onChangeRoute = (route: string) => {
+  const setIsShowExtraHeader = (isShow: boolean) => {
     setConfig({
       ...config,
-      lastRoute: route,
+      isShowExtraHeader: isShow,
     })
   }
 
@@ -100,7 +100,7 @@ function ConfigProvider({ children }: ConfigProviderProps) {
         onChangeMiniDrawer,
         onChangeMenuOrientation,
         onChangeFontFamily,
-        onChangeRoute,
+        setIsShowExtraHeader,
       }}
     >
       {children}

@@ -15,7 +15,15 @@ const DashboardAnalytics = Loadable(
 )
 
 // render - contributor
-const ContributorAnalysis = Loadable(lazy(() => import("pages/contributor/analysis")))
+const ContributorAnalysis = Loadable(
+  lazy(() => import("pages/contributor/analysis")),
+)
+const CategoryAnalysis = Loadable(
+  lazy(() => import("pages/contributor/categoryanalysis")),
+)
+const ContributorUpload = Loadable(
+  lazy(() => import("pages/contributor/upload")),
+)
 
 // render - widget
 const WidgetStatistics = Loadable(lazy(() => import("pages/widget/statistics")))
@@ -23,12 +31,16 @@ const WidgetData = Loadable(lazy(() => import("pages/widget/data")))
 const WidgetChart = Loadable(lazy(() => import("pages/widget/chart")))
 const NatixarChart = Loadable(lazy(() => import("pages/natixar/charts")))
 const ScopePage = Loadable(lazy(() => import("pages/natixar/ScopePage")))
+const ContributorsPage = Loadable(
+  lazy(() => import("pages/natixar/ContributorsPage")),
+)
 const DataPage = Loadable(lazy(() => import("pages/natixar/DataPage")))
 
 // render - charts & map
 const ChartApexchart = Loadable(lazy(() => import("pages/charts/apexchart")))
 const ChartOrganization = Loadable(lazy(() => import("pages/charts/org-chart")))
 const ClustersMap = Loadable(lazy(() => import("pages/maps")))
+const ClustersLeafletMap = Loadable(lazy(() => import("pages/maps-leaflet")))
 
 const MaintenanceError = Loadable(lazy(() => import("pages/maintenance/404")))
 const MaintenanceError500 = Loadable(
@@ -77,7 +89,11 @@ const MainRoutes = {
             },
             {
               path: "scope-details/:id",
-              element: <DataPage />,
+              element: <ContributorsPage />,
+            },
+            {
+              path: "category-analysis/:id",
+              element: <CategoryAnalysis />,
             },
             {
               path: "map",
@@ -88,12 +104,24 @@ const MainRoutes = {
               element: <ContributorAnalysis />,
             },
             {
+              path: "upload",
+              element: <ContributorUpload />,
+            },
+            {
+              path: "map2",
+              element: <ClustersLeafletMap />,
+            },
+            {
               path: "statistics",
               element: <WidgetStatistics />,
             },
             {
-              path: "data",
+              path: "data1",
               element: <WidgetData />,
+            },
+            {
+              path: "data",
+              element: <DataPage />,
             },
             {
               path: "chart",
@@ -116,7 +144,7 @@ const MainRoutes = {
         },
         {
           path: "map",
-          element: <Map />,
+          element: <ClustersLeafletMap />,
         },
       ],
     },

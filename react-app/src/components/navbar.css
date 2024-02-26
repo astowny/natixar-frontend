@@ -1,0 +1,38 @@
+header {
+    /* width: 100%; */
+    /* font-size: 2rem; */
+    padding: 1rem;
+}
+
+.top-bar {
+    /* width: 100%; */
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.top-bar > button {
+    min-width: 5rem;
+}
+
+
+.dimensions-bar {
+    width: 30rem;
+}
+
+
+/*@media(max-width: 1050px) {
+    .top-bar {
+        flex-direction: column;
+    }
+
+    .top-bar > button {
+        min-width: 5rem;
+        height: 4rem;
+    }
+
+    .dimensions-bar {
+        width: 100%;
+    }
+}
+*/

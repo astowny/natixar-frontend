@@ -15,6 +15,7 @@ import {
 } from "@mui/material"
 import { LinkOutlined } from "@ant-design/icons"
 import { useLocation, useNavigate } from "react-router-dom"
+import useConfig from "hooks/useConfig"
 
 // ===========================|| DATA WIDGET - PROJECT TABLE CARD ||=========================== //
 type ScopeTableItemProps = {
@@ -30,8 +31,14 @@ type ScopeTableProps = {
 export const ScopeTable = ({ data }: ScopeTableProps) => {
   const navigate = useNavigate()
   const location = useLocation()
+  const { setIsShowExtraHeader } = useConfig()
   const params = new URLSearchParams(location.search)
   const scopeID = params.get("scopeID")
+
+  const handleOnCategoryClick = (id: string) => {
+    setIsShowExtraHeader(true)
+    navigate(`/contributor/category-analysis/${id}?scopeID=${scopeID}`)
+  }
 
   return (
     <TableContainer
@@ -66,11 +73,13 @@ export const ScopeTable = ({ data }: ScopeTableProps) => {
                   <Grid item>
                     <Typography align="left">
                       <Link
+                        onClick={() => handleOnCategoryClick(row.emissionID)}
                         sx={{
                           display: "flex",
                           alignItems: "center",
                           columnGap: "5px",
                           textDecoration: "underline",
+                          cursor: "pointer",
                         }}
                       >
                         {row.title}

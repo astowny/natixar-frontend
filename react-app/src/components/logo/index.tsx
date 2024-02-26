@@ -20,7 +20,7 @@ interface Props {
   to?: To
 }
 
-const LogoSection = ({ reverse, isIcon, sx, to }: Props) => {
+const LogoSection = ({ isIcon, sx, to }: Props) => {
   const { isLoggedIn } = useAuth()
 
   return (
@@ -32,7 +32,7 @@ const LogoSection = ({ reverse, isIcon, sx, to }: Props) => {
         sx,
       })}
     >
-      {isIcon ? <LogoIcon /> : <Logo reverse={reverse} />}
+      {isIcon ? <LogoIcon /> : <Logo />}
     </ButtonBase>
   )
 }

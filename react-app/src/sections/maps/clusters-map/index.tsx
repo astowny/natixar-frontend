@@ -10,11 +10,9 @@ import {
   GeoJSONSource,
   MapLayerMouseEvent,
 } from "react-map-gl"
-import { useNavigate } from "react-router-dom"
 
 // project-import
 import { MapBoxProps } from "types/map"
-import useConfig from "hooks/useConfig"
 import {
   clusterCountLayer,
   clusterLayer,
@@ -27,16 +25,11 @@ import {
 
 const MapClusters = ({ ...other }: MapBoxProps) => {
   const mapRef = useRef<MapRef>(null)
-  const { onChangeRoute } = useConfig()
-  const navigate = useNavigate()
-
 
   const onClick = (event: MapLayerMouseEvent) => {
     const feature = event.features?.[0]
     const clusterId = feature?.properties?.cluster_id
     
-    onChangeRoute('/contributor/map');
-    navigate('/contributor/analysis');
     // @ts-ignore
     const mapboxSource = mapRef.current?.getSource(
       "earthquakes",

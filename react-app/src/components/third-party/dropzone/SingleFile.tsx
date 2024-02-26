@@ -11,7 +11,6 @@ import RejectionFiles from "./RejectionFiles"
 import PlaceholderContent from "./PlaceholderContent"
 
 // types
-
 const DropzoneWrapper = styled("div")(({ theme }) => ({
   outline: "none",
   overflow: "hidden",
@@ -19,7 +18,7 @@ const DropzoneWrapper = styled("div")(({ theme }) => ({
   padding: theme.spacing(5, 1),
   borderRadius: theme.shape.borderRadius,
   transition: theme.transitions.create("padding"),
-  backgroundColor: theme.palette.background.paper,
+  backgroundColor: theme.palette.grey.A100,
   border: `1px dashed ${theme.palette.secondary.main}`,
   "&:hover": { opacity: 0.72, cursor: "pointer" },
 }))
@@ -87,7 +86,6 @@ const SingleFileUpload = ({ error, file, setFieldValue, sx }: UploadProps) => {
           ...((isDragReject || error) && {
             color: "error.main",
             borderColor: "error.light",
-            bgcolor: "error.lighter",
           }),
           ...(file && {
             padding: "12% 0",

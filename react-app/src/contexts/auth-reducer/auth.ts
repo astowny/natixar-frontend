@@ -13,7 +13,7 @@ export const initialState: AuthProps = {
 
 // ==============================|| AUTH REDUCER ||============================== //
 
-const auth = (action: AuthActionProps, state = initialState) => {
+const auth = (state = initialState, action: AuthActionProps) => {
   switch (action.type) {
     case REGISTER: {
       const { user } = action.payload!

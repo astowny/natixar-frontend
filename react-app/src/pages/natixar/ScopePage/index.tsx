@@ -5,6 +5,7 @@ import { ArrowLeftOutlined, RightOutlined } from "@ant-design/icons"
 import { useLocation, useNavigate } from "react-router-dom"
 import { ScopeTable } from "../../../components/natixarComponents/ScopeTable"
 import Breadcrumb from "../../../components/@extended/Breadcrumbs"
+import { AreaCheckbox } from "../../../components/natixarComponents/AreaCheckbox"
 
 // table data
 const createData = (title: string, value: number, emissionID: string) => ({

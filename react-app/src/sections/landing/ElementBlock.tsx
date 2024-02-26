@@ -205,7 +205,7 @@ const ElementBlock = () => {
                   <Grid item>{checkIcon}</Grid>
                   <Grid item xs zeroMinWidth>
                     <Typography variant="body1" color="secondary">
-                      Auth Methods : JWT, Auth0, Firebase
+                      Auth Methods : JWT, Auth0
                     </Typography>
                   </Grid>
                 </Grid>

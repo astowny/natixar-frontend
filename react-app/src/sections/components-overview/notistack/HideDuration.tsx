@@ -66,6 +66,7 @@ export default function HideDuration() {
       title="Hide Duration"
       codeString={NotistackHideDurationCodeString}
     >
+      {/* eslint-disable react/jsx-no-bind */}
       <Slider
         value={value}
         min={1}
@@ -73,7 +74,6 @@ export default function HideDuration() {
         max={11}
         valueLabelDisplay="on"
         marks={marks}
-        {/* eslint-disable-next-line react/jsx-no-bind */}
         getAriaValueText={valueLabelFormat}
         valueLabelFormat={valueLabelFormat}
         onChange={handleChange}

@@ -11,12 +11,12 @@ import useConfig from "hooks/useConfig"
 
 const ExtraHeaderContent = () => {
   const navigate = useNavigate()
-  const { lastRoute, onChangeRoute } = useConfig()
+  const { setIsShowExtraHeader } = useConfig()
   const theme = useTheme()
 
   const handleBack = () => {
-    navigate(lastRoute)
-    onChangeRoute("")
+    navigate(-1)
+    setIsShowExtraHeader(false)
   }
 
   return (

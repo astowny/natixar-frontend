@@ -1,102 +1,26 @@
-import { Box, Button, Grid, Typography } from "@mui/material"
-import MainCard from "components/MainCard"
-import { useLocation, useNavigate } from "react-router-dom"
-import { ArrowLeftOutlined, RightOutlined } from "@ant-design/icons"
-import Breadcrumb from "../../../components/@extended/Breadcrumbs"
-import { FactoryTable } from "../../../components/natixarComponents/FactoryTable"
+import { Grid, Typography } from "@mui/material"
 
-// table data
-const createData = (title: string, value: number) => ({
-  title,
-  value,
-})
+import RecentTickets from "sections/widget/data/RecentTickets"
+import SourcesTable from "./SourcesTable"
 
-const rows = [
-  createData("Major Factory -  Italy", 90000),
-  createData("Second Factory -  France", 40000),
-  createData("Major Factory -  Italy", 20000),
-  createData("Second Factory -  France", 16000),
-  createData("Major Factory -  Italy", 11000),
-]
-
-const DataPage = () => {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const params = new URLSearchParams(location.search)
-  const scopeID = params.get("scopeID")
-
-  const links = [
-    {
-      title: "Scopes",
-      to: "/contributor/dashboard",
-    },
-    {
-      title: `Scope ${scopeID} emissions`,
-      to: `/contributor/scope/${scopeID}?scopeID=${scopeID}`,
-    },
-    {
-      title: "Top contributors of Transportation and destribution",
-      to: "",
-    },
-  ]
-
-  return (
-    <MainCard>
-      <Grid container rowSpacing={4.5} columnSpacing={3}>
-        <Grid item xs={12} md={12} xl={12}>
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            position="relative"
-            width="100%"
-            padding="10px 0px"
-          >
-            <Button
-              variant="contained"
-              sx={{ color: "#FFF", position: "absolute", left: 0, top: 0 }}
-              startIcon={<ArrowLeftOutlined color="#FFF" />}
-              onClick={() => navigate(-1)}
-            >
-              Back to scope {scopeID}
-            </Button>
-            <Breadcrumb
-              custom
-              title={false}
-              links={links}
-              separator={RightOutlined}
-              sx={{
-                mb: "0px !important",
-              }}
-            />
-          </Box>
-        </Grid>
-        <Grid item xs={12} md={12} xl={12}>
-          <Typography variant="h5">
-            Top contributors of Transportation and destribution
-          </Typography>
-        </Grid>
-        <Grid item xs={12} md={12} xl={12}>
-          <FactoryTable data={rows} />
-        </Grid>
-        <Grid
-          item
-          xs={12}
-          md={12}
-          xl={12}
-          sx={{ display: "flex", justifyContent: "center" }}
-        >
-          <Button
-            variant="contained"
-            sx={{ color: "#FFF", marginBottom: "15px" }}
-            onClick={() => navigate("/contributor/dashboard")}
-          >
-            Go to Top contributors page
-          </Button>
-        </Grid>
-      </Grid>
-    </MainCard>
-  )
-}
+const DataPage = () => (
+  <Grid container spacing={3}>
+    <Grid item xs={12} lg={12} md={12}>
+      <Typography variant="h5">Connection status</Typography>
+    </Grid>
+    <Grid item xs={12} lg={6} md={6}>
+      <SourcesTable title="Public Sources" />
+    </Grid>
+    <Grid item xs={12} lg={6} md={6}>
+      <SourcesTable title="Private Data" />
+    </Grid>
+    <Grid item xs={12} lg={12} md={12}>
+      <Typography variant="h5">Data mapping</Typography>
+    </Grid>
+    <Grid item xs={12} md={12} lg={12}>
+      <RecentTickets />
+    </Grid>
+  </Grid>
+)
 
 export default DataPage

@@ -5,7 +5,7 @@ import mockData, { range } from "utils/mock-data"
 import { Gender } from "types/table"
 
 const newPerson = (index: number) => {
-  const tempData = mockData(index)
+  const tempData = mockData()
   const statusCode = tempData.number.status(0, 2)
   let status: string
   switch (statusCode) {
