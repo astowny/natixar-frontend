@@ -60,22 +60,6 @@ const Customization = () => {
 
   return (
     <>
-      <Box sx={{ flexShrink: 0, ml: 0.75 }}>
-        <IconButton
-          color="secondary"
-          variant="light"
-          sx={{
-            color: "text.primary",
-            bgcolor: open ? iconBackColorOpen : "transparent",
-          }}
-          onClick={handleToggle}
-          aria-label="settings toggler"
-        >
-          <AnimateButton>
-            <SettingOutlined />
-          </AnimateButton>
-        </IconButton>
-      </Box>
       <Drawer
         sx={{
           zIndex: 2001,
