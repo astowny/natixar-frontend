@@ -190,7 +190,7 @@ const FooterBlock = ({ isFull }: showProps) => {
                       variant="body1"
                       sx={{ color: theme.palette.common.white }}
                     >
-                      What is next? Checkout the Upcoming release of Mantis
+                      What is next? Checkout the Upcoming release of Natixar
                       React.
                     </Typography>
                   </Grid>
@@ -249,7 +249,7 @@ const FooterBlock = ({ isFull }: showProps) => {
                       }}
                     >
                       Since 2017, More than 50K+ Developers trust the
-                      CodedThemes Digital Product. Mantis React is Manage under
+                      CodedThemes Digital Product. Natixar React is Manage under
                       their Experienced Team Players.
                     </Typography>
                   </Grid>
@@ -340,7 +340,7 @@ const FooterBlock = ({ isFull }: showProps) => {
                       color={textColor}
                       sx={{ fontWeight: 500 }}
                     >
-                      Mantis Eco-System
+                      Natixar Eco-System
                     </Typography>
                     <Stack spacing={{ xs: 1.5, md: 2.5 }}>
                       {frameworks.map((item, index) => (
@@ -386,7 +386,7 @@ const FooterBlock = ({ isFull }: showProps) => {
                         target="_blank"
                         underline="none"
                       >
-                        Free Mantis React
+                        Free Natixar React
                       </FooterLink>
                     </Stack>
                   </Stack>

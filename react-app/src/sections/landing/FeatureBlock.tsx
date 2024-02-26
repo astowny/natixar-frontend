@@ -32,17 +32,17 @@ const FeatureBlock = () => (
             <Grid container spacing={1} justifyContent="center">
               <Grid item xs={12}>
                 <Typography variant="subtitle1" color="primary">
-                  Mantis nailed it!
+                  Natixar nailed it!
                 </Typography>
               </Grid>
               <Grid item xs={12}>
                 <Typography variant="h2" sx={{ mb: 2 }}>
-                  Why Mantis?
+                  Why Natixar?
                 </Typography>
               </Grid>
               <Grid item xs={12}>
                 <Typography variant="body1">
-                  Customize everything with the Mantis React Material-UI
+                  Customize everything with the Natixar React Material-UI
                   Dashboard Template built with latest MUI v5 component library
                 </Typography>
               </Grid>
@@ -69,7 +69,7 @@ const FeatureBlock = () => (
               </Grid>
               <Grid item xs={12}>
                 <Typography variant="body1" color="secondary">
-                  Mantis has fully professional grade user interface for any
+                  Natixar has fully professional grade user interface for any
                   kind of backend project.
                 </Typography>
               </Grid>
@@ -96,7 +96,7 @@ const FeatureBlock = () => (
               </Grid>
               <Grid item xs={12}>
                 <Typography variant="body1" color="secondary">
-                  Highly flexible to work around using Mantis React Template.
+                  Highly flexible to work around using Natixar React Template.
                 </Typography>
               </Grid>
             </Grid>

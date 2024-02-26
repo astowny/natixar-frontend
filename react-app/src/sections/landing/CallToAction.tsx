@@ -102,7 +102,7 @@ const CallToActionPage = () => {
                     }}
                   >
                     <Box component="span" sx={{ mx: 0 }}>
-                      Check Mantis
+                      Check Natixar
                     </Box>
                     <Box
                       component="span"

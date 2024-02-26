@@ -126,7 +126,7 @@ const PartnerBlock = () => {
                   </Grid>
                   <Grid item xs={12}>
                     <Typography variant="body1">
-                      Mantis is available in multiple technologies. Simply click
+                      Natixar is available in multiple technologies. Simply click
                       to dive in and discover the perfect solution for your
                       needs. Each sold{" "}
                       <Link

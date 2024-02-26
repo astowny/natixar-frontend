@@ -101,7 +101,7 @@ function ComingSoon() {
       <Grid item xs={12} sx={{ width: { xs: 380, md: "40%", lg: "30%" } }}>
         <Stack spacing={2} sx={{ mt: 2 }}>
           <Typography align="center" color="textSecondary">
-            Be the first to be notified when Mantis launches.
+            Be the first to be notified when Natixar launches.
           </Typography>
           <Stack direction="row" spacing={1}>
             <TextField fullWidth placeholder="Email Address" />

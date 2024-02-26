@@ -6,6 +6,10 @@ import {
   IdcardOutlined,
   DashboardOutlined,
   SettingOutlined,
+  CloudUploadOutlined,
+  FileTextOutlined,
+  DatabaseOutlined,
+  PieChartOutlined,
 } from "@ant-design/icons"
 
 // type
@@ -16,6 +20,10 @@ const icons = {
   IdcardOutlined,
   DashboardOutlined,
   SettingOutlined,
+  CloudUploadOutlined,
+  FileTextOutlined,
+  DatabaseOutlined,
+  PieChartOutlined,
 }
 
 // ==============================|| MENU ITEMS - DASHBOARD ||============================== //
@@ -31,7 +39,7 @@ const natixarNav: NavItemType[] = [
         title: <FormattedMessage id="Climat Change Dashboard" />,
         type: "item",
         url: "/contributor/dashboard",
-        icon: icons.DashboardOutlined,
+        icon: icons.PieChartOutlined,
       },
       {
         id: "map",
@@ -52,21 +60,21 @@ const natixarNav: NavItemType[] = [
         title: <FormattedMessage id="Data" />,
         type: "item",
         url: "/contributor/data",
-        icon: icons.DashboardOutlined,
+        icon: icons.DatabaseOutlined,
       },
       {
         id: "upload",
         title: <FormattedMessage id="Upload" />,
         type: "item",
         url: "/contributor/upload",
-        icon: icons.DashboardOutlined,
+        icon: icons.CloudUploadOutlined,
       },
       {
         id: "report",
         title: <FormattedMessage id="Report" />,
         type: "item",
         url: "/contributor/report",
-        icon: icons.DashboardOutlined,
+        icon: icons.FileTextOutlined,
       },
       {
         id: "lca",

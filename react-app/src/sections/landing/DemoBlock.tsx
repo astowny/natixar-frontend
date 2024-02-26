@@ -40,7 +40,7 @@ const DemoBlock = () => {
               <Grid container spacing={1} justifyContent="center">
                 <Grid item xs={12}>
                   <Typography variant="subtitle1" color="primary">
-                    Mantis for All
+                    Natixar for All
                   </Typography>
                 </Grid>
                 <Grid item xs={12}>
@@ -50,7 +50,7 @@ const DemoBlock = () => {
                 </Grid>
                 <Grid item xs={12}>
                   <Typography variant="body1">
-                    Wheather you are developer or designer, Mantis serve the
+                    Wheather you are developer or designer, Natixar serve the
                     need of all - No matter you are novice or expert
                   </Typography>
                 </Grid>
@@ -75,7 +75,7 @@ const DemoBlock = () => {
                 </Grid>
                 <Grid item xs={12}>
                   <Typography variant="body1" color="secondary">
-                    Check the live preview of Mantis figma design file. Figma
+                    Check the live preview of Natixar figma design file. Figma
                     file included in Plus and Extended License only.
                   </Typography>
                 </Grid>
@@ -87,7 +87,7 @@ const DemoBlock = () => {
                         endIcon={<SendOutlined />}
                         sx={{ my: 2 }}
                         component={Link}
-                        href="https://www.figma.com/file/NJGFukWMHgU0LVhS4qLP4A/Mantis?node-id=106412%3A169520"
+                        href="https://www.figma.com/file/NJGFukWMHgU0LVhS4qLP4A/Natixar?node-id=106412%3A169520"
                         target="_blank"
                       >
                         Preview Figma
@@ -124,7 +124,7 @@ const DemoBlock = () => {
                 </Grid>
                 <Grid item xs={12}>
                   <Typography variant="body1" color="secondary">
-                    Check the all components of Mantis in single place with
+                    Check the all components of Natixar in single place with
                     search feature for easing your development while working.
                   </Typography>
                 </Grid>

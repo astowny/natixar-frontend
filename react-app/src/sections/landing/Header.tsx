@@ -88,7 +88,7 @@ const HeaderPage = () => {
                     lineHeight: { xs: 1.4, md: 1.4 },
                   }}
                 >
-                  Mantis React is a blazing-fast dashboard template built using
+                  Natixar React is a blazing-fast dashboard template built using
                   the MUI React library.
                 </Typography>
               </motion.div>
@@ -153,7 +153,7 @@ const HeaderPage = () => {
                   delay: 0.6,
                 }}
               >
-                <img src={headertechimg} alt="Mantis" style={{ zIndex: 9 }} />
+                <img src={headertechimg} alt="Natixar" style={{ zIndex: 9 }} />
               </motion.div>
             </Grid>
           </Grid>

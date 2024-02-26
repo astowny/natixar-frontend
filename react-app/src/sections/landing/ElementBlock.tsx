@@ -93,14 +93,14 @@ const ElementBlock = () => {
                         >
                           web apps
                         </Box>
-                        with Mantis React
+                        with Natixar React
                       </Box>
                     </Typography>
                   </Grid>
                   <Grid item xs={12}>
                     <Typography variant="body1">
                       Create your powerful backend project using powerful design
-                      system of Mantis React Template.
+                      system of Natixar React Template.
                     </Typography>
                   </Grid>
                 </Grid>
