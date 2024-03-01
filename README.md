@@ -1,7 +1,2 @@
 # natixar-frontend
-The static front end of the Natixar SaaS platform
-
-# Défauts
-
-* Multilingue, mais fonctionne avec des liens symboliques pour les pages applicatives (opposé à "contenu")
-* Pas de nom de domaine dédié (sous-domaine) car il faudrait une entrée DNS pour app.natixar.com .
+react-app branch: Forked from the master branch, it is the main development branch for the single page application developed using react components (in the react-app folder).
