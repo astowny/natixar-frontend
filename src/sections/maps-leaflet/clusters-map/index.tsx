@@ -9,7 +9,7 @@ import { clearSelectedCluster } from "data/store/features/coordinates/ClusterSli
 import {
   selectAllVisibleCategories,
   selectSelectedCluster,
-} from "data/store/features/coordinates/Selectors"
+} from "data/store/api/Selectors"
 import { useAppDispatch } from "data/store"
 
 const ClusteredMapSection = (props: SxProps) => {

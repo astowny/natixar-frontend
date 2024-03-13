@@ -25,7 +25,6 @@ export interface EmissionRangesPayload {
 }
 
 export interface EmissionRangeState {
-  wholeDataSet?: EmissionRangesPayload
   alignedIndexes: AlignedIndexes
   allPoints: DataPoint[]
   visibleFrame: PerceivedData

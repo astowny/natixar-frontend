@@ -8,14 +8,7 @@ import {
 } from "../../coordinates/Types"
 import { EmissionRangeState, IndexesContainer } from "./EndpointTypes"
 import { emissionRangesApi } from "./EmissionRangesClient"
-import {
-  AlignedIndexes,
-  CDP_LAYOUT_AREA,
-  CDP_LAYOUT_CATEGORY,
-  CDP_LAYOUT_ENTITY,
-  CDP_LAYOUT_INTENSITY,
-  CDP_LAYOUT_START,
-} from "./Types"
+import { AlignedIndexes, CdpLayoutItem, CompressedDataPoint } from "./Types"
 
 const initialFilterTemplate: GlobalEmissionFilter = {
   countries: [],
@@ -66,17 +59,30 @@ const alignIndexes = (originalIndexes: IndexesContainer): AlignedIndexes => {
   }
 }
 
+const calculateTotalAmount = (payload: CompressedDataPoint): number => {
+  const durationInFullTimeSlots =
+    payload[CdpLayoutItem.CDP_LAYOUT_END] -
+    payload[CdpLayoutItem.CDP_LAYOUT_START] -
+    2 +
+    payload[CdpLayoutItem.CDP_LAYOUT_START_PERCENTAGE] +
+    payload[CdpLayoutItem.CDP_LAYOUT_END_PERCENTAGE]
+
+  return durationInFullTimeSlots * payload[CdpLayoutItem.CDP_LAYOUT_INTENSITY]
+}
+
 const compressedPayloadToDataPoint = (
-  payload: number[],
+  payload: CompressedDataPoint,
   indexes: AlignedIndexes,
 ): DataPoint => {
-  const categoryName = indexes.categories[payload[CDP_LAYOUT_CATEGORY]].name
-  const companyName = indexes.entities[payload[CDP_LAYOUT_ENTITY]].name
-  const area = indexes.areas[payload[CDP_LAYOUT_AREA]]
+  const categoryName =
+    indexes.categories[payload[CdpLayoutItem.CDP_LAYOUT_CATEGORY]].name
+  const companyName =
+    indexes.entities[payload[CdpLayoutItem.CDP_LAYOUT_ENTITY]].name
+  const area = indexes.areas[payload[CdpLayoutItem.CDP_LAYOUT_AREA]]
   return {
     id: uuid(),
-    time: payload[CDP_LAYOUT_START],
-    emission_amount: payload[CDP_LAYOUT_INTENSITY],
+    time: payload[CdpLayoutItem.CDP_LAYOUT_START],
+    emission_amount: calculateTotalAmount(payload),
     emission_measure: "kg",
     category: categoryName,
     company: companyName,
@@ -185,7 +191,6 @@ export const emissionsRangeSlice = createSlice({
           state.globalFilter.selectedValues,
         )
 
-        state.wholeDataSet = action.payload
         state.alignedIndexes = alignedIndexes
         state.allPoints = allPoints
         state.visibleFrame = visiblePoints

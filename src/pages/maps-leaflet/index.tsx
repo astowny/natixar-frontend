@@ -1,12 +1,12 @@
 import { Stack, Typography } from "@mui/material"
-import { useGetRandomCoordinatesQuery } from "data/store/features/coordinates/CoordinateClient"
+import { useGetEmissionRangesQuery } from "data/store/features/emissions/ranges/EmissionRangesClient"
 
 import ByCompanySection from "sections/charts/emissions/ByCompanySection"
 import ByCountrySection from "sections/charts/emissions/ByCountrySection"
 import ClusteredMapSection from "sections/maps-leaflet/clusters-map"
 
 const ContributorDashboardPage = () => {
-  useGetRandomCoordinatesQuery(undefined, {
+  useGetEmissionRangesQuery(undefined, {
     pollingInterval: 5000,
   })
 

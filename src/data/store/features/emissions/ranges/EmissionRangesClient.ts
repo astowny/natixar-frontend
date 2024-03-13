@@ -11,6 +11,9 @@ export const emissionRangesApi = createApi({
         url: `/data/ranges`,
         method: "GET",
       }),
+      transformResponse: (
+        payload: EmissionRangesPayload[],
+      ): EmissionRangesPayload => payload[0],
     }),
   }),
 })

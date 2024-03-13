@@ -22,7 +22,7 @@ import {
   setSelectedCompanies as selectedCompaniesAction,
   setSelectedCountries as selectedCountriesAction,
 } from "data/store/features/coordinates/CoordinateSlice"
-import { selectGlobalFilter } from "data/store/features/coordinates/Selectors"
+import { selectGlobalFilter } from "data/store/api/Selectors"
 import { useAppDispatch } from "data/store"
 
 // import { DateRangePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro';

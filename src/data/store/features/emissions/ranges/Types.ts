@@ -64,12 +64,14 @@ export interface AlignedIndexes {
 
 export type CompressedDataPoint = number[]
 
-export const CDP_LAYOUT_START = 0
-export const CDP_LAYOUT_START_PERCENTAGE = 1
-export const CDP_LAYOUT_INTENSITY = 2
-export const CDP_LAYOUT_END = 3
-export const CDP_LAYOUT_END_PERCENTAGE = 4
-export const CDP_LAYOUT_ENTITY = 5
-export const CDP_LAYOUT_AREA = 6
-export const CDP_LAYOUT_THIRD_PARTY = 7
-export const CDP_LAYOUT_CATEGORY = 8
+export enum CdpLayoutItem {
+  CDP_LAYOUT_START = 0,
+  CDP_LAYOUT_START_PERCENTAGE,
+  CDP_LAYOUT_INTENSITY,
+  CDP_LAYOUT_END,
+  CDP_LAYOUT_END_PERCENTAGE,
+  CDP_LAYOUT_ENTITY,
+  CDP_LAYOUT_AREA,
+  CDP_LAYOUT_THIRD_PARTY,
+  CDP_LAYOUT_CATEGORY,
+}

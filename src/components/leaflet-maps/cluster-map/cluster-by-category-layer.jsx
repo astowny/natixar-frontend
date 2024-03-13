@@ -6,13 +6,13 @@ import MarkerClusterGroup from "react-leaflet-cluster"
 
 import MapMarker from "components/third-party/map/MapMarker"
 
-// import 'leaflet/dist/leaflet.css'
+import "leaflet/dist/leaflet.css"
 import "./map-style.css"
 
 import { useAppDispatch } from "data/store"
 import { formatAmount } from "utils/formatAmounts"
 import { selectClusterPoints } from "data/store/features/coordinates/ClusterSlice"
-import { selectVisibleData } from "data/store/features/coordinates/Selectors"
+import { selectVisibleData } from "data/store/api/Selectors"
 
 const customIcon = new L.Icon({
   iconUrl: MapMarker,
@@ -48,7 +48,7 @@ const createClusterCustomIcon = (cluster) => {
       category = "cluster"
     }
   }
-  category = category.toLowerCase()
+  category = "operation" // category.toLowerCase()
 
   const amountLabel = formatAmount(childCount)
 
