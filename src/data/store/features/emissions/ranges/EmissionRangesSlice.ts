@@ -123,7 +123,6 @@ const compressedPayloadToDataPoint = (
     id: uuid(),
     time: payload[CdpLayoutItem.CDP_LAYOUT_START],
     emission_amount: calculateTotalAmount(payload),
-    emission_measure: "kg",
     category: categoryName,
     company: company.name,
     location: {

@@ -8,7 +8,6 @@ interface DataPoint {
   id: string
   time: number
   emission_amount: number
-  emission_measure: string
   category: string
   company: string
   location: Location
