@@ -133,6 +133,41 @@ const compressedPayloadToDataPoint = (
   }
 }
 
+const extractFilters = (indexes: AlignedIndexes): GlobalFilterState => {
+  const categories = new Set<string>()
+  const companies = new Set<string>()
+  const countries = new Set<string>()
+
+  Object.values(indexes.categories)
+    .filter(
+      (category) =>
+        !category.parent ||
+        ["Upstream", "Downstream", "Operation"].includes(category.name),
+    )
+    .forEach((category) => categories.add(category.name))
+  Object.values(indexes.entities)
+    .filter((entity) => entity.type === "Company")
+    .forEach((entity) => companies.add(entity.name))
+  Object.values(indexes.areas)
+    .filter((area) => area.type === "Country")
+    .forEach((area) => countries.add(area.name))
+
+  return {
+    availableValues: {
+      categories: Array.from(categories).sort(),
+      companies: Array.from(companies).sort(),
+      countries: Array.from(countries).sort(),
+      timeRange: { from: 0, to: 0 },
+    },
+    selectedValues: {
+      categories: [],
+      companies: [],
+      countries: [],
+      timeRange: { from: 0, to: 0 },
+    },
+  }
+}
+
 const stringFilterRoutine = (
   currentValue: string,
   filterSelectedValues: string[],
@@ -225,6 +260,7 @@ export const emissionsRangeSlice = createSlice({
         const allPoints = action.payload.data.map((compressedPoint) =>
           compressedPayloadToDataPoint(compressedPoint, alignedIndexes),
         )
+        const availableFilters = extractFilters(alignedIndexes)
         const visiblePoints = filterVisibleData(
           allPoints,
           state.globalFilter.selectedValues,
@@ -233,6 +269,7 @@ export const emissionsRangeSlice = createSlice({
         state.alignedIndexes = alignedIndexes
         state.allPoints = allPoints
         state.visibleFrame = visiblePoints
+        state.globalFilter = availableFilters
       },
     )
   },

@@ -58,17 +58,18 @@ const ClusteredMapSection = (props: SxProps) => {
           <Card
             sx={{
               zIndex: 1100,
+              maxWidth: "80%",
               position: "absolute",
               bottom: "40px",
               left: "50%",
               transform: "translateX(-50%)",
-              px: "15px",
+              px: "1rem",
               py: "10px",
               borderRadius: "10px",
             }}
             elevation={5}
           >
-            <CategoriesLegend categories={categories} />
+            <CategoriesLegend sx={{ px: "1rem" }} categories={categories} />
           </Card>
         </Fade>
       </Box>
