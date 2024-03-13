@@ -115,8 +115,8 @@ const ClusterByCategoryLayer = () => {
       iconCreateFunction={createClusterCustomIcon}
       maxClusterRadius={CLUSTER_RADIUS}
       zoomToBoundsOnClick={false}
+      spiderfyOnMaxZoom={false}
       onClick={onClusterClick}
-      onClusterClick={onClusterClick}
       ref={clusterGroupRef}
     />
   )

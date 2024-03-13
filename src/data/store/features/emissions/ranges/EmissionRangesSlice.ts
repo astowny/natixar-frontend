@@ -8,7 +8,13 @@ import {
 } from "../../coordinates/Types"
 import { EmissionRangeState, IndexesContainer } from "./EndpointTypes"
 import { emissionRangesApi } from "./EmissionRangesClient"
-import { AlignedIndexes, CdpLayoutItem, CompressedDataPoint } from "./Types"
+import {
+  AlignedIndexes,
+  BusinessEntity,
+  CdpLayoutItem,
+  CompressedDataPoint,
+  GeographicalArea,
+} from "./Types"
 
 const initialFilterTemplate: GlobalEmissionFilter = {
   countries: [],
@@ -70,26 +76,60 @@ const calculateTotalAmount = (payload: CompressedDataPoint): number => {
   return durationInFullTimeSlots * payload[CdpLayoutItem.CDP_LAYOUT_INTENSITY]
 }
 
+const AREAS_OF_INTEREST = ["World region", "Continent", "Country"]
+const detectCountry = (
+  originalArea: GeographicalArea,
+  indexes: AlignedIndexes,
+): GeographicalArea => {
+  let area = originalArea
+  while (
+    area.parent &&
+    indexes.areas[area.parent] &&
+    !AREAS_OF_INTEREST.includes(area.type)
+  ) {
+    area = indexes.areas[area.parent]
+  }
+  return area
+}
+
+const detectCompany = (
+  originalEntity: BusinessEntity,
+  indexes: AlignedIndexes,
+): BusinessEntity => {
+  let entity = originalEntity
+  while (
+    entity.parent &&
+    indexes.entities[entity.parent] &&
+    entity.type !== "Company"
+  ) {
+    entity = indexes.entities[entity.parent]
+  }
+  return entity
+}
+
 const compressedPayloadToDataPoint = (
   payload: CompressedDataPoint,
   indexes: AlignedIndexes,
 ): DataPoint => {
   const categoryName =
     indexes.categories[payload[CdpLayoutItem.CDP_LAYOUT_CATEGORY]].name
-  const companyName =
-    indexes.entities[payload[CdpLayoutItem.CDP_LAYOUT_ENTITY]].name
+  const company = detectCompany(
+    indexes.entities[payload[CdpLayoutItem.CDP_LAYOUT_ENTITY]],
+    indexes,
+  )
   const area = indexes.areas[payload[CdpLayoutItem.CDP_LAYOUT_AREA]]
+  const country = detectCountry(area, indexes)
   return {
     id: uuid(),
     time: payload[CdpLayoutItem.CDP_LAYOUT_START],
     emission_amount: calculateTotalAmount(payload),
     emission_measure: "kg",
     category: categoryName,
-    company: companyName,
+    company: company.name,
     location: {
       lat: area.details?.lat ?? 0,
       lon: area.details?.long ?? 0,
-      country: area.name,
+      country: country.name,
     },
   }
 }
