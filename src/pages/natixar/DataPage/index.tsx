@@ -1,8 +1,8 @@
 import { Grid, Typography } from "@mui/material"
 
 import RecentTickets from "sections/widget/data/RecentTickets"
-import SourcesTable from "./SourcesTable"
 import UnknownMappings from "sections/data-health/UnknownMappingsSection"
+import SourcesTable from "./SourcesTable"
 
 const DataPage = () => (
   <Grid container spacing={3}>

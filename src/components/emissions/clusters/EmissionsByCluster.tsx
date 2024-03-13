@@ -42,7 +42,7 @@ const EmissionsByClusterSection = (
               height: "40px",
               px: "16px",
               py: "9px",
-              color: "white",
+              color: "primary.contrastText",
             }}
             onClick={() => onClose && onClose()}
             variant="contained"

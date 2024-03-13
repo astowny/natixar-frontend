@@ -1,21 +1,18 @@
 import { RootState } from "data/store"
 
 export const selectGlobalFilter = (state: RootState) =>
-  state.coordinates.globalFilter
+  state.emissionRanges.globalFilter
 
 export const selectAllVisibleCategories = (state: RootState) =>
-  state.coordinates.globalFilter.availableValues.categories
-
-export const selectCoordinatesDataSet = (state: RootState) =>
-  state.coordinates.wholeDataSet
+  state.emissionRanges.globalFilter.availableValues.categories
 
 export const selectVisibleData = (state: RootState) =>
-  state.coordinates.visibleFrame.allPoints
+  state.emissionRanges.visibleFrame.allPoints
 
 export const selectCoordinatesByCompany = (state: RootState) =>
-  state.coordinates.visibleFrame.byCompany
+  state.emissionRanges.visibleFrame.byCompany
 
 export const selectCoordinatesByCountry = (state: RootState) =>
-  state.coordinates.visibleFrame.byCountry
+  state.emissionRanges.visibleFrame.byCountry
 
 export const selectSelectedCluster = (state: RootState) => state.selectedCluster

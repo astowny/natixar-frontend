@@ -18,12 +18,12 @@ const CategoryBadge = (props: CategoryLabelProps & SxProps) => {
         component="span"
         sx={{
           width: 8,
-          height: 8,
+          aspectRatio: 1,
           borderRadius: "50%",
           bgcolor: color,
         }}
       />
-      <Typography>{category}</Typography>
+      <Typography noWrap>{category}</Typography>
     </Stack>
   )
 }

@@ -1,10 +1,10 @@
 import { createApi } from "@reduxjs/toolkit/query/react"
-import { backendBaseQueryFn } from "data/store/config/BackendConfigs"
+import { backendBaseQuery } from "data/store/config/BackendConfigs"
 import { DataSet } from "./Types"
 
 export const coordinateApi = createApi({
   reducerPath: "coordinateApi",
-  baseQuery: backendBaseQueryFn(),
+  baseQuery: backendBaseQuery(),
   endpoints: (builder) => ({
     getRandomCoordinates: builder.query<DataSet, void>({
       query: () => ({

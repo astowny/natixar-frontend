@@ -2,6 +2,8 @@ import React, { useLayoutEffect, useRef, useState } from "react"
 import { Chip, Input, Stack } from "@mui/material"
 import { GridRenderEditCellParams, useGridApiContext } from "@mui/x-data-grid"
 
+const SEPARATOR_KEY = "Enter"
+
 const KeywordInput = (props: GridRenderEditCellParams) => {
   const { id, field, value, hasFocus } = props
   const [keywords, setKeywords] = useState<string[]>(
@@ -12,7 +14,9 @@ const KeywordInput = (props: GridRenderEditCellParams) => {
   const inputRef = useRef<HTMLElement>()
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === ",") {
+    if (event.key === SEPARATOR_KEY) {
+      event.preventDefault()
+      event.stopPropagation()
       const text = inputValue ? inputValue.trim() : ""
       if (text.length > 0) {
         const newKeywords = [...keywords, text]
@@ -20,7 +24,6 @@ const KeywordInput = (props: GridRenderEditCellParams) => {
         setInputValue("")
         apiRef.current.setEditCellValue({ id, field, value: newKeywords })
       }
-      event.preventDefault()
     }
   }
 

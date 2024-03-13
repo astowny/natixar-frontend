@@ -26,7 +26,14 @@ const KeywordsCellEditor = (props: KeywordsCellEditorProps & SxProps) => {
 
   return (
     <Box sx={{ ...sxProps }}>
-      <Button aria-describedby={id} variant="contained" onClick={handleClick}>
+      <Button
+        aria-describedby={id}
+        sx={{
+          color: "primary.contrastText",
+        }}
+        variant="contained"
+        onClick={handleClick}
+      >
         {buttonText}
       </Button>
       <Popover

@@ -1,5 +1,5 @@
 import { memo, useCallback, useState } from "react"
-import { Link, SxProps } from "@mui/material"
+import { Link, SxProps, TextField } from "@mui/material"
 import {
   DataGrid,
   GridActionsCellItem,
@@ -30,7 +30,7 @@ and 8 for NC8
 */
 const GOODS_CODE_LIMITATION = 6
 const CODE_DETAIL_URL_PREFIX = import.meta.env.VITE_GOODS_DETAIL_PAGE
-const PAGINATION_OPTIONS = [5, 10, 25]
+const PAGINATION_OPTIONS = [20, 50, 100]
 
 const HEADER_CSS_CLASS = "common-super-class-name"
 const AWESOME_COLUMN: GridColTypeDef = {
@@ -78,10 +78,8 @@ const columns: GridColDef[] = [
       if (!params.hasChanged || !newValue) {
         return { ...params.props }
       }
-      const hasError =
-        newValue.toString().length > GOODS_CODE_LIMITATION ||
-        Number.isNaN(parseInt(newValue, 10))
-      return { ...params.props, error: hasError || undefined }
+      const hasError = Number.isNaN(parseInt(newValue, 10))
+      return { ...params.props, error: hasError }
     },
     renderCell: (params) =>
       params.value ? (
@@ -94,6 +92,15 @@ const columns: GridColDef[] = [
           {params.formattedValue}
         </Link>
       ) : null,
+    renderEditCell: (params) => (
+      <TextField
+        sx={{
+          mr: ".5rem",
+        }}
+        value={params.value}
+        variant="outlined"
+      />
+    ),
   },
   {
     field: "precision",

@@ -30,7 +30,7 @@ import {
 import {
   allMappingsSelector,
   mappingToEditSelector,
-} from "data/store/features/codemappings/Selectors"
+} from "data/store/api/Selectors"
 
 const CODES_REGISTRY_URL = import.meta.env.VITE_GOODS_CODE_REPOSITORY
 
@@ -211,7 +211,14 @@ const UnknownMappingsSection = (props: SxProps) => {
         position: "relative",
       }}
     >
-      <Box sx={{ width: "100%", minHeight: "440px", position: "relative" }}>
+      <Box
+        sx={{
+          width: "100%",
+          minHeight: "1200px",
+          height: "fit-content",
+          position: "relative",
+        }}
+      >
         <Stack
           sx={{
             ...OVERLAY_FRAME_PROPS,
