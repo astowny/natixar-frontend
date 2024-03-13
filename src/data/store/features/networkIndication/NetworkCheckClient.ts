@@ -1,13 +1,13 @@
 import { createApi } from "@reduxjs/toolkit/query/react"
-import { backendBaseQueryFn } from "data/store/config/BackendConfigs"
+import { backendBaseQuery } from "data/store/config/BackendConfigs"
 
 export const networkCheckApi = createApi({
   reducerPath: "networkCheckApi",
-  baseQuery: backendBaseQueryFn(),
+  baseQuery: backendBaseQuery(),
   endpoints: (builder) => ({
     getNetworkInformation: builder.query<string, void>({
       query: () => ({
-        url: `/health`,
+        url: import.meta.env.VITE_NATIXAR_HEALTH_URL,
         method: "GET",
         responseHandler: "text",
       }),

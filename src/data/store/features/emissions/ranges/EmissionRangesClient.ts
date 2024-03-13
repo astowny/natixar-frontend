@@ -1,15 +1,19 @@
 import { createApi } from "@reduxjs/toolkit/query/react"
-import { backendBaseQueryFn } from "data/store/config/BackendConfigs"
-import { EmissionRangesPayload } from "./EndpointTypes"
+import { axiosBaseQuery } from "data/store/config/BackendConfigs"
+import { EmissionRangesPayload, EmissionRangesRequests } from "./EndpointTypes"
 
 export const emissionRangesApi = createApi({
   reducerPath: "emissionRangesApi",
-  baseQuery: backendBaseQueryFn(),
+  baseQuery: axiosBaseQuery(),
   endpoints: (builder) => ({
-    getEmissionRanges: builder.query<EmissionRangesPayload, void>({
+    getEmissionRanges: builder.query<
+      EmissionRangesPayload,
+      EmissionRangesRequests
+    >({
       query: () => ({
-        url: `/data/ranges`,
+        url: `/api/v0/data/ranges`,
         method: "GET",
+        // data: JSON.stringify(requests),
       }),
       transformResponse: (
         payload: EmissionRangesPayload[],

@@ -24,6 +24,16 @@ export interface EmissionRangesPayload {
   data: CompressedDataPoint[]
 }
 
+export interface EmissionRangesRequest {
+  start: string
+  end: string
+  scale: "m" | "h" | "d" | "w" | "M" | "Q" | "y"
+}
+
+export interface EmissionRangesRequests {
+  requests: EmissionRangesRequest[]
+}
+
 export interface EmissionRangeState {
   alignedIndexes: AlignedIndexes
   allPoints: DataPoint[]

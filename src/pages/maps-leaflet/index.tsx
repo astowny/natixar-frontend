@@ -6,9 +6,20 @@ import ByCountrySection from "sections/charts/emissions/ByCountrySection"
 import ClusteredMapSection from "sections/maps-leaflet/clusters-map"
 
 const ContributorDashboardPage = () => {
-  useGetEmissionRangesQuery(undefined, {
-    pollingInterval: 5000,
-  })
+  useGetEmissionRangesQuery(
+    {
+      requests: [
+        {
+          start: "2023-01-01T00:00:00Z",
+          end: "2023-01-02T00:00:00Z",
+          scale: "h",
+        },
+      ],
+    },
+    {
+      pollingInterval: 5000,
+    },
+  )
 
   return (
     <Stack spacing="22px">

@@ -139,12 +139,8 @@ const extractFilters = (indexes: AlignedIndexes): GlobalFilterState => {
   const countries = new Set<string>()
 
   Object.values(indexes.categories)
-    .filter(
-      (category) =>
-        !category.parent ||
-        ["Upstream", "Downstream", "Operation"].includes(category.name),
-    )
-    .forEach((category) => categories.add(category.name))
+    .filter((category) => category.era)
+    .forEach((category) => categories.add(category.era!!))
   Object.values(indexes.entities)
     .filter((entity) => entity.type === "Company")
     .forEach((entity) => companies.add(entity.name))
@@ -154,7 +150,21 @@ const extractFilters = (indexes: AlignedIndexes): GlobalFilterState => {
 
   return {
     availableValues: {
-      categories: Array.from(categories).sort(),
+      categories: Array.from(categories)
+        .map((era) => {
+          switch (era.toLowerCase()) {
+            case "d":
+              return "Downstream"
+            case "u":
+              return "Upstream"
+            case "o":
+              return "Operation"
+            default:
+              return ""
+          }
+        })
+        .filter((category) => category !== "")
+        .sort(),
       companies: Array.from(companies).sort(),
       countries: Array.from(countries).sort(),
       timeRange: { from: 0, to: 0 },
