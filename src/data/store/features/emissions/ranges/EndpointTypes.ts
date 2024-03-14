@@ -24,14 +24,19 @@ export interface EmissionRangesPayload {
   data: CompressedDataPoint[]
 }
 
-export interface EmissionRangesRequest {
+export type TimeRangeScale = "m" | "h" | "d" | "w" | "M" | "Q" | "y"
+export type EmissionProtocol = "ghgprotocol" | "beges" | "begesv5"
+
+export interface TimeRangeRequest {
   start: string
   end: string
-  scale: "m" | "h" | "d" | "w" | "M" | "Q" | "y"
+  scale?: TimeRangeScale
 }
 
-export interface EmissionRangesRequests {
-  requests: EmissionRangesRequest[]
+export interface EmissionRangesRequest {
+  timeRanges: TimeRangeRequest[]
+  protocol: EmissionProtocol
+  scale: TimeRangeScale
 }
 
 export interface EmissionRangeState {

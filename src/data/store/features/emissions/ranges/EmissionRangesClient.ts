@@ -1,19 +1,26 @@
 import { createApi } from "@reduxjs/toolkit/query/react"
-import { axiosBaseQuery } from "data/store/config/BackendConfigs"
-import { EmissionRangesPayload, EmissionRangesRequests } from "./EndpointTypes"
+import { backendBaseQuery } from "data/store/config/BackendConfigs"
+import { EmissionRangesPayload, EmissionRangesRequest } from "./EndpointTypes"
+
+const encodeRangeParameters = (r: EmissionRangesRequest): string => {
+  const parameterString =
+    `scale=${r.scale}` +
+    `&protocol=${r.protocol}` +
+    `&time_ranges=${JSON.stringify(r.timeRanges)}`
+  return encodeURI(parameterString)
+}
 
 export const emissionRangesApi = createApi({
   reducerPath: "emissionRangesApi",
-  baseQuery: axiosBaseQuery(),
+  baseQuery: backendBaseQuery(),
   endpoints: (builder) => ({
     getEmissionRanges: builder.query<
       EmissionRangesPayload,
-      EmissionRangesRequests
+      EmissionRangesRequest
     >({
-      query: () => ({
-        url: `/api/v0/data/ranges`,
+      query: (request) => ({
+        url: `/api/v0/data/ranges?${encodeRangeParameters(request)}`,
         method: "GET",
-        // data: JSON.stringify(requests),
       }),
       transformResponse: (
         payload: EmissionRangesPayload[],
