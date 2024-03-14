@@ -8,11 +8,13 @@ import ClusteredMapSection from "sections/maps-leaflet/clusters-map"
 const ContributorDashboardPage = () => {
   useGetEmissionRangesQuery(
     {
-      requests: [
+      protocol: "ghgprotocol",
+      scale: "m",
+      timeRanges: [
         {
           start: "2023-01-01T00:00:00Z",
           end: "2023-01-02T00:00:00Z",
-          scale: "h",
+          scale: "m",
         },
       ],
     },
