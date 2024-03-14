@@ -30,7 +30,7 @@ import {
 import {
   allMappingsSelector,
   mappingToEditSelector,
-} from "data/store/api/Selectors"
+} from "data/store/api/DataHealthSelectors"
 
 const CODES_REGISTRY_URL = import.meta.env.VITE_GOODS_CODE_REPOSITORY
 
