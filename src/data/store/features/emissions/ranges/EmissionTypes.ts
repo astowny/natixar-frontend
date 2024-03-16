@@ -56,10 +56,22 @@ export interface EmissionCategory {
   era?: string
 }
 
+export type IdTreeNode = Tree<number>
+
+export type Tree<T> = {
+  parent?: Tree<T>
+  value: T
+  children: Tree<T>[]
+}
+
+export type IndexOf<T> = Record<number, T>
+
 export interface AlignedIndexes {
-  entities: Record<number, BusinessEntity>
-  areas: Record<number, GeographicalArea>
-  categories: Record<number, EmissionCategory>
+  entities: IndexOf<BusinessEntity>
+  areas: IndexOf<GeographicalArea>
+  areaHierarchy: IdTreeNode[]
+  entityHierarchy: IdTreeNode[]
+  categories: IndexOf<EmissionCategory>
 }
 
 export type CompressedDataPoint = number[]

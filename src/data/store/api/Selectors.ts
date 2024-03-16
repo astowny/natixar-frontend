@@ -16,3 +16,6 @@ export const selectCoordinatesByCountry = (state: RootState) =>
   state.emissionRanges.visibleFrame.byCountry
 
 export const selectSelectedCluster = (state: RootState) => state.selectedCluster
+
+export const selectAlignedIndexes = (state: RootState) =>
+  state.emissionRanges.alignedIndexes

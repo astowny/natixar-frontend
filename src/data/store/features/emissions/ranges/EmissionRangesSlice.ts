@@ -14,7 +14,9 @@ import {
   CdpLayoutItem,
   CompressedDataPoint,
   GeographicalArea,
-} from "./Types"
+  IdTreeNode,
+  IndexOf,
+} from "./EmissionTypes"
 
 const initialFilterTemplate: GlobalEmissionFilter = {
   countries: [],
@@ -36,6 +38,8 @@ const initialState: EmissionRangeState = {
     entities: {},
     areas: {},
     categories: {},
+    areaHierarchy: [],
+    entityHierarchy: [],
   },
   allPoints: [],
   visibleFrame: {
@@ -46,8 +50,61 @@ const initialState: EmissionRangeState = {
   globalFilter: { ...initialFilterState },
 }
 
+function extractHierarchyOf<T>(
+  indexOfValues: IndexOf<T>,
+  idFunc: (t: T) => number,
+  parentFunc: (t: T) => number | undefined,
+): IdTreeNode[] {
+  if (Object.keys(indexOfValues).length === 0) {
+    return []
+  }
+
+  const indexOfTreeNodes: IndexOf<IdTreeNode> = {}
+  Object.values(indexOfValues).forEach((v) => {
+    const id = idFunc(v)
+    const node: IdTreeNode = {
+      value: id,
+      children: [],
+    }
+    indexOfTreeNodes[id] = node
+  })
+
+  const rootIds = new Set(
+    Object.keys(indexOfValues).map((id) => parseInt(id, 10)),
+  )
+  Object.values(indexOfTreeNodes).forEach((node) => {
+    const myArea = indexOfValues[node.value]
+    const parentId = parentFunc(myArea)
+    if (parentId) {
+      const myParentNode = indexOfTreeNodes[parentId]
+      myParentNode.children.push(node)
+      rootIds.delete(idFunc(myArea))
+    }
+  })
+
+  return Object.values(indexOfTreeNodes).filter((node) =>
+    rootIds.has(node.value),
+  )
+}
+
+const extractAreaHierarchy = (areas: IndexOf<GeographicalArea>): IdTreeNode[] =>
+  extractHierarchyOf(
+    areas,
+    (area) => area.id,
+    (area) => area.parent,
+  )
+
+const extractEntityHierarchy = (
+  entities: IndexOf<BusinessEntity>,
+): IdTreeNode[] =>
+  extractHierarchyOf(
+    entities,
+    (entity) => entity.id,
+    (entity) => entity.parent,
+  )
+
 const alignIndexes = (originalIndexes: IndexesContainer): AlignedIndexes => {
-  const alignedCompanyIndexes = Object.fromEntries(
+  const alignedBusinessEntities = Object.fromEntries(
     originalIndexes.entity.map((company) => [company.id, company]),
   )
   const alignedAreas = Object.fromEntries(
@@ -58,10 +115,15 @@ const alignIndexes = (originalIndexes: IndexesContainer): AlignedIndexes => {
     originalIndexes.category.map((category) => [category.id, category]),
   )
 
+  const areasTree = extractAreaHierarchy(alignedAreas)
+  const entityTree = extractEntityHierarchy(alignedBusinessEntities)
+
   return {
-    entities: alignedCompanyIndexes,
+    entities: alignedBusinessEntities,
     areas: alignedAreas,
     categories: alignedCategories,
+    areaHierarchy: areasTree,
+    entityHierarchy: entityTree,
   }
 }
 

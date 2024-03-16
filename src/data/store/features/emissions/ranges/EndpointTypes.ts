@@ -10,7 +10,7 @@ import {
   EmissionCategory,
   GeographicalArea,
   TimeWindow,
-} from "./Types"
+} from "./EmissionTypes"
 
 export interface IndexesContainer {
   entity: BusinessEntity[]
