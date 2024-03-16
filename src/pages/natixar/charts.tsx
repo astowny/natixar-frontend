@@ -13,7 +13,7 @@ import {
 } from "data/store/api/EmissionSelectors"
 import { useSelector } from "react-redux"
 import { useGetEmissionRangesQuery } from "data/store/features/emissions/ranges/EmissionRangesClient"
-import EmissionByCategorySection from "../../components/natixarComponents/CO2DonutSection"
+import EmissionByScopeSection from "../../components/natixarComponents/CO2DonutSection"
 
 // assets
 import { ChartCard } from "../../components/natixarComponents/ChartCard/ChartCard"
@@ -40,10 +40,7 @@ const NatixarChart = () => {
           scale: "m",
         },
       ],
-    },
-    {
-      pollingInterval: 5000,
-    },
+    }
   )
 
   return (
@@ -58,7 +55,7 @@ const NatixarChart = () => {
           <Typography variant="h5" sx={{ marginBottom: "15px" }}>
             Scope Emissions
           </Typography>
-          <EmissionByCategorySection
+          <EmissionByScopeSection
             allDataPoints={allDataPoints}
             alignedIndexes={alignedItems}
           />
