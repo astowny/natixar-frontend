@@ -1,46 +1,106 @@
-import { Box } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 
-import ApexDonatChart from "../../../sections/charts/apexchart/ApexDonutChart"
-import LabelBox from "./LabelBox"
+import { memo } from "react"
+import { getColorByCategory } from "utils/CategoryColors"
+import { ApexPieChartProps } from "sections/charts/apexchart/ApexDonutChart/interface"
+import { DataPoint } from "data/store/features/coordinates/Types"
+import { AlignedIndexes } from "data/store/features/emissions/ranges/EmissionTypes"
+import ReactApexChart from "react-apexcharts"
+import { defaultOptions } from "sections/charts/apexchart/ApexDonutChart/constants"
+import { color } from "framer-motion"
 import {
   ChartContainerStyles,
   ContainerStyles,
   LegendsContainerStyles,
 } from "./styled"
+import LabelBox from "./LabelBox"
 
-const data = [
-  {
-    value: 44,
-    color: "#52C41A",
-    title: "Scope 1",
-    navLink: "1",
-  },
-  {
-    value: 55,
-    color: "#EF8100",
-    title: "Scope 2",
-    navLink: "2",
-  },
-  {
-    value: 13,
-    color: "#0084FF",
-    title: "Scope 3",
-    navLink: "3",
-  },
-]
+interface ByCategoryItem {
+  categoryId: number
+  count: number
+  categoryName: string
+  categoryColor: string
+}
 
-const CO2DonutSection = () => (
-  <Box sx={ContainerStyles}>
-    <Box sx={ChartContainerStyles}>
-      <ApexDonatChart data={data} totalLabel="tCO2e" />
+export interface EmissionByCategorySectionProps {
+  allDataPoints: DataPoint[]
+  alignedIndexes: AlignedIndexes
+}
+
+const EmissionByCategorySection = (props: EmissionByCategorySectionProps) => {
+  const { allDataPoints, alignedIndexes } = props
+  // const [pieChartData, setPieChartData] = useState<ApexPieChartProps>({
+  // data: [],
+  // totalLabel: "",
+  // })
+
+  // useEffect(() => {
+  // let acceptResult = true
+  // const fetchData = async () => {
+  console.log("All data points are:", allDataPoints)
+  const categoryAggregators: Record<string, ByCategoryItem> = {}
+  allDataPoints.forEach((dataPoint) => {
+    const { categoryId } = dataPoint
+    const category = alignedIndexes.categories[categoryId]
+    let { era } = category
+    if (!era) {
+      era = "Other"
+    }
+    if (!categoryAggregators[era]) {
+      categoryAggregators[era] = {
+        categoryId,
+        count: 0,
+        categoryName: era,
+        categoryColor: getColorByCategory(era ?? ""),
+      }
+    }
+    categoryAggregators[era].count += dataPoint.emission_amount
+  })
+
+  // if (acceptResult) {
+  // setByCategoryItems(Object.values(categoryAggregators))
+  const byCategoryItems = Object.values(categoryAggregators)
+
+  const pieChartData: ApexPieChartProps = {
+    data: byCategoryItems.map((item) => ({
+      value: item.count,
+      color: item.categoryColor,
+      title: item.categoryName,
+    })),
+    totalLabel: "",
+  }
+  // }
+  // }
+
+  // fetchData()
+  // return () => {
+  // acceptResult = false
+  // }
+  // }, [])
+
+  const series = pieChartData.data.map((a) => a.value)
+  const labels = pieChartData.data.map((a) => a.title)
+  const colors = pieChartData.data.map((a) => a.color)
+
+  return (
+    <Box sx={ContainerStyles}>
+      <Box sx={ChartContainerStyles}>
+        <ReactApexChart
+          options={{ ...defaultOptions, labels, colors }}
+          series={series}
+          type="donut"
+          width={400}
+        />
+      </Box>
     </Box>
+  )
+  /*
+        <Box sx={LegendsContainerStyles}>
+        {data.map((legendItem, i) => (
+          <LabelBox legend={legendItem} key={i} />
+        ))}
+      </Box>
+ */
+}
 
-    <Box sx={LegendsContainerStyles}>
-      {data.map((legendItem, i) => (
-        <LabelBox legend={legendItem} key={i} />
-      ))}
-    </Box>
-  </Box>
-)
-
-export default CO2DonutSection
+export default memo(EmissionByCategorySection)

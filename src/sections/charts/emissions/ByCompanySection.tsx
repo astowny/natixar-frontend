@@ -9,7 +9,7 @@ import { useSelector } from "react-redux"
 import {
   selectAllVisibleCategories,
   selectCoordinatesByCompany,
-} from "data/store/api/Selectors"
+} from "data/store/api/EmissionSelectors"
 
 const ByCompanySection = (props: SxProps) => {
   const { ...sxProps } = props

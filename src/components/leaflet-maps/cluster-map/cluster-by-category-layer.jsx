@@ -12,7 +12,7 @@ import "./map-style.css"
 import { useAppDispatch } from "data/store"
 import { formatAmount } from "utils/formatAmounts"
 import { selectClusterPoints } from "data/store/features/coordinates/ClusterSlice"
-import { selectVisibleData } from "data/store/api/Selectors"
+import { selectVisibleData } from "data/store/api/EmissionSelectors"
 
 const customIcon = new L.Icon({
   iconUrl: MapMarker,

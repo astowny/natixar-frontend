@@ -8,7 +8,7 @@ import MainCard from "components/MainCard"
 import {
   selectAllVisibleCategories,
   selectCoordinatesByCountry,
-} from "data/store/api/Selectors"
+} from "data/store/api/EmissionSelectors"
 
 const ByCountrySection = (props: SxProps) => {
   const { ...sxProps } = props

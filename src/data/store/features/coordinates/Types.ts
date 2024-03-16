@@ -8,6 +8,7 @@ interface DataPoint {
   id: string
   time: number
   emission_amount: number
+  categoryId: number
   category: string
   company: string
   location: Location

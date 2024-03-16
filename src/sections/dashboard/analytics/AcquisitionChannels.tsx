@@ -34,9 +34,7 @@ function AcquisitionChannels() {
             />
           </ListItemButton>
         </List>
-        <Box sx={{ pr: 2 }}>
-          <AcquisitionChart slot="month" />
-        </Box>
+        <Box sx={{ pr: 2 }}>{/* <AcquisitionChart slot="month" /> */}</Box>
       </Stack>
     </MainCard>
   )

@@ -103,6 +103,22 @@ const extractEntityHierarchy = (
     (entity) => entity.parent,
   )
 
+const extractNameOfEra = (era: string | undefined) => {
+  if (typeof era === "undefined") {
+    return ""
+  }
+  switch (era.toLowerCase()) {
+    case "d":
+      return "Downstream"
+    case "u":
+      return "Upstream"
+    case "o":
+      return "Operation"
+    default:
+      return era
+  }
+}
+
 const alignIndexes = (originalIndexes: IndexesContainer): AlignedIndexes => {
   const alignedBusinessEntities = Object.fromEntries(
     originalIndexes.entity.map((company) => [company.id, company]),
@@ -112,7 +128,12 @@ const alignIndexes = (originalIndexes: IndexesContainer): AlignedIndexes => {
   )
 
   const alignedCategories = Object.fromEntries(
-    originalIndexes.category.map((category) => [category.id, category]),
+    originalIndexes.category
+      .map((origCategory) => ({
+        ...origCategory,
+        era: extractNameOfEra(origCategory.era),
+      }))
+      .map((category) => [category.id, category]),
   )
 
   const areasTree = extractAreaHierarchy(alignedAreas)
@@ -173,8 +194,8 @@ const compressedPayloadToDataPoint = (
   payload: CompressedDataPoint,
   indexes: AlignedIndexes,
 ): DataPoint => {
-  const categoryName =
-    indexes.categories[payload[CdpLayoutItem.CDP_LAYOUT_CATEGORY]].name
+  const category =
+    indexes.categories[payload[CdpLayoutItem.CDP_LAYOUT_CATEGORY]]
   const company = detectCompany(
     indexes.entities[payload[CdpLayoutItem.CDP_LAYOUT_ENTITY]],
     indexes,
@@ -185,7 +206,8 @@ const compressedPayloadToDataPoint = (
     id: uuid(),
     time: payload[CdpLayoutItem.CDP_LAYOUT_START],
     emission_amount: calculateTotalAmount(payload),
-    category: categoryName,
+    category: category.name,
+    categoryId: category.id,
     company: company.name,
     location: {
       lat: area.details?.lat ?? 0,
@@ -213,18 +235,7 @@ const extractFilters = (indexes: AlignedIndexes): GlobalFilterState => {
   return {
     availableValues: {
       categories: Array.from(categories)
-        .map((era) => {
-          switch (era.toLowerCase()) {
-            case "d":
-              return "Downstream"
-            case "u":
-              return "Upstream"
-            case "o":
-              return "Operation"
-            default:
-              return ""
-          }
-        })
+        .map((era) => extractNameOfEra(era))
         .filter((category) => category !== "")
         .sort(),
       companies: Array.from(companies).sort(),

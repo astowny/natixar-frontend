@@ -23,7 +23,7 @@ import {
 import {
   selectAlignedIndexes,
   selectGlobalFilter,
-} from "data/store/api/Selectors"
+} from "data/store/api/EmissionSelectors"
 import { useAppDispatch } from "data/store"
 import {
   BusinessEntity,
