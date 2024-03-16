@@ -1,36 +1,24 @@
 import { createSlice } from "@reduxjs/toolkit"
 import { v4 as uuid } from "uuid"
-import {
-  DataPoint,
-  GlobalEmissionFilter,
-  GlobalFilterState,
-  PerceivedData,
-} from "../../coordinates/Types"
-import { EmissionRangeState, IndexesContainer } from "./EndpointTypes"
+import { IndexesContainer } from "./EndpointTypes"
 import { emissionRangesApi } from "./EmissionRangesClient"
 import {
   AlignedIndexes,
   BusinessEntity,
-  CdpLayoutItem,
-  CompressedDataPoint,
   GeographicalArea,
   IdTreeNode,
   IndexOf,
+  EmissionRangeState,
+  EmissionFilterState,
+  TimeWindow,
+  EmissionDataPoint,
+  VisibleData,
 } from "./EmissionTypes"
 
-const initialFilterTemplate: GlobalEmissionFilter = {
-  countries: [],
-  companies: [],
-  categories: [],
-  timeRange: {
-    from: 0,
-    to: Number.MAX_SAFE_INTEGER,
-  },
-}
-
-const initialFilterState: GlobalFilterState = {
-  availableValues: { ...initialFilterTemplate },
-  selectedValues: { ...initialFilterTemplate },
+const initialFilterState: EmissionFilterState = {
+  selectedBusinessEntities: [],
+  selectedGeographicalAreas: [],
+  selectedCategories: [],
 }
 
 const initialState: EmissionRangeState = {
@@ -42,12 +30,15 @@ const initialState: EmissionRangeState = {
     entityHierarchy: [],
   },
   allPoints: [],
-  visibleFrame: {
-    allPoints: [],
-    byCompany: [],
-    byCountry: [],
+  visiblePoints: {
+    emissionPoints: [],
   },
-  globalFilter: { ...initialFilterState },
+  overallTimeWindow: {
+    start: "",
+    end: "",
+    step: 0,
+  },
+  emissionFilterState: { ...initialFilterState },
 }
 
 function extractHierarchyOf<T>(
@@ -148,18 +139,30 @@ const alignIndexes = (originalIndexes: IndexesContainer): AlignedIndexes => {
   }
 }
 
-const calculateTotalAmount = (payload: CompressedDataPoint): number => {
-  const durationInFullTimeSlots =
-    payload[CdpLayoutItem.CDP_LAYOUT_END] -
-    payload[CdpLayoutItem.CDP_LAYOUT_START] -
-    2 +
-    payload[CdpLayoutItem.CDP_LAYOUT_START_PERCENTAGE] +
-    payload[CdpLayoutItem.CDP_LAYOUT_END_PERCENTAGE]
+// eslint-disable-next-line no-unused-vars
+const calculateTotalAmount = (
+  dataPoint: EmissionDataPoint,
+  overallTimeWindow: TimeWindow,
+): number => {
+  // TODO more accurate step usage
+  const seconds =
+    typeof overallTimeWindow.step === "number"
+      ? overallTimeWindow.step
+      : overallTimeWindow.step[0]
 
-  return durationInFullTimeSlots * payload[CdpLayoutItem.CDP_LAYOUT_INTENSITY]
+  const duration =
+    seconds *
+    (dataPoint.endTimeSlot() -
+      dataPoint.startTimeSlot() -
+      2 +
+      dataPoint.startIntensityPercentage() +
+      dataPoint.endIntensityPercentage())
+
+  return duration * dataPoint.emissionIntensity()
 }
 
 const AREAS_OF_INTEREST = ["World region", "Continent", "Country"]
+/*
 const detectCountry = (
   originalArea: GeographicalArea,
   indexes: AlignedIndexes,
@@ -189,7 +192,9 @@ const detectCompany = (
   }
   return entity
 }
+*/
 
+/*
 const compressedPayloadToDataPoint = (
   payload: CompressedDataPoint,
   indexes: AlignedIndexes,
@@ -216,7 +221,9 @@ const compressedPayloadToDataPoint = (
     },
   }
 }
+*/
 
+/*
 const extractFilters = (indexes: AlignedIndexes): GlobalFilterState => {
   const categories = new Set<string>()
   const companies = new Set<string>()
@@ -250,29 +257,39 @@ const extractFilters = (indexes: AlignedIndexes): GlobalFilterState => {
     },
   }
 }
+*/
 
-const stringFilterRoutine = (
-  currentValue: string,
-  filterSelectedValues: string[],
-): boolean =>
-  filterSelectedValues.length === 0 ||
-  filterSelectedValues.includes(currentValue)
+function filterRoutine<T>(currentValue: T, filterSelectedValues: T[]): boolean {
+  return (
+    filterSelectedValues.length === 0 ||
+    filterSelectedValues.includes(currentValue)
+  )
+}
 
 const filterVisibleData = (
-  dataPoints: Array<DataPoint>,
-  filter: GlobalEmissionFilter,
-): PerceivedData => {
+  dataPoints: EmissionDataPoint[],
+  indexes: AlignedIndexes,
+  filter: EmissionFilterState,
+): VisibleData => {
   const filteredDataPoints = dataPoints
+    .filter((dataPoint) => {
+      const category = indexes.categories[dataPoint.categoryId()]
+      return filterRoutine(
+        category.era?.toLowerCase() ?? "",
+        filter.selectedCategories,
+      )
+    })
     .filter((dataPoint) =>
-      stringFilterRoutine(dataPoint.category.toLowerCase(), filter.categories),
+      filterRoutine(
+        dataPoint.businessEntityId(),
+        filter.selectedBusinessEntities,
+      ),
     )
     .filter((dataPoint) =>
-      stringFilterRoutine(dataPoint.company, filter.companies),
-    )
-    .filter((dataPoint) =>
-      stringFilterRoutine(dataPoint.location.country, filter.countries),
+      filterRoutine(dataPoint.geoAreaId(), filter.selectedGeographicalAreas),
     )
 
+  /*
   const byCompany = filteredDataPoints.reduce(
     (accumulator: any, currentPoint: DataPoint) => {
       const currentCompany = currentPoint.company
@@ -323,11 +340,10 @@ const filterVisibleData = (
     },
     {},
   )
+  */
 
   return {
-    allPoints: filteredDataPoints,
-    byCompany: Object.values(byCompany),
-    byCountry: Object.values(byCountry),
+    emissionPoints: filteredDataPoints,
   }
 }
 
@@ -340,19 +356,21 @@ export const emissionsRangeSlice = createSlice({
       emissionRangesApi.endpoints.getEmissionRanges.matchFulfilled,
       (state, action) => {
         const alignedIndexes = alignIndexes(action.payload.indexes)
-        const allPoints = action.payload.data.map((compressedPoint) =>
-          compressedPayloadToDataPoint(compressedPoint, alignedIndexes),
+        const allPoints = action.payload.data.map(
+          (compressedPoint) => new EmissionDataPoint(uuid(), compressedPoint),
         )
-        const availableFilters = extractFilters(alignedIndexes)
+        // const availableFilters = extractFilters(alignedIndexes)
         const visiblePoints = filterVisibleData(
           allPoints,
-          state.globalFilter.selectedValues,
+          alignedIndexes,
+          state.emissionFilterState,
         )
 
         state.alignedIndexes = alignedIndexes
         state.allPoints = allPoints
-        state.visibleFrame = visiblePoints
-        state.globalFilter = availableFilters
+        state.visiblePoints = visiblePoints
+        state.overallTimeWindow = action.payload.time_range
+        // state.emissionFilterState = availableFilters
       },
     )
   },

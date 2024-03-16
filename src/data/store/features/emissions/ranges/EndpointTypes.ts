@@ -38,10 +38,3 @@ export interface EmissionRangesRequest {
   protocol: EmissionProtocol
   scale: TimeRangeScale
 }
-
-export interface EmissionRangeState {
-  alignedIndexes: AlignedIndexes
-  allPoints: DataPoint[]
-  visibleFrame: PerceivedData
-  globalFilter: GlobalFilterState
-}

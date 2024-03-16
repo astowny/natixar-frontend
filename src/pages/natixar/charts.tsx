@@ -13,7 +13,7 @@ import {
 } from "data/store/api/EmissionSelectors"
 import { useSelector } from "react-redux"
 import { useGetEmissionRangesQuery } from "data/store/features/emissions/ranges/EmissionRangesClient"
-import EmissionByScopeSection from "../../components/natixarComponents/CO2DonutSection"
+import EmissionByCategorySection from "../../components/natixarComponents/CO2DonutSection"
 
 // assets
 import { ChartCard } from "../../components/natixarComponents/ChartCard/ChartCard"
@@ -29,33 +29,31 @@ const NatixarChart = () => {
 
   const allDataPoints = useSelector(selectVisibleData)
   const alignedItems = useSelector(selectAlignedIndexes)
-  useGetEmissionRangesQuery(
-    {
-      protocol: "ghgprotocol",
-      scale: "m",
-      timeRanges: [
-        {
-          start: "2023-01-01T00:00:00Z",
-          end: "2023-01-02T00:00:00Z",
-          scale: "m",
-        },
-      ],
-    }
-  )
+  useGetEmissionRangesQuery({
+    protocol: "ghgprotocol",
+    scale: "m",
+    timeRanges: [
+      {
+        start: "2023-01-01T00:00:00Z",
+        end: "2023-01-02T00:00:00Z",
+        scale: "m",
+      },
+    ],
+  })
 
   return (
     <Grid container rowSpacing={4.5} columnSpacing={3}>
-      <Grid item xs={12} md={12} xl={12}>
+      {/* <Grid item xs={12} md={12} xl={12}>
         <MainCard>
           <DateFilter />
         </MainCard>
-      </Grid>
+      </Grid> */}
       <Grid item xs={12} md={12} xl={12}>
         <MainCard>
           <Typography variant="h5" sx={{ marginBottom: "15px" }}>
             Scope Emissions
           </Typography>
-          <EmissionByScopeSection
+          <EmissionByCategorySection
             allDataPoints={allDataPoints}
             alignedIndexes={alignedItems}
           />
@@ -69,7 +67,10 @@ const NatixarChart = () => {
           slot={areaSlot}
           setSlot={setAreaSlot}
         >
-          <IncomeAreaChart slot={areaSlot} />
+          {/* <IncomeAreaChart */}
+          {/* allDataPoints={allDataPoints} */}
+          {/* alignedIndexes={alignedItems} */}
+          {/* /> */}
         </ChartCard>
       </Grid>
       <Grid item xs={12} md={12} lg={12}>

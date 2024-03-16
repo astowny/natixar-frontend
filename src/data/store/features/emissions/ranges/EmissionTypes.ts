@@ -1,7 +1,7 @@
 export interface TimeWindow {
   start: string
   end: string
-  step: number[]
+  step: number | number[]
 }
 
 export interface BusinessEntity {
@@ -86,4 +86,69 @@ export enum CdpLayoutItem {
   CDP_LAYOUT_AREA,
   CDP_LAYOUT_THIRD_PARTY,
   CDP_LAYOUT_CATEGORY,
+}
+
+export class EmissionDataPoint {
+  private compressedData: CompressedDataPoint
+
+  readonly id: string
+
+  constructor(id: string, data: CompressedDataPoint) {
+    this.id = id
+    this.compressedData = data
+  }
+
+  private attrBy(index: number): number {
+    return this.compressedData[index]
+  }
+
+  categoryId(): number {
+    return this.attrBy(CdpLayoutItem.CDP_LAYOUT_CATEGORY)
+  }
+
+  businessEntityId(): number {
+    return this.attrBy(CdpLayoutItem.CDP_LAYOUT_ENTITY)
+  }
+
+  geoAreaId(): number {
+    return this.attrBy(CdpLayoutItem.CDP_LAYOUT_AREA)
+  }
+
+  emissionIntensity(): number {
+    return this.attrBy(CdpLayoutItem.CDP_LAYOUT_INTENSITY)
+  }
+
+  startTimeSlot(): number {
+    return this.attrBy(CdpLayoutItem.CDP_LAYOUT_START)
+  }
+
+  endTimeSlot(): number {
+    return this.attrBy(CdpLayoutItem.CDP_LAYOUT_END)
+  }
+
+  startIntensityPercentage(): number {
+    return this.attrBy(CdpLayoutItem.CDP_LAYOUT_START_PERCENTAGE)
+  }
+
+  endIntensityPercentage(): number {
+    return this.attrBy(CdpLayoutItem.CDP_LAYOUT_END_PERCENTAGE)
+  }
+}
+
+export interface VisibleData {
+  emissionPoints: EmissionDataPoint[]
+}
+
+export interface EmissionFilterState {
+  selectedBusinessEntities: number[]
+  selectedGeographicalAreas: number[]
+  selectedCategories: string[]
+}
+
+export interface EmissionRangeState {
+  alignedIndexes: AlignedIndexes
+  allPoints: EmissionDataPoint[]
+  visiblePoints: VisibleData
+  overallTimeWindow: TimeWindow
+  emissionFilterState: EmissionFilterState
 }
