@@ -1,13 +1,14 @@
-import { Box, Typography } from "@mui/material"
+import { Box } from "@mui/material"
 
 import { memo, useEffect, useState } from "react"
 import { getColorByCategory } from "utils/CategoryColors"
 import { ApexPieChartProps } from "sections/charts/apexchart/ApexDonutChart/interface"
-import { DataPoint } from "data/store/features/coordinates/Types"
-import { AlignedIndexes } from "data/store/features/emissions/ranges/EmissionTypes"
+import {
+  AlignedIndexes,
+  EmissionDataPoint,
+} from "data/store/features/emissions/ranges/EmissionTypes"
 import ReactApexChart from "react-apexcharts"
 import { defaultOptions } from "sections/charts/apexchart/ApexDonutChart/constants"
-import { color } from "framer-motion"
 import {
   ChartContainerStyles,
   ContainerStyles,
@@ -16,14 +17,14 @@ import {
 import LabelBox from "./LabelBox"
 
 interface ByCategoryItem {
-  categoryId: number
+  categoryId: string
   count: number
   categoryName: string
   categoryColor: string
 }
 
 export interface EmissionByCategorySectionProps {
-  allDataPoints: DataPoint[]
+  allDataPoints: EmissionDataPoint[]
   alignedIndexes: AlignedIndexes
 }
 
@@ -36,12 +37,11 @@ const EmissionByCategorySection = (props: EmissionByCategorySectionProps) => {
 
   useEffect(() => {
     let acceptResult = true
-    const fetchData = async () => {
+    const aggregateData = async () => {
       console.log("All data points are:", allDataPoints)
       const categoryAggregators: Record<string, ByCategoryItem> = {}
-      allDataPoints.forEach((dataPoint) => {
-        const { categoryId } = dataPoint
-        const category = alignedIndexes.categories[categoryId]
+      Object.entries(alignedIndexes.categories).forEach((entry) => {
+        const [categoryId, category] = entry
         let { era } = category
         if (!era) {
           era = "Other"
@@ -54,7 +54,16 @@ const EmissionByCategorySection = (props: EmissionByCategorySectionProps) => {
             categoryColor: getColorByCategory(era ?? ""),
           }
         }
-        categoryAggregators[era].count += dataPoint.emission_amount
+      })
+
+      allDataPoints.forEach((dataPoint) => {
+        const categoryId = dataPoint.categoryId()
+        const category = alignedIndexes.categories[categoryId]
+        let { era } = category
+        if (!era) {
+          era = "Other"
+        }
+        categoryAggregators[era].count += dataPoint.emissionIntensity()
       })
 
       if (acceptResult) {
@@ -73,7 +82,7 @@ const EmissionByCategorySection = (props: EmissionByCategorySectionProps) => {
       }
     }
 
-    fetchData()
+    aggregateData()
     return () => {
       acceptResult = false
     }

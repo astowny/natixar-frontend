@@ -152,3 +152,8 @@ export interface EmissionRangeState {
   overallTimeWindow: TimeWindow
   emissionFilterState: EmissionFilterState
 }
+
+export interface GroupedDataPoints {
+  groupKey: string
+  groupedEmissionsByCategory: Record<string, number>
+}

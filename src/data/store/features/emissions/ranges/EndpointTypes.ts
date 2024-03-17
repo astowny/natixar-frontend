@@ -1,10 +1,4 @@
 import {
-  DataPoint,
-  GlobalFilterState,
-  PerceivedData,
-} from "../../coordinates/Types"
-import {
-  AlignedIndexes,
   BusinessEntity,
   CompressedDataPoint,
   EmissionCategory,

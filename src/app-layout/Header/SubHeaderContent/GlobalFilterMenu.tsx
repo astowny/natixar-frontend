@@ -22,7 +22,7 @@ import {
 } from "data/store/features/coordinates/CoordinateSlice"
 import {
   selectAlignedIndexes,
-  selectGlobalFilter,
+  selectEmissionFilter,
 } from "data/store/api/EmissionSelectors"
 import { useAppDispatch } from "data/store"
 import {
@@ -117,7 +117,7 @@ const entitiesToCheckboxes = (
 const GlobalFilterMenu = (props: SxProps) => {
   const { ...sxProps } = props
   const dispatch = useAppDispatch()
-  const globalFilter = useSelector(selectGlobalFilter)
+  const globalFilter = useSelector(selectEmissionFilter)
   const alignedIndexes = useSelector(selectAlignedIndexes)
 
   const [selectedBusinessEntities, setSelectedBusinessEntities] = useState<
@@ -133,13 +133,13 @@ const GlobalFilterMenu = (props: SxProps) => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
 
   useEffect(() => {
-    // if (globalFilter.selectedValues.companies.length === 0) {
-    // setSelectedBusinessEntities(new Set())
-    // }
-    // if (globalFilter.selectedValues.countries.length === 0) {
-    // setSelectedAreas(new Set())
-    // }
-    if (globalFilter.selectedValues.categories.length === 0) {
+    if (globalFilter.selectedBusinessEntities.length === 0) {
+      setSelectedBusinessEntities(new Set())
+    }
+    if (globalFilter.selectedGeographicalAreas.length === 0) {
+      setSelectedAreas(new Set())
+    }
+    if (globalFilter.selectedCategories.length === 0) {
       setSelectedCategories([])
     }
   }, [globalFilter])
@@ -169,15 +169,15 @@ const GlobalFilterMenu = (props: SxProps) => {
   }
 
   const {
-    companies: availableCompanies,
+    entities: availableEntities,
     categories: availableCategories,
-    countries: availableCountries,
-  } = globalFilter.availableValues
+    areas: availableAreas,
+  } = alignedIndexes
 
   const weHaveAnyData =
-    availableCompanies.length &&
-    availableCountries.length &&
-    availableCategories.length
+    Object.keys(availableEntities).length &&
+    Object.keys(availableAreas).length &&
+    Object.keys(availableCategories).length
   if (!weHaveAnyData) {
     return null
   }
@@ -214,7 +214,7 @@ const GlobalFilterMenu = (props: SxProps) => {
     alignedIndexes.entityHierarchy,
     onEntitySelectionChange,
   )
-  const categoryNodes = availableCategories
+  const categoryNodes = Object.keys(availableCategories)
     .map((category) => _.capitalize(category))
     .map((category) => (
       <MenuItem key={category} value={category}>

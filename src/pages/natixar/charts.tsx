@@ -27,7 +27,7 @@ const NatixarChart = () => {
   const [acquisitionSlot, setAcquisitionSlot] = useState("month")
   const [compare, setCompare] = useState(false)
 
-  const allDataPoints = useSelector(selectVisibleData)
+  const visibleData = useSelector(selectVisibleData)
   const alignedItems = useSelector(selectAlignedIndexes)
   useGetEmissionRangesQuery({
     protocol: "ghgprotocol",
@@ -54,7 +54,7 @@ const NatixarChart = () => {
             Scope Emissions
           </Typography>
           <EmissionByCategorySection
-            allDataPoints={allDataPoints}
+            allDataPoints={visibleData.emissionPoints}
             alignedIndexes={alignedItems}
           />
         </MainCard>
