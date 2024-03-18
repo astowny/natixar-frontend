@@ -279,6 +279,7 @@ const extractVisibleData = (
   indexes: AlignedIndexes,
   filter: EmissionFilterState,
 ): VisibleData => {
+  console.log("I extract points with: ", filter)
   const filteredDataPoints = dataPoints
   if (filter.selectedCategories.length > 0) {
     filteredDataPoints.filter((dataPoint) => {

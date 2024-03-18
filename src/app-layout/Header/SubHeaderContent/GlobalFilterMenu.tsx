@@ -169,13 +169,9 @@ const GlobalFilterMenu = ({ ...sxProps }: SxProps) => {
 
   const [selectedBusinessEntities, setSelectedBusinessEntities] = useState<
     number[]
-  >(globalFilter.selectedBusinessEntities)
-  const [selectedAreas, setSelectedAreas] = useState<number[]>(
-    globalFilter.selectedGeographicalAreas,
-  )
-  const [selectedCategories, setSelectedCategories] = useState<string[]>(
-    globalFilter.selectedCategories,
-  )
+  >([])
+  const [selectedAreas, setSelectedAreas] = useState<number[]>([])
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
 
   useEffect(() => {
     setSelectedBusinessEntities(globalFilter.selectedBusinessEntities)
@@ -213,7 +209,13 @@ const GlobalFilterMenu = ({ ...sxProps }: SxProps) => {
       selectedCategories: [...selectedCategories],
     }
     dispatch(updateFilterAction(newFilter))
-  }, [dispatch, updateFilterAction])
+  }, [
+    dispatch,
+    updateFilterAction,
+    selectedBusinessEntities,
+    selectedAreas,
+    selectedCategories,
+  ])
 
   const onAreaSelectionChange = useCallback(
     (id: number, selected: boolean) => {
@@ -322,7 +324,14 @@ const GlobalFilterMenu = ({ ...sxProps }: SxProps) => {
         </Select>
       </FormControl>
       <ButtonGroup disableElevation variant="contained">
-        <Button onClick={onApplyClick}>Apply</Button>
+        <Button
+          sx={{
+            color: "primary.contrastText",
+          }}
+          onClick={onApplyClick}
+        >
+          Apply
+        </Button>
         <Button onClick={onClearClick} variant="outlined">
           Clear
         </Button>
