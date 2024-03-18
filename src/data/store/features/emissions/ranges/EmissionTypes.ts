@@ -1,7 +1,17 @@
+export enum TimeMeasurement {
+  MINUTES = "m",
+  HOURS = "h",
+  DAYS = "d",
+  WEEKS = "w",
+  MONTHS = "M",
+  QUARTERS = "Q",
+  YEARS = "y",
+}
+
 export interface TimeWindow {
-  start: string
-  end: string
-  step: number | number[]
+  startTimestamp: number
+  endTimestamp: number
+  timeStepInSecondsPattern: number[]
 }
 
 export interface BusinessEntity {
@@ -105,6 +115,12 @@ export interface EmissionDataPoint {
   geoAreaId: number
   countryId: number
   location: CountryLocation
+
+  startTimeSlot: number
+  startEmissionPercentage: number
+  endTimeSlot: number
+  endEmissionPercentage: number
+  emissionIntensity: number
 }
 
 export interface VisibleData {
