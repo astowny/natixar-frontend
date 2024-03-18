@@ -10,6 +10,7 @@ import {
 import ReactApexChart from "react-apexcharts"
 import { defaultOptions } from "sections/charts/apexchart/ApexDonutChart/constants"
 import { formatEmissionAmount } from "utils/formatAmounts"
+import { ApexOptions } from "apexcharts"
 import {
   ChartContainerStyles,
   ContainerStyles,
@@ -27,6 +28,24 @@ interface ByCategoryItem {
 export interface EmissionByCategorySectionProps {
   allDataPoints: EmissionDataPoint[]
   alignedIndexes: AlignedIndexes
+}
+
+const optionsOverrides: ApexOptions = {
+  yaxis: {
+    labels: {
+      formatter(val) {
+        return formatEmissionAmount(val)
+      },
+    },
+  },
+  tooltip: {
+    followCursor: true,
+    y: {
+      formatter(val) {
+        return formatEmissionAmount(val)
+      },
+    },
+  },
 }
 
 const EmissionByCategorySection = (props: EmissionByCategorySectionProps) => {
@@ -93,7 +112,7 @@ const EmissionByCategorySection = (props: EmissionByCategorySectionProps) => {
     <Box sx={ContainerStyles}>
       <Box sx={ChartContainerStyles}>
         <ReactApexChart
-          options={{ ...defaultOptions, labels, colors }}
+          options={{ ...defaultOptions, ...optionsOverrides, labels, colors }}
           series={series}
           type="donut"
           width={400}
