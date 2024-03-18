@@ -233,22 +233,80 @@ function filterRoutine<T>(currentValue: T, filterSelectedValues: T[]): boolean {
   )
 }
 
+const findTreeNode = (
+  id: number,
+  nodes: IdTreeNode[],
+): IdTreeNode | undefined => {
+  let nodeFound = nodes.find((node) => node.value === id)
+  if (!nodeFound) {
+    nodeFound = nodes.find((node) => findTreeNode(id, node.children))
+  }
+  return nodeFound
+}
+
+const selectExpandedSubTree = (
+  values: number[],
+  nodes: IdTreeNode[],
+  results: number[],
+) => {
+  if (values.length === 0 || nodes.length === 0) {
+    return
+  }
+  const foundNodes: IdTreeNode[] = values
+    .flatMap((value) => findTreeNode(value, nodes))
+    .filter((node) => typeof node !== "undefined")
+    .map((node) => node!!)
+  if (foundNodes.length === 0) {
+    return
+  }
+
+  foundNodes.forEach((node) => {
+    if (!results.includes(node.value)) {
+      results.push(node.value)
+      selectExpandedSubTree(values, node.children, results)
+    }
+  })
+}
+
+const expandId = (ids: number[], nodes: IdTreeNode[]): number[] => {
+  const result: number[] = []
+  selectExpandedSubTree(ids, nodes, result)
+  return result
+}
+
 const extractVisibleData = (
   dataPoints: EmissionDataPoint[],
   indexes: AlignedIndexes,
   filter: EmissionFilterState,
 ): VisibleData => {
   const filteredDataPoints = dataPoints
-    .filter((dataPoint) => {
+  if (filter.selectedCategories.length > 0) {
+    filteredDataPoints.filter((dataPoint) => {
       const era = dataPoint.categoryEraName
       return filterRoutine(era.toLowerCase(), filter.selectedCategories)
     })
-    .filter((dataPoint) =>
-      filterRoutine(dataPoint.entityId, filter.selectedBusinessEntities),
+  }
+  if (filter.selectedBusinessEntities.length > 0) {
+    const expandedEntityIds = expandId(
+      filter.selectedBusinessEntities,
+      indexes.entityHierarchy,
     )
-    .filter((dataPoint) =>
-      filterRoutine(dataPoint.geoAreaId, filter.selectedGeographicalAreas),
+
+    filteredDataPoints.filter((dataPoint) =>
+      filterRoutine(dataPoint.entityId, expandedEntityIds),
     )
+  }
+
+  if (filter.selectedGeographicalAreas.length > 0) {
+    const expandedGeoAreaIds = expandId(
+      filter.selectedGeographicalAreas,
+      indexes.areaHierarchy,
+    )
+
+    filteredDataPoints.filter((dataPoint) =>
+      filterRoutine(dataPoint.geoAreaId, expandedGeoAreaIds),
+    )
+  }
 
   return {
     emissionPoints: filteredDataPoints,
@@ -299,6 +357,14 @@ const setSelectedCategoriesReducer: CaseReducer<
   extractAndProcessVisibleData(state as EmissionRangeState)
 }
 
+const setNewFilterReducer: CaseReducer<
+  EmissionRangeState,
+  PayloadAction<EmissionFilterState>
+> = (state, action) => {
+  state.emissionFilterState = { ...action.payload }
+  extractAndProcessVisibleData(state as EmissionRangeState)
+}
+
 const clearFilterSelectionsReducer: CaseReducer<
   EmissionRangeState,
   PayloadAction
@@ -314,6 +380,7 @@ export const emissionsRangeSlice = createSlice({
     selectBusinessEntities: setSelectedBusinessEntitiesReducer,
     selectGeoAreas: setSelectedGeoAreasReducer,
     selectCategories: setSelectedCategoriesReducer,
+    updateFilterSelection: setNewFilterReducer,
     clearFilterSelection: clearFilterSelectionsReducer,
   },
   extraReducers: (builder) => {
@@ -346,6 +413,7 @@ export const {
   selectBusinessEntities,
   selectGeoAreas,
   selectCategories,
+  updateFilterSelection,
   clearFilterSelection,
 } = emissionsRangeSlice.actions
 export default emissionsRangeSlice.reducer

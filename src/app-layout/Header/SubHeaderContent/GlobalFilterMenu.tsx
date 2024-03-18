@@ -1,7 +1,15 @@
 // material-ui
-import { ChangeEvent, memo, useCallback, useEffect, useState } from "react"
+import {
+  ChangeEvent,
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react"
 import {
   Button,
+  ButtonGroup,
   FormControl,
   InputLabel,
   MenuItem,
@@ -15,23 +23,22 @@ import { CategoryLabel } from "components/categories/CategoriesLegend"
 import { useSelector } from "react-redux"
 import _ from "lodash"
 import {
-  clearFilter,
-  setSelectedCategories as selectedCategoriesAction,
-  // setSelectedCompanies as selectedCompaniesAction,
-  // setSelectedCountries as selectedCountriesAction,
-} from "data/store/features/coordinates/CoordinateSlice"
-import {
-  selectAlignedIndexes,
-  selectEmissionFilter,
+  selectAlignedIndexes as indexesSelector,
+  selectEmissionFilter as filterStateSelector,
 } from "data/store/api/EmissionSelectors"
 import { useAppDispatch } from "data/store"
 import {
   BusinessEntity,
+  EmissionFilterState,
   GeographicalArea,
   IdTreeNode,
   IndexOf,
 } from "data/store/features/emissions/ranges/EmissionTypes"
 import { CheckboxItem } from "components/natixarComponents/AreaCheckbox/CheckboxItem"
+import {
+  clearFilterSelection as clearFilterAction,
+  updateFilterSelection as updateFilterAction,
+} from "data/store/features/emissions/ranges/EmissionRangesSlice"
 
 // import { DateRangePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro';
 
@@ -45,7 +52,7 @@ const parseSelectedValues = (receivedValues: string | string[]): string[] =>
 
 function indexToCheckboxes<T>(
   indexedValues: IndexOf<T>,
-  selectedItems: Set<number>,
+  selectedItems: number[],
   nameFunc: (t: T) => string,
   checkCallback: (id: number, selected: boolean) => void,
   indexHierarchy: IdTreeNode[] | undefined,
@@ -59,7 +66,7 @@ function indexToCheckboxes<T>(
     const onSelectionChange = (event: ChangeEvent<HTMLInputElement>) => {
       checkCallback(indexId, event.target.checked)
     }
-    const itemIsSelected = selectedItems.has(indexId)
+    const itemIsSelected = selectedItems.includes(indexId)
     const childBoxItems = itemIsSelected
       ? []
       : indexToCheckboxes(
@@ -75,7 +82,7 @@ function indexToCheckboxes<T>(
         key={indexLabel}
         onCheckedListener={onSelectionChange}
         label={indexLabel}
-        isSelected={selectedItems.has(indexId)}
+        isSelected={selectedItems.includes(indexId)}
       >
         <Stack direction="column" sx={{ pl: "1rem" }}>
           {childBoxItems}
@@ -88,7 +95,7 @@ function indexToCheckboxes<T>(
 
 const areasToCheckboxes = (
   areas: IndexOf<GeographicalArea>,
-  selectedAreas: Set<number>,
+  selectedAreas: number[],
   treeItems: IdTreeNode[] | undefined,
   checkCallback: (id: number, selected: boolean) => void,
 ): JSX.Element[] | null =>
@@ -102,7 +109,7 @@ const areasToCheckboxes = (
 
 const entitiesToCheckboxes = (
   entities: IndexOf<BusinessEntity>,
-  selectedEntities: Set<number>,
+  selectedEntities: number[],
   treeItems: IdTreeNode[] | undefined,
   checkCallback: (id: number, selected: boolean) => void,
 ): JSX.Element[] | null =>
@@ -114,59 +121,138 @@ const entitiesToCheckboxes = (
     treeItems,
   )
 
-const GlobalFilterMenu = (props: SxProps) => {
-  const { ...sxProps } = props
+const AreaControlForm = memo(
+  ({
+    selectedAreaLabels,
+    allAreas,
+    selectedAreas,
+    areaHierarchy,
+    checkCallback,
+  }: {
+    selectedAreaLabels: string[]
+    allAreas: IndexOf<GeographicalArea>
+    selectedAreas: number[]
+    areaHierarchy: IdTreeNode[] | undefined
+    checkCallback: (id: number, selected: boolean) => void
+  }) => {
+    const areaCheckboxes = areasToCheckboxes(
+      allAreas,
+      selectedAreas,
+      areaHierarchy,
+      checkCallback,
+    )
+
+    return (
+      <FormControl sx={{ width: 160 }}>
+        <InputLabel>Geographic Area</InputLabel>
+        <Select
+          value={selectedAreaLabels}
+          renderValue={multiSelectJoiner}
+          multiple
+          sx={{
+            "& .MuiList-root": {
+              padding: "12px",
+            },
+          }}
+        >
+          {areaCheckboxes}
+        </Select>
+      </FormControl>
+    )
+  },
+)
+
+const GlobalFilterMenu = ({ ...sxProps }: SxProps) => {
   const dispatch = useAppDispatch()
-  const globalFilter = useSelector(selectEmissionFilter)
-  const alignedIndexes = useSelector(selectAlignedIndexes)
+  const alignedIndexes = useSelector(indexesSelector)
+  const globalFilter = useSelector(filterStateSelector)
 
   const [selectedBusinessEntities, setSelectedBusinessEntities] = useState<
-    Set<number>
-  >(new Set())
-  const [selectedEntitiesLabel, setSelectedEntitiesLabel] = useState<string[]>(
-    [],
+    number[]
+  >(globalFilter.selectedBusinessEntities)
+  const [selectedAreas, setSelectedAreas] = useState<number[]>(
+    globalFilter.selectedGeographicalAreas,
+  )
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(
+    globalFilter.selectedCategories,
   )
 
-  const [selectedAreas, setSelectedAreas] = useState<Set<number>>(new Set())
-  const [selectedAreasLabel, setSelectedAreasLabel] = useState<string[]>([])
-
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+  useEffect(() => {
+    setSelectedBusinessEntities(globalFilter.selectedBusinessEntities)
+  }, [setSelectedBusinessEntities, globalFilter.selectedBusinessEntities])
 
   useEffect(() => {
-    if (globalFilter.selectedBusinessEntities.length === 0) {
-      setSelectedBusinessEntities(new Set())
-    }
-    if (globalFilter.selectedGeographicalAreas.length === 0) {
-      setSelectedAreas(new Set())
-    }
-    if (globalFilter.selectedCategories.length === 0) {
-      setSelectedCategories([])
-    }
-  }, [globalFilter])
+    setSelectedAreas(globalFilter.selectedGeographicalAreas)
+  }, [setSelectedAreas, globalFilter.selectedGeographicalAreas])
+
   useEffect(() => {
-    const entitiesLabel = Array.from(selectedBusinessEntities)
-      .map((id) => alignedIndexes.entities[id].name)
-      .toSorted()
-    const areasLabel = Array.from(selectedAreas)
-      .map((id) => alignedIndexes.areas[id].name)
-      .toSorted()
-    setSelectedEntitiesLabel(entitiesLabel)
-    setSelectedAreasLabel(areasLabel)
-  }, [selectedBusinessEntities, selectedAreas])
+    setSelectedCategories(globalFilter.selectedCategories)
+  }, [setSelectedCategories, globalFilter.selectedCategories])
+
+  const entityLabel = useMemo(
+    () =>
+      selectedBusinessEntities
+        .map((id) => alignedIndexes.entities[id].name)
+        .toSorted(),
+    [selectedBusinessEntities],
+  )
+
+  const areaLabel = useMemo(
+    () => selectedAreas.map((id) => alignedIndexes.areas[id].name).toSorted(),
+    [selectedAreas],
+  )
+
   const onClearClick = useCallback(() => {
-    dispatch(clearFilter())
-  }, [dispatch, clearFilter])
+    dispatch(clearFilterAction())
+  }, [dispatch, clearFilterAction])
 
-  const handleCategoriesChange = (
-    event: SelectChangeEvent<typeof selectedCategories>,
-  ) => {
-    const {
-      target: { value },
-    } = event
-    const parsedValues = parseSelectedValues(value)
-    dispatch(selectedCategoriesAction(parsedValues))
-    setSelectedCategories(parsedValues)
-  }
+  const onApplyClick = useCallback(() => {
+    const newFilter: EmissionFilterState = {
+      selectedBusinessEntities: [...selectedBusinessEntities],
+      selectedGeographicalAreas: [...selectedAreas],
+      selectedCategories: [...selectedCategories],
+    }
+    dispatch(updateFilterAction(newFilter))
+  }, [dispatch, updateFilterAction])
+
+  const onAreaSelectionChange = useCallback(
+    (id: number, selected: boolean) => {
+      let newSelections: number[]
+      if (selected) {
+        newSelections = [...selectedAreas, id]
+      } else {
+        newSelections = selectedAreas.filter((areaId) => areaId !== id)
+      }
+      setSelectedAreas(newSelections)
+    },
+    [selectedAreas, setSelectedAreas],
+  )
+
+  const onEntitySelectionChange = useCallback(
+    (id: number, selected: boolean) => {
+      let newSelections: number[]
+      if (selected) {
+        newSelections = [...selectedBusinessEntities, id]
+      } else {
+        newSelections = selectedBusinessEntities.filter(
+          (entityId) => entityId !== id,
+        )
+      }
+      setSelectedBusinessEntities(newSelections)
+    },
+    [selectedBusinessEntities],
+  )
+
+  const onCategoriesSelectionChange = useCallback(
+    (event: SelectChangeEvent<typeof selectedCategories>) => {
+      const {
+        target: { value },
+      } = event
+      const parsedValues = parseSelectedValues(value)
+      setSelectedCategories(parsedValues)
+    },
+    [setSelectedCategories],
+  )
 
   const {
     entities: availableEntities,
@@ -182,32 +268,6 @@ const GlobalFilterMenu = (props: SxProps) => {
     return null
   }
 
-  const onEntitySelectionChange = (id: number, selected: boolean) => {
-    const newSelections = new Set([...selectedBusinessEntities])
-    if (selected) {
-      newSelections.add(id)
-    } else {
-      newSelections.delete(id)
-    }
-    setSelectedBusinessEntities(newSelections)
-  }
-
-  const onAreaSelectionChange = (id: number, selected: boolean) => {
-    const newSelections = new Set([...selectedAreas])
-    if (selected) {
-      newSelections.add(id)
-    } else {
-      newSelections.delete(id)
-    }
-    setSelectedAreas(newSelections)
-  }
-
-  const areaCheckboxes = areasToCheckboxes(
-    alignedIndexes.areas,
-    selectedAreas,
-    alignedIndexes.areaHierarchy,
-    onAreaSelectionChange,
-  )
   const entityCheckboxes = entitiesToCheckboxes(
     alignedIndexes.entities,
     selectedBusinessEntities,
@@ -237,43 +297,36 @@ const GlobalFilterMenu = (props: SxProps) => {
       <Typography>Filter</Typography>
       <FormControl sx={{ width: 220 }}>
         <InputLabel>Business Entity / Facility</InputLabel>
-        <Select
-          value={selectedEntitiesLabel}
-          renderValue={multiSelectJoiner}
-          multiple
-        >
+        <Select value={entityLabel} renderValue={multiSelectJoiner} multiple>
           {entityCheckboxes}
         </Select>
       </FormControl>
-      <FormControl sx={{ width: 160 }}>
-        <InputLabel>Geographic Area</InputLabel>
-        <Select
-          value={selectedAreasLabel}
-          renderValue={multiSelectJoiner}
-          multiple
-          sx={{
-            "& .MuiList-root": {
-              padding: "12px",
-            },
-          }}
-        >
-          {areaCheckboxes}
-        </Select>
-      </FormControl>
+
+      <AreaControlForm
+        selectedAreaLabels={areaLabel}
+        allAreas={availableAreas}
+        areaHierarchy={alignedIndexes.areaHierarchy}
+        selectedAreas={selectedAreas}
+        checkCallback={onAreaSelectionChange}
+      />
+
       <FormControl sx={{ width: 100 }}>
         <InputLabel>Scope</InputLabel>
         <Select
           value={selectedCategories}
           renderValue={multiSelectJoiner}
-          onChange={handleCategoriesChange}
+          onChange={onCategoriesSelectionChange}
           multiple
         >
           {categoryNodes}
         </Select>
       </FormControl>
-      <Button onClick={onClearClick} variant="outlined">
-        Clear
-      </Button>
+      <ButtonGroup disableElevation variant="contained">
+        <Button onClick={onApplyClick}>Apply</Button>
+        <Button onClick={onClearClick} variant="outlined">
+          Clear
+        </Button>
+      </ButtonGroup>
     </Stack>
   )
 }
