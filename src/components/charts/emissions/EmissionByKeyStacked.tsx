@@ -2,16 +2,51 @@ import { SxProps } from "@mui/system"
 import { ApexOptions } from "apexcharts"
 import { memo } from "react"
 import ReactApexChart from "react-apexcharts"
+import { getColorByCategory } from "utils/CategoryColors"
+import { formatEmissionAmount } from "utils/formatAmounts"
 
 const defaultOptions: ApexOptions = {
   chart: {
     type: "bar",
     stacked: true,
   },
-  xaxis: {
-    type: "category",
+  yaxis: {
+    title: {
+      text: "Emissions",
+    },
+    labels: {
+      formatter(val) {
+        return formatEmissionAmount(val)
+      },
+    },
+  },
+  plotOptions: {
+    bar: {
+      columnWidth: "25%",
+      barHeight: "70%",
+      borderRadius: 4,
+    },
+  },
+  fill: {
+    opacity: 1,
+  },
+  stroke: {
+    show: true,
+    width: 8,
+    colors: ["transparent"],
+  },
+  grid: {
+    show: true,
+    strokeDashArray: 5,
+    // position: "back",
   },
 }
+
+const optionOverrides = (keys: string[]): ApexOptions => ({
+  xaxis: {
+    categories: [...keys],
+  },
+})
 
 const EmissionByKeyStacked = ({
   groupedData,
@@ -21,26 +56,40 @@ const EmissionByKeyStacked = ({
   groupedData: Record<string, Record<string, number>>
   keys: string[]
 } & SxProps) => {
-  const options = { ...defaultOptions }
-  const series = Object.entries(groupedData).map((entry) => {
-    const category = entry[0]
-    const data = Object.entries(entry[1]).map((seriesEntry) => ({
-      x: seriesEntry[0],
-      y: seriesEntry[1],
-    }))
+  const options = { ...defaultOptions, ...optionOverrides(keys) }
 
-    return {
-      name: category,
-      data,
-    }
+  const categories = Object.keys(groupedData)
+  const byKeyData = Array(categories.length).fill(Array(keys.length).fill(0))
+
+  Object.entries(groupedData).forEach((entry) => {
+    const category = entry[0]
+    const categoryIndex = categories.indexOf(category)
+
+    Object.entries(entry[1]).forEach((seriesEntry) => {
+      const keyIndex = keys.indexOf(seriesEntry[0])
+      const data: number[] = byKeyData[categoryIndex]
+      const amount = seriesEntry[1]
+      data[keyIndex] = amount
+    })
   })
+
+  const series: ApexAxisChartSeries = Object.entries(groupedData).map(
+    (entry) => {
+      const category = entry[0]
+      const categoryIndex = categories.indexOf(category)
+      return {
+        name: category,
+        color: getColorByCategory(category),
+        data: byKeyData[categoryIndex],
+      }
+    },
+  )
 
   return (
     <ReactApexChart
       sx={{ sxProps }}
       options={options}
       series={series}
-      type="area"
       height="300px"
     />
   )
