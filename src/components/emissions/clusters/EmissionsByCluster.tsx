@@ -6,13 +6,15 @@ import EmissionsByClusterTable from "./EmissionsTable"
 
 import { EmissionsByClusterProps } from "./types"
 
-const EmissionsByClusterSection = (
-  props: EmissionsByClusterProps & SxProps,
-) => {
-  const { cluster, onClose, ...sxProps } = props
+const EmissionsByClusterSection = ({
+  cluster,
+  onClose,
+  ...sxProps
+}: EmissionsByClusterProps & SxProps) => {
   const totalEmission = useMemo(() => {
     const totalAmount = cluster.dataPoints.reduce(
-      (accumulator, currentValue) => accumulator + currentValue.emission_amount,
+      (accumulator, currentValue) =>
+        accumulator + currentValue.totalEmissionAmount,
       0,
     )
     return formatEmissionAmount(totalAmount)

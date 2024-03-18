@@ -1,34 +1,33 @@
-import { createSlice } from "@reduxjs/toolkit"
+import { CaseReducer, PayloadAction, createSlice } from "@reduxjs/toolkit"
 import { v4 as uuid } from "uuid"
 import {
-  DataPoint,
-  GlobalEmissionFilter,
-  GlobalFilterState,
-  PerceivedData,
-} from "../../coordinates/Types"
-import { EmissionRangeState, IndexesContainer } from "./EndpointTypes"
+  extractNameOfEra,
+  dataPointsGroupByCompanyAndCategory,
+  dataPointsGroupByCountryAndCategory,
+} from "data/store/api/EmissionTransformers"
+import { detectCompany, detectCountry } from "data/store/api/DataDetectors"
+import { IndexesContainer } from "./EndpointTypes"
 import { emissionRangesApi } from "./EmissionRangesClient"
 import {
   AlignedIndexes,
   BusinessEntity,
-  CdpLayoutItem,
-  CompressedDataPoint,
   GeographicalArea,
-} from "./Types"
+  IdTreeNode,
+  IndexOf,
+  EmissionRangeState,
+  EmissionFilterState,
+  TimeWindow,
+  EmissionDataPoint,
+  VisibleData,
+  CompressedDataPoint,
+  CdpLayoutItem,
+  CountryLocation,
+} from "./EmissionTypes"
 
-const initialFilterTemplate: GlobalEmissionFilter = {
-  countries: [],
-  companies: [],
-  categories: [],
-  timeRange: {
-    from: 0,
-    to: Number.MAX_SAFE_INTEGER,
-  },
-}
-
-const initialFilterState: GlobalFilterState = {
-  availableValues: { ...initialFilterTemplate },
-  selectedValues: { ...initialFilterTemplate },
+const initialFilterState: EmissionFilterState = {
+  selectedBusinessEntities: [],
+  selectedGeographicalAreas: [],
+  selectedCategories: [],
 }
 
 const initialState: EmissionRangeState = {
@@ -36,18 +35,78 @@ const initialState: EmissionRangeState = {
     entities: {},
     areas: {},
     categories: {},
+    areaHierarchy: [],
+    entityHierarchy: [],
   },
   allPoints: [],
-  visibleFrame: {
-    allPoints: [],
-    byCompany: [],
-    byCountry: [],
+  visibleData: {
+    emissionPoints: [],
+    emissionsByCompany: {},
+    emissionsByCountry: {},
   },
-  globalFilter: { ...initialFilterState },
+  overallTimeWindow: {
+    start: "",
+    end: "",
+    step: 0,
+  },
+  emissionFilterState: { ...initialFilterState },
 }
 
+function extractHierarchyOf<T>(
+  indexOfValues: IndexOf<T>,
+  idFunc: (t: T) => number,
+  parentFunc: (t: T) => number | undefined,
+): IdTreeNode[] {
+  if (Object.keys(indexOfValues).length === 0) {
+    return []
+  }
+
+  const indexOfTreeNodes: IndexOf<IdTreeNode> = {}
+  Object.values(indexOfValues).forEach((v) => {
+    const id = idFunc(v)
+    const node: IdTreeNode = {
+      value: id,
+      children: [],
+    }
+    indexOfTreeNodes[id] = node
+  })
+
+  const rootIds = new Set(
+    Object.keys(indexOfValues).map((id) => parseInt(id, 10)),
+  )
+  Object.values(indexOfTreeNodes).forEach((node) => {
+    const myArea = indexOfValues[node.value]
+    const parentId = parentFunc(myArea)
+    if (parentId) {
+      const myParentNode = indexOfTreeNodes[parentId]
+      myParentNode.children.push(node)
+      rootIds.delete(idFunc(myArea))
+    }
+  })
+
+  return Object.values(indexOfTreeNodes).filter((node) =>
+    rootIds.has(node.value),
+  )
+}
+
+const extractAreaHierarchy = (areas: IndexOf<GeographicalArea>): IdTreeNode[] =>
+  extractHierarchyOf(
+    areas,
+    (area) => area.id,
+    (area) => area.parent,
+  )
+
+const extractEntityHierarchy = (
+  entities: IndexOf<BusinessEntity>,
+): IdTreeNode[] =>
+  extractHierarchyOf(
+    entities,
+    (entity) => entity.id,
+    (entity) => entity.parent,
+  )
+
 const alignIndexes = (originalIndexes: IndexesContainer): AlignedIndexes => {
-  const alignedCompanyIndexes = Object.fromEntries(
+  const alignedBusinessEntities = Object.fromEntries(
     originalIndexes.entity.map((company) => [company.id, company]),
   )
   const alignedAreas = Object.fromEntries(
@@ -55,84 +114,48 @@ const alignIndexes = (originalIndexes: IndexesContainer): AlignedIndexes => {
   )
 
   const alignedCategories = Object.fromEntries(
-    originalIndexes.category.map((category) => [category.id, category]),
+    originalIndexes.category
+      .map((origCategory) => ({
+        ...origCategory,
+        era: extractNameOfEra(origCategory.era),
+      }))
+      .map((category) => [category.id, category]),
   )
 
+  const areasTree = extractAreaHierarchy(alignedAreas)
+  const entityTree = extractEntityHierarchy(alignedBusinessEntities)
+
   return {
-    entities: alignedCompanyIndexes,
+    entities: alignedBusinessEntities,
     areas: alignedAreas,
     categories: alignedCategories,
+    areaHierarchy: areasTree,
+    entityHierarchy: entityTree,
   }
 }
 
-const calculateTotalAmount = (payload: CompressedDataPoint): number => {
-  const durationInFullTimeSlots =
-    payload[CdpLayoutItem.CDP_LAYOUT_END] -
-    payload[CdpLayoutItem.CDP_LAYOUT_START] -
-    2 +
-    payload[CdpLayoutItem.CDP_LAYOUT_START_PERCENTAGE] +
-    payload[CdpLayoutItem.CDP_LAYOUT_END_PERCENTAGE]
+const calculateTotalAmount = (
+  dataPoint: CompressedDataPoint,
+  overallTimeWindow: TimeWindow,
+): number => {
+  // TODO more accurate step usage
+  const seconds =
+    typeof overallTimeWindow.step === "number"
+      ? overallTimeWindow.step
+      : overallTimeWindow.step[0]
 
-  return durationInFullTimeSlots * payload[CdpLayoutItem.CDP_LAYOUT_INTENSITY]
+  const duration =
+    seconds *
+    (dataPoint[CdpLayoutItem.CDP_LAYOUT_END] -
+      dataPoint[CdpLayoutItem.CDP_LAYOUT_START] -
+      2 +
+      dataPoint[CdpLayoutItem.CDP_LAYOUT_START_PERCENTAGE] +
+      dataPoint[CdpLayoutItem.CDP_LAYOUT_END_PERCENTAGE])
+
+  return duration * dataPoint[CdpLayoutItem.CDP_LAYOUT_INTENSITY]
 }
 
-const AREAS_OF_INTEREST = ["World region", "Continent", "Country"]
-const detectCountry = (
-  originalArea: GeographicalArea,
-  indexes: AlignedIndexes,
-): GeographicalArea => {
-  let area = originalArea
-  while (
-    area.parent &&
-    indexes.areas[area.parent] &&
-    !AREAS_OF_INTEREST.includes(area.type)
-  ) {
-    area = indexes.areas[area.parent]
-  }
-  return area
-}
-
-const detectCompany = (
-  originalEntity: BusinessEntity,
-  indexes: AlignedIndexes,
-): BusinessEntity => {
-  let entity = originalEntity
-  while (
-    entity.parent &&
-    indexes.entities[entity.parent] &&
-    entity.type !== "Company"
-  ) {
-    entity = indexes.entities[entity.parent]
-  }
-  return entity
-}
-
-const compressedPayloadToDataPoint = (
-  payload: CompressedDataPoint,
-  indexes: AlignedIndexes,
-): DataPoint => {
-  const categoryName =
-    indexes.categories[payload[CdpLayoutItem.CDP_LAYOUT_CATEGORY]].name
-  const company = detectCompany(
-    indexes.entities[payload[CdpLayoutItem.CDP_LAYOUT_ENTITY]],
-    indexes,
-  )
-  const area = indexes.areas[payload[CdpLayoutItem.CDP_LAYOUT_AREA]]
-  const country = detectCountry(area, indexes)
-  return {
-    id: uuid(),
-    time: payload[CdpLayoutItem.CDP_LAYOUT_START],
-    emission_amount: calculateTotalAmount(payload),
-    category: categoryName,
-    company: company.name,
-    location: {
-      lat: area.details?.lat ?? 0,
-      lon: area.details?.long ?? 0,
-      country: country.name,
-    },
-  }
-}
-
+/*
 const extractFilters = (indexes: AlignedIndexes): GlobalFilterState => {
   const categories = new Set<string>()
   const companies = new Set<string>()
@@ -151,18 +174,7 @@ const extractFilters = (indexes: AlignedIndexes): GlobalFilterState => {
   return {
     availableValues: {
       categories: Array.from(categories)
-        .map((era) => {
-          switch (era.toLowerCase()) {
-            case "d":
-              return "Downstream"
-            case "u":
-              return "Upstream"
-            case "o":
-              return "Operation"
-            default:
-              return ""
-          }
-        })
+        .map((era) => extractNameOfEra(era))
         .filter((category) => category !== "")
         .sort(),
       companies: Array.from(companies).sort(),
@@ -177,112 +189,232 @@ const extractFilters = (indexes: AlignedIndexes): GlobalFilterState => {
     },
   }
 }
+*/
 
-const stringFilterRoutine = (
-  currentValue: string,
-  filterSelectedValues: string[],
-): boolean =>
-  filterSelectedValues.length === 0 ||
-  filterSelectedValues.includes(currentValue)
+const cdpToEdp = (
+  cdp: CompressedDataPoint,
+  indexes: AlignedIndexes,
+  timeWindow: TimeWindow,
+): EmissionDataPoint => {
+  const categoryId = cdp[CdpLayoutItem.CDP_LAYOUT_CATEGORY]
+  const origEra = indexes.categories[categoryId]?.era
+  const entityId = cdp[CdpLayoutItem.CDP_LAYOUT_ENTITY]
+  const company = detectCompany(entityId, indexes)
 
-const filterVisibleData = (
-  dataPoints: Array<DataPoint>,
-  filter: GlobalEmissionFilter,
-): PerceivedData => {
-  const filteredDataPoints = dataPoints
-    .filter((dataPoint) =>
-      stringFilterRoutine(dataPoint.category.toLowerCase(), filter.categories),
-    )
-    .filter((dataPoint) =>
-      stringFilterRoutine(dataPoint.company, filter.companies),
-    )
-    .filter((dataPoint) =>
-      stringFilterRoutine(dataPoint.location.country, filter.countries),
-    )
+  const geoAreaId = cdp[CdpLayoutItem.CDP_LAYOUT_AREA]
+  const geoArea = indexes.areas[geoAreaId]
+  const country = detectCountry(geoAreaId, indexes)
+  const countryLocation: CountryLocation = {
+    lat: country.details?.lat ?? geoArea.details?.lat ?? 0,
+    lon: country.details?.long ?? geoArea.details?.long ?? 0,
+    country: country.name,
+  }
 
-  const byCompany = filteredDataPoints.reduce(
-    (accumulator: any, currentPoint: DataPoint) => {
-      const currentCompany = currentPoint.company
-      if (!accumulator[currentCompany]) {
-        accumulator[currentCompany] = {}
-      }
-      const accumulatorForCompany = accumulator[currentCompany]
-      if (!accumulatorForCompany.emissionsByCategory) {
-        accumulatorForCompany.emissionsByCategory = {}
-      }
-
-      const currCategory = currentPoint.category.toLowerCase()
-      if (!accumulatorForCompany.emissionsByCategory[currCategory]) {
-        accumulatorForCompany.emissionsByCategory[currCategory] = 0
-      }
-
-      accumulatorForCompany.company = currentCompany
-      accumulatorForCompany.emissionsByCategory[currCategory] +=
-        currentPoint.emission_amount
-
-      return accumulator
-    },
-    {},
-  )
-
-  const byCountry = filteredDataPoints.reduce(
-    (accumulator: any, currentPoint: DataPoint) => {
-      const currentCountry = currentPoint.location.country
-      if (!accumulator[currentCountry]) {
-        accumulator[currentCountry] = {}
-      }
-
-      const accumulatorForCountry = accumulator[currentCountry]
-      if (!accumulatorForCountry.emissionsByCategory) {
-        accumulatorForCountry.emissionsByCategory = {}
-      }
-
-      const currCategory = currentPoint.category.toLowerCase()
-      if (!accumulatorForCountry.emissionsByCategory[currCategory]) {
-        accumulatorForCountry.emissionsByCategory[currCategory] = 0
-      }
-
-      accumulatorForCountry.country = currentCountry
-      accumulatorForCountry.emissionsByCategory[currCategory] +=
-        currentPoint.emission_amount
-
-      return accumulator
-    },
-    {},
-  )
+  const totalAmount = calculateTotalAmount(cdp, timeWindow)
 
   return {
-    allPoints: filteredDataPoints,
-    byCompany: Object.values(byCompany),
-    byCountry: Object.values(byCountry),
+    id: uuid(),
+    totalEmissionAmount: totalAmount,
+    categoryId,
+    categoryEraName: extractNameOfEra(origEra),
+    entityId,
+    companyId: company.id,
+    companyName: company.name,
+    geoAreaId,
+    countryId: country.id,
+    location: countryLocation,
   }
+}
+
+function filterRoutine<T>(currentValue: T, filterSelectedValues: T[]): boolean {
+  return (
+    filterSelectedValues.length === 0 ||
+    filterSelectedValues.includes(currentValue)
+  )
+}
+
+const findTreeNode = (
+  id: number,
+  nodes: IdTreeNode[],
+): IdTreeNode | undefined => {
+  let nodeFound = nodes.find((node) => node.value === id)
+  if (!nodeFound) {
+    nodeFound = nodes.find((node) => findTreeNode(id, node.children))
+  }
+  return nodeFound
+}
+
+const selectExpandedSubTree = (
+  values: number[],
+  nodes: IdTreeNode[],
+  results: number[],
+) => {
+  if (values.length === 0 || nodes.length === 0) {
+    return
+  }
+  const foundNodes: IdTreeNode[] = values
+    .flatMap((value) => findTreeNode(value, nodes))
+    .filter((node) => typeof node !== "undefined")
+    .map((node) => node!!)
+  if (foundNodes.length === 0) {
+    return
+  }
+
+  foundNodes.forEach((node) => {
+    if (!results.includes(node.value)) {
+      results.push(node.value)
+      selectExpandedSubTree(values, node.children, results)
+    }
+  })
+}
+
+const expandId = (ids: number[], nodes: IdTreeNode[]): number[] => {
+  const result: number[] = []
+  selectExpandedSubTree(ids, nodes, result)
+  return result
+}
+
+const extractVisibleData = (
+  dataPoints: EmissionDataPoint[],
+  indexes: AlignedIndexes,
+  filter: EmissionFilterState,
+): VisibleData => {
+  console.log("I extract points with: ", filter)
+  const filteredDataPoints = dataPoints
+  if (filter.selectedCategories.length > 0) {
+    filteredDataPoints.filter((dataPoint) => {
+      const era = dataPoint.categoryEraName
+      return filterRoutine(era.toLowerCase(), filter.selectedCategories)
+    })
+  }
+  if (filter.selectedBusinessEntities.length > 0) {
+    const expandedEntityIds = expandId(
+      filter.selectedBusinessEntities,
+      indexes.entityHierarchy,
+    )
+
+    filteredDataPoints.filter((dataPoint) =>
+      filterRoutine(dataPoint.entityId, expandedEntityIds),
+    )
+  }
+
+  if (filter.selectedGeographicalAreas.length > 0) {
+    const expandedGeoAreaIds = expandId(
+      filter.selectedGeographicalAreas,
+      indexes.areaHierarchy,
+    )
+
+    filteredDataPoints.filter((dataPoint) =>
+      filterRoutine(dataPoint.geoAreaId, expandedGeoAreaIds),
+    )
+  }
+
+  return {
+    emissionPoints: filteredDataPoints,
+    emissionsByCompany: dataPointsGroupByCompanyAndCategory(filteredDataPoints),
+    emissionsByCountry: dataPointsGroupByCountryAndCategory(filteredDataPoints),
+  }
+}
+
+const extractAndProcessVisibleData = (state: EmissionRangeState) => {
+  const newVisibleData = extractVisibleData(
+    state.allPoints,
+    state.alignedIndexes,
+    state.emissionFilterState,
+  )
+  state.visibleData = newVisibleData
+}
+
+const setSelectedBusinessEntitiesReducer: CaseReducer<
+  EmissionRangeState,
+  PayloadAction<number[]>
+> = (state, action) => {
+  state.emissionFilterState = {
+    ...state.emissionFilterState,
+    selectedBusinessEntities: action.payload,
+  }
+  extractAndProcessVisibleData(state as EmissionRangeState)
+}
+
+const setSelectedGeoAreasReducer: CaseReducer<
+  EmissionRangeState,
+  PayloadAction<number[]>
+> = (state, action) => {
+  state.emissionFilterState = {
+    ...state.emissionFilterState,
+    selectedGeographicalAreas: action.payload,
+  }
+  extractAndProcessVisibleData(state as EmissionRangeState)
+}
+
+const setSelectedCategoriesReducer: CaseReducer<
+  EmissionRangeState,
+  PayloadAction<string[]>
+> = (state, action) => {
+  state.emissionFilterState = {
+    ...state.emissionFilterState,
+    selectedCategories: action.payload,
+  }
+  extractAndProcessVisibleData(state as EmissionRangeState)
+}
+
+const setNewFilterReducer: CaseReducer<
+  EmissionRangeState,
+  PayloadAction<EmissionFilterState>
+> = (state, action) => {
+  state.emissionFilterState = { ...action.payload }
+  extractAndProcessVisibleData(state as EmissionRangeState)
+}
+
+const clearFilterSelectionsReducer: CaseReducer<
+  EmissionRangeState,
+  PayloadAction
+> = (state) => {
+  state.emissionFilterState = { ...initialFilterState }
+  extractAndProcessVisibleData(state as EmissionRangeState)
 }
 
 export const emissionsRangeSlice = createSlice({
   name: "emissionRanges",
   initialState,
-  reducers: {},
+  reducers: {
+    selectBusinessEntities: setSelectedBusinessEntitiesReducer,
+    selectGeoAreas: setSelectedGeoAreasReducer,
+    selectCategories: setSelectedCategoriesReducer,
+    updateFilterSelection: setNewFilterReducer,
+    clearFilterSelection: clearFilterSelectionsReducer,
+  },
   extraReducers: (builder) => {
     builder.addMatcher(
       emissionRangesApi.endpoints.getEmissionRanges.matchFulfilled,
       (state, action) => {
         const alignedIndexes = alignIndexes(action.payload.indexes)
-        const allPoints = action.payload.data.map((compressedPoint) =>
-          compressedPayloadToDataPoint(compressedPoint, alignedIndexes),
+        const timeWindow = action.payload.time_range
+        const allPoints = action.payload.data.map((cdp) =>
+          cdpToEdp(cdp, alignedIndexes, timeWindow),
         )
-        const availableFilters = extractFilters(alignedIndexes)
-        const visiblePoints = filterVisibleData(
+        // const availableFilters = extractFilters(alignedIndexes)
+        const visibleData = extractVisibleData(
           allPoints,
-          state.globalFilter.selectedValues,
+          alignedIndexes,
+          state.emissionFilterState,
         )
 
         state.alignedIndexes = alignedIndexes
         state.allPoints = allPoints
-        state.visibleFrame = visiblePoints
-        state.globalFilter = availableFilters
+        state.visibleData = visibleData
+        state.overallTimeWindow = timeWindow
+        // state.emissionFilterState = availableFilters
       },
     )
   },
 })
 
+export const {
+  selectBusinessEntities,
+  selectGeoAreas,
+  selectCategories,
+  updateFilterSelection,
+  clearFilterSelection,
+} = emissionsRangeSlice.actions
 export default emissionsRangeSlice.reducer

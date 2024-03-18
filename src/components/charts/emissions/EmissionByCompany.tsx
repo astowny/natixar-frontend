@@ -3,11 +3,13 @@ import { memo } from "react"
 import { getColorByCategory } from "utils/CategoryColors"
 import { formatEmissionAmount } from "utils/formatAmounts"
 import ReactApexChart from "react-apexcharts"
-import { ByCompanyDataPoint } from "data/store/features/coordinates/Types"
 import _ from "lodash"
+import { AlignedIndexes } from "data/store/features/emissions/ranges/EmissionTypes"
+import { detectCompany } from "data/store/api/DataDetectors"
 
 interface EmissionByCompanyProps {
-  emissionData: ByCompanyDataPoint[]
+  emissionData: Record<string, Record<number, number>>
+  indexes: AlignedIndexes
 }
 
 const chartOptions = (companies: string[]): ApexCharts.ApexOptions => ({
@@ -75,44 +77,50 @@ const chartOptions = (companies: string[]): ApexCharts.ApexOptions => ({
   ],
 })
 
-const EmissionByCompany = (props: EmissionByCompanyProps) => {
-  const { emissionData } = props
-  const companiesSet = new Set<string>()
-  emissionData.forEach((emissionPoint) => {
-    companiesSet.add(emissionPoint.company)
-  })
-  const companies = Array.from(companiesSet)
+const EmissionByCompany = ({
+  emissionData,
+  indexes,
+}: EmissionByCompanyProps) => {
+  const companyMappings: Record<number, number> = {}
+  Object.values(emissionData)
+    .flatMap((dataForCategory) => Object.keys(dataForCategory))
+    .map((entityIdStr) => parseInt(entityIdStr, 10))
+    .forEach((entityId) => {
+      const company = detectCompany(entityId, indexes)
+      companyMappings[entityId] = company.id
+    })
+
+  const companyIds = Object.values(companyMappings)
+  const companyNames = companyIds.map(
+    (companyId) => indexes.entities[companyId].name,
+  )
 
   const seriesByCategories: { [id: string]: number[] } = {}
 
-  emissionData.forEach((emissionPoint) => {
-    const { company } = emissionPoint
-    const categorizedEmissions = emissionPoint.emissionsByCategory
-    Object.keys(categorizedEmissions)
-      .map((category) => category.toLowerCase())
-      .forEach((categoryOfEmission) => {
-        let seriesForThatCategory = seriesByCategories[categoryOfEmission]
-        if (!seriesForThatCategory) {
-          seriesByCategories[categoryOfEmission] = Array(companies.length).fill(
-            0,
-          )
-          seriesForThatCategory = seriesByCategories[categoryOfEmission]
-        }
-        seriesForThatCategory[companies.indexOf(company)] +=
-          categorizedEmissions[categoryOfEmission]
-      })
+  Object.keys(emissionData).forEach((categoryEra) => {
+    const dataForThisCategory = emissionData[categoryEra]
+
+    const series = Array(companyNames.length).fill(0)
+
+    Object.entries(dataForThisCategory).forEach((entry) => {
+      const companyId = parseInt(entry[0], 10)
+      const companyIndex = companyIds.indexOf(companyId)
+      series[companyIndex] += entry[1]
+    })
+
+    seriesByCategories[categoryEra] = series
   })
 
-  const series = Object.keys(seriesByCategories).map((category) => ({
-    name: _.capitalize(category),
-    data: seriesByCategories[category],
-    color: getColorByCategory(category),
+  const series = Object.keys(seriesByCategories).map((categoryEra) => ({
+    name: _.capitalize(categoryEra),
+    data: seriesByCategories[categoryEra],
+    color: getColorByCategory(categoryEra),
   }))
 
   return (
     <ReactApexChart
       type="bar"
-      options={chartOptions(companies)}
+      options={chartOptions(companyNames)}
       series={series}
       height="100%"
     />

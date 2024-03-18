@@ -7,9 +7,9 @@ import EmissionsByCluster from "components/emissions/clusters/EmissionsByCluster
 import { useSelector } from "react-redux"
 import { clearSelectedCluster } from "data/store/features/coordinates/ClusterSlice"
 import {
-  selectAllVisibleCategories,
+  selectAllVisibleCategoryEras,
   selectSelectedCluster,
-} from "data/store/api/Selectors"
+} from "data/store/api/EmissionSelectors"
 import { useAppDispatch } from "data/store"
 
 const ClusteredMapSection = (props: SxProps) => {
@@ -26,7 +26,7 @@ const ClusteredMapSection = (props: SxProps) => {
     [setTableCloseVeto],
   )
   const selectedCluster = useSelector(selectSelectedCluster)
-  let categories = useSelector(selectAllVisibleCategories)
+  let categories = useSelector(selectAllVisibleCategoryEras)
 
   if (categories.length > 0) {
     // We deconstruct here, because redux has immutable values

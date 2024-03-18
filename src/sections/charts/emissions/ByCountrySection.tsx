@@ -6,27 +6,26 @@ import EmissionByCountry from "components/charts/emissions/EmissionByCountry"
 import { useSelector } from "react-redux"
 import MainCard from "components/MainCard"
 import {
-  selectAllVisibleCategories,
-  selectCoordinatesByCountry,
-} from "data/store/api/Selectors"
+  selectAlignedIndexes as indexesSelector,
+  selectCoordinatesByCountry as emissionsSelector,
+} from "data/store/api/EmissionSelectors"
 
-const ByCountrySection = (props: SxProps) => {
-  const { ...sxProps } = props
-  const categories = useSelector(selectAllVisibleCategories)
-  const visibleFrame = useSelector(selectCoordinatesByCountry)
+const ByCountrySection = ({ ...sxProps }: SxProps) => {
+  const indexes = useSelector(indexesSelector)
+  const groupedPoints = useSelector(emissionsSelector)
 
-  return visibleFrame == null || visibleFrame.length <= 0 ? null : (
+  return Object.keys(groupedPoints).length <= 0 ? null : (
     <MainCard
       sx={{ ...sxProps }}
       contentSX={{ height: 500 }}
       title={
         <HeaderWithCategoriesLegend
-          categories={categories}
+          categories={Object.keys(groupedPoints)}
           titleText="Performance by Country"
         />
       }
     >
-      <EmissionByCountry emissionData={visibleFrame} />
+      <EmissionByCountry emissionData={groupedPoints} indexes={indexes} />
     </MainCard>
   )
 }

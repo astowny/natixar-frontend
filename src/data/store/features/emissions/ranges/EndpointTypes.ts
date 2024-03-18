@@ -1,16 +1,10 @@
 import {
-  DataPoint,
-  GlobalFilterState,
-  PerceivedData,
-} from "../../coordinates/Types"
-import {
-  AlignedIndexes,
   BusinessEntity,
   CompressedDataPoint,
   EmissionCategory,
   GeographicalArea,
   TimeWindow,
-} from "./Types"
+} from "./EmissionTypes"
 
 export interface IndexesContainer {
   entity: BusinessEntity[]
@@ -37,11 +31,4 @@ export interface EmissionRangesRequest {
   timeRanges: TimeRangeRequest[]
   protocol: EmissionProtocol
   scale: TimeRangeScale
-}
-
-export interface EmissionRangeState {
-  alignedIndexes: AlignedIndexes
-  allPoints: DataPoint[]
-  visibleFrame: PerceivedData
-  globalFilter: GlobalFilterState
 }

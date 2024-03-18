@@ -9,12 +9,15 @@ import ReactApexChart, { Props as ChartProps } from "react-apexcharts"
 // project import
 import useConfig from "hooks/useConfig"
 import { Box } from "@mui/material"
+import { AlignedIndexes } from "data/store/features/emissions/ranges/EmissionTypes"
+import { DataPoint } from "data/store/features/coordinates/Types"
 
 // chart options
 const areaChartOptions = {
   chart: {
     height: 450,
     type: "area",
+    stacked: true,
     toolbar: {
       show: false,
     },
@@ -36,10 +39,11 @@ const areaChartOptions = {
 // ==============================|| INCOME AREA CHART ||============================== //
 
 interface Props {
-  slot: string
+  allDataPoints: DataPoint[]
+  alignedIndexes: AlignedIndexes
 }
 
-const IncomeAreaChart = ({ slot }: Props) => {
+const IncomeAreaChart = ({ allDataPoints, alignedIndexes }: Props) => {
   const theme = useTheme()
   const { mode } = useConfig()
 

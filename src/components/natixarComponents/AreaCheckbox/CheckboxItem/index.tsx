@@ -1,15 +1,22 @@
 import { Box, Checkbox, FormControlLabel } from "@mui/material"
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons"
-import { ReactNode, useState } from "react"
+import { ChangeEvent, ReactNode, useState } from "react"
 import IconButton from "../../../@extended/IconButton"
 
 type CheckboxItemProps = {
   label: string
+  onCheckedListener?: (event: ChangeEvent<HTMLInputElement>) => void
+  isSelected?: boolean
   children?: ReactNode
 }
 
-export const CheckboxItem = ({ label, children }: CheckboxItemProps) => {
-  const [show, setShow] = useState(false)
+export const CheckboxItem = ({
+  label,
+  onCheckedListener,
+  isSelected,
+  children,
+}: CheckboxItemProps) => {
+  const [expanded, setExpanded] = useState(isSelected)
 
   return (
     <>
@@ -24,7 +31,7 @@ export const CheckboxItem = ({ label, children }: CheckboxItemProps) => {
         <IconButton
           size="small"
           variant="outlined"
-          onClick={() => setShow(!show)}
+          onClick={() => setExpanded(!expanded)}
           sx={{
             width: "24px",
             height: "24px",
@@ -33,11 +40,14 @@ export const CheckboxItem = ({ label, children }: CheckboxItemProps) => {
             borderColor: "#D9D9D9",
           }}
         >
-          {show ? <MinusOutlined /> : <PlusOutlined />}
+          {expanded ? <MinusOutlined /> : <PlusOutlined />}
         </IconButton>
-        <FormControlLabel label={label} control={<Checkbox />} />
+        <FormControlLabel
+          label={label}
+          control={<Checkbox onChange={onCheckedListener} />}
+        />
       </Box>
-      {show && children}
+      {expanded && children}
     </>
   )
 }

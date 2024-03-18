@@ -1,3 +1,5 @@
+import { EmissionDataPoint } from "../emissions/ranges/EmissionTypes"
+
 interface Location {
   lat: number
   lon: number
@@ -8,6 +10,7 @@ interface DataPoint {
   id: string
   time: number
   emission_amount: number
+  categoryId: number
   category: string
   company: string
   location: Location
@@ -38,7 +41,7 @@ interface DataPartitions {
 }
 
 interface SelectedCluster {
-  dataPoints: Array<DataPoint>
+  dataPoints: Array<EmissionDataPoint>
 }
 
 interface DataSet {

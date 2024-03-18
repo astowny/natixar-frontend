@@ -7,7 +7,13 @@ import { Grid, Typography } from "@mui/material"
 import MainCard from "components/MainCard"
 
 import IncomeAreaChart from "sections/dashboard/default/IncomeAreaChart"
-import CO2DonutSection from "../../components/natixarComponents/CO2DonutSection"
+import {
+  selectAlignedIndexes as indexSelector,
+  selectVisiblePoints as emissionsSelector,
+} from "data/store/api/EmissionSelectors"
+import { useSelector } from "react-redux"
+import { useGetEmissionRangesQuery } from "data/store/features/emissions/ranges/EmissionRangesClient"
+import EmissionByCategorySection from "../../components/natixarComponents/CO2DonutSection/EmissionByCategorySection"
 
 // assets
 import { ChartCard } from "../../components/natixarComponents/ChartCard/ChartCard"
@@ -21,19 +27,37 @@ const NatixarChart = () => {
   const [acquisitionSlot, setAcquisitionSlot] = useState("month")
   const [compare, setCompare] = useState(false)
 
+  const alignedIndexes = useSelector(indexSelector)
+  const allPoints = useSelector(emissionsSelector)
+
+  useGetEmissionRangesQuery({
+    protocol: "ghgprotocol",
+    scale: "m",
+    timeRanges: [
+      {
+        start: "2023-01-01T00:00:00Z",
+        end: "2023-01-02T00:00:00Z",
+        scale: "m",
+      },
+    ],
+  })
+
   return (
     <Grid container rowSpacing={4.5} columnSpacing={3}>
-      <Grid item xs={12} md={12} xl={12}>
+      {/* <Grid item xs={12} md={12} xl={12}>
         <MainCard>
           <DateFilter />
         </MainCard>
-      </Grid>
+      </Grid> */}
       <Grid item xs={12} md={12} xl={12}>
         <MainCard>
           <Typography variant="h5" sx={{ marginBottom: "15px" }}>
             Scope Emissions
           </Typography>
-          <CO2DonutSection />
+          <EmissionByCategorySection
+            allDataPoints={allPoints}
+            alignedIndexes={alignedIndexes}
+          />
         </MainCard>
       </Grid>
       <Grid item xs={12} md={12} lg={12}>
@@ -44,7 +68,10 @@ const NatixarChart = () => {
           slot={areaSlot}
           setSlot={setAreaSlot}
         >
-          <IncomeAreaChart slot={areaSlot} />
+          {/* <IncomeAreaChart */}
+          {/* allDataPoints={allDataPoints} */}
+          {/* alignedIndexes={alignedItems} */}
+          {/* /> */}
         </ChartCard>
       </Grid>
       <Grid item xs={12} md={12} lg={12}>
@@ -58,7 +85,7 @@ const NatixarChart = () => {
           compare={compare}
           setCompare={setCompare}
         >
-          <AcquisitionChart slot={acquisitionSlot} compare={compare} />
+          {/* <AcquisitionChart slot={acquisitionSlot} compare={compare} /> */}
         </ChartCard>
       </Grid>
     </Grid>
