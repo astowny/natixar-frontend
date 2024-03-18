@@ -41,6 +41,12 @@ export interface GeographicalArea {
   details?: GeographicalAreaDetails
 }
 
+export interface CountryLocation {
+  lat: number
+  lon: number
+  country: string
+}
+
 export interface GeographicalAreaDetails {
   lat: number
   long: number
@@ -88,55 +94,23 @@ export enum CdpLayoutItem {
   CDP_LAYOUT_CATEGORY,
 }
 
-export class EmissionDataPoint {
-  private compressedData: CompressedDataPoint
-
-  readonly id: string
-
-  constructor(id: string, data: CompressedDataPoint) {
-    this.id = id
-    this.compressedData = data
-  }
-
-  private attrBy(index: number): number {
-    return this.compressedData[index]
-  }
-
-  categoryId(): number {
-    return this.attrBy(CdpLayoutItem.CDP_LAYOUT_CATEGORY)
-  }
-
-  businessEntityId(): number {
-    return this.attrBy(CdpLayoutItem.CDP_LAYOUT_ENTITY)
-  }
-
-  geoAreaId(): number {
-    return this.attrBy(CdpLayoutItem.CDP_LAYOUT_AREA)
-  }
-
-  emissionIntensity(): number {
-    return this.attrBy(CdpLayoutItem.CDP_LAYOUT_INTENSITY)
-  }
-
-  startTimeSlot(): number {
-    return this.attrBy(CdpLayoutItem.CDP_LAYOUT_START)
-  }
-
-  endTimeSlot(): number {
-    return this.attrBy(CdpLayoutItem.CDP_LAYOUT_END)
-  }
-
-  startIntensityPercentage(): number {
-    return this.attrBy(CdpLayoutItem.CDP_LAYOUT_START_PERCENTAGE)
-  }
-
-  endIntensityPercentage(): number {
-    return this.attrBy(CdpLayoutItem.CDP_LAYOUT_END_PERCENTAGE)
-  }
+export interface EmissionDataPoint {
+  id: string
+  totalEmissionAmount: number
+  categoryId: number
+  categoryEraName: string
+  entityId: number
+  companyId: number
+  companyName: string
+  geoAreaId: number
+  countryId: number
+  location: CountryLocation
 }
 
 export interface VisibleData {
   emissionPoints: EmissionDataPoint[]
+  emissionsByCompany: Record<string, Record<number, number>>
+  emissionsByCountry: Record<string, Record<number, number>>
 }
 
 export interface EmissionFilterState {
@@ -148,12 +122,12 @@ export interface EmissionFilterState {
 export interface EmissionRangeState {
   alignedIndexes: AlignedIndexes
   allPoints: EmissionDataPoint[]
-  visiblePoints: VisibleData
+  visibleData: VisibleData
   overallTimeWindow: TimeWindow
   emissionFilterState: EmissionFilterState
 }
 
-export interface GroupedDataPoints {
-  groupKey: string
-  groupedEmissionsByCategory: Record<string, number>
+export interface GroupedDataPoints<GroupKeyT> {
+  groupKey: GroupKeyT
+  valueSeries: number[]
 }

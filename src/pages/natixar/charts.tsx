@@ -9,7 +9,7 @@ import MainCard from "components/MainCard"
 import IncomeAreaChart from "sections/dashboard/default/IncomeAreaChart"
 import {
   selectAlignedIndexes,
-  selectVisibleData,
+  selectVisiblePoints,
 } from "data/store/api/EmissionSelectors"
 import { useSelector } from "react-redux"
 import { useGetEmissionRangesQuery } from "data/store/features/emissions/ranges/EmissionRangesClient"
@@ -27,7 +27,7 @@ const NatixarChart = () => {
   const [acquisitionSlot, setAcquisitionSlot] = useState("month")
   const [compare, setCompare] = useState(false)
 
-  const visibleData = useSelector(selectVisibleData)
+  const allPoints = useSelector(selectVisiblePoints)
   const alignedItems = useSelector(selectAlignedIndexes)
   useGetEmissionRangesQuery({
     protocol: "ghgprotocol",
@@ -54,7 +54,7 @@ const NatixarChart = () => {
             Scope Emissions
           </Typography>
           <EmissionByCategorySection
-            allDataPoints={visibleData.emissionPoints}
+            allDataPoints={allPoints}
             alignedIndexes={alignedItems}
           />
         </MainCard>

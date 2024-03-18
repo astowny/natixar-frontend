@@ -6,22 +6,17 @@ import ByCountrySection from "sections/charts/emissions/ByCountrySection"
 import ClusteredMapSection from "sections/maps-leaflet/clusters-map"
 
 const ContributorDashboardPage = () => {
-  useGetEmissionRangesQuery(
-    {
-      protocol: "ghgprotocol",
-      scale: "m",
-      timeRanges: [
-        {
-          start: "2023-01-01T00:00:00Z",
-          end: "2023-01-02T00:00:00Z",
-          scale: "m",
-        },
-      ],
-    },
-    {
-      pollingInterval: 5000,
-    },
-  )
+  useGetEmissionRangesQuery({
+    protocol: "ghgprotocol",
+    scale: "m",
+    timeRanges: [
+      {
+        start: "2023-01-01T00:00:00Z",
+        end: "2023-01-02T00:00:00Z",
+        scale: "m",
+      },
+    ],
+  })
 
   return (
     <Stack spacing="22px">

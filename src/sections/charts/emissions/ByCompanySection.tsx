@@ -7,27 +7,26 @@ import { SxProps } from "@mui/material"
 
 import { useSelector } from "react-redux"
 import {
-  selectAllVisibleCategories,
-  selectCoordinatesByCompany,
+  selectAlignedIndexes as indexesSelector,
+  selectVisibleEmissionsByCompany as emissionSelector,
 } from "data/store/api/EmissionSelectors"
 
-const ByCompanySection = (props: SxProps) => {
-  const { ...sxProps } = props
-  const visibleFrame = useSelector(selectCoordinatesByCompany)
-  const categories = useSelector(selectAllVisibleCategories)
+const ByCompanySection = ({ ...sxProps }: SxProps) => {
+  const groupedPoints = useSelector(emissionSelector)
+  const indexes = useSelector(indexesSelector)
 
-  return visibleFrame.length <= 0 ? null : (
+  return Object.keys(groupedPoints).length <= 0 ? null : (
     <MainCard
       sx={{ ...sxProps }}
       contentSX={{ height: 500 }}
       title={
         <HeaderWithCategoriesLegend
           titleText="Emissions by contributor"
-          categories={categories}
+          categories={Object.keys(groupedPoints)}
         />
       }
     >
-      <EmissionByCompany emissionData={visibleFrame} />
+      <EmissionByCompany emissionData={groupedPoints} indexes={indexes} />
     </MainCard>
   )
 }

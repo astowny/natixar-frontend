@@ -3,11 +3,13 @@ import ReactApexChart from "react-apexcharts"
 
 import { getColorByCategory } from "utils/CategoryColors"
 import { formatEmissionAmount } from "utils/formatAmounts"
-import { ByCountryDataPoint } from "data/store/features/coordinates/Types"
 import _ from "lodash"
+import { detectCountry } from "data/store/api/DataDetectors"
+import { AlignedIndexes } from "data/store/features/emissions/ranges/EmissionTypes"
 
 interface EmissionByCountryProps {
-  emissionData: Array<ByCountryDataPoint>
+  emissionData: Record<string, Record<number, number>>
+  indexes: AlignedIndexes
 }
 
 const chartOptions = (countries: string[]): ApexCharts.ApexOptions => ({
@@ -75,30 +77,39 @@ const chartOptions = (countries: string[]): ApexCharts.ApexOptions => ({
   ],
 })
 
-const EmissionByCountry = (props: EmissionByCountryProps) => {
-  const { emissionData } = props
-  const countriesSet = new Set<string>()
-  emissionData.forEach((emissionPoint) => {
-    countriesSet.add(emissionPoint.country)
-  })
-  const countries = Array.from(countriesSet).sort()
+const EmissionByCountry = ({
+  emissionData,
+  indexes,
+}: EmissionByCountryProps) => {
+  // Area ID -> Country ID
+  const countryMappings: Record<number, number> = {}
+  Object.values(emissionData)
+    .flatMap((dataForCategory) => Object.keys(dataForCategory))
+    .map((geoAreaIdStr) => parseInt(geoAreaIdStr, 10))
+    .forEach((geoAreaId) => {
+      const country = detectCountry(geoAreaId, indexes)
+      countryMappings[geoAreaId] = country.id
+    })
+
+  const countryIds = Object.values(countryMappings)
+  const countryNames = countryIds.map(
+    (countryId) => indexes.entities[countryId].name,
+  )
+
   const seriesByCategories: { [id: string]: number[] } = {}
-  emissionData.forEach((emissionPoint) => {
-    const { country } = emissionPoint
-    const categorizedEmissions = emissionPoint.emissionsByCategory
-    Object.keys(categorizedEmissions)
-      .map((category) => category.toLowerCase())
-      .forEach((categoryOfEmission) => {
-        let seriesForThatCategory = seriesByCategories[categoryOfEmission]
-        if (!seriesForThatCategory) {
-          seriesByCategories[categoryOfEmission] = Array(countries.length).fill(
-            0,
-          )
-          seriesForThatCategory = seriesByCategories[categoryOfEmission]
-        }
-        seriesForThatCategory[countries.indexOf(country)] +=
-          categorizedEmissions[categoryOfEmission]
-      })
+
+  Object.keys(emissionData).forEach((categoryEra) => {
+    const dataForThisCategory = emissionData[categoryEra]
+
+    const series = Array(countryNames.length).fill(0)
+
+    Object.entries(dataForThisCategory).forEach((entry) => {
+      const countryId = parseInt(entry[0], 10)
+      const countryIndex = countryIds.indexOf(countryId)
+      series[countryIndex] += entry[1]
+    })
+
+    seriesByCategories[categoryEra] = series
   })
 
   const series = Object.keys(seriesByCategories).map((category) => ({
@@ -110,7 +121,7 @@ const EmissionByCountry = (props: EmissionByCountryProps) => {
   return (
     <ReactApexChart
       type="bar"
-      options={chartOptions(Array.from(countries))}
+      options={chartOptions(countryNames)}
       series={series}
       height="100%"
     />

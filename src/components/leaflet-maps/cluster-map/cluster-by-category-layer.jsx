@@ -12,7 +12,7 @@ import "./map-style.css"
 import { useAppDispatch } from "data/store"
 import { formatAmount } from "utils/formatAmounts"
 import { selectClusterPoints } from "data/store/features/coordinates/ClusterSlice"
-import { selectVisibleData } from "data/store/api/EmissionSelectors"
+import { selectVisiblePoints as pointsSelector } from "data/store/api/EmissionSelectors"
 
 const customIcon = new L.Icon({
   iconUrl: MapMarker,
@@ -40,15 +40,15 @@ const createClusterCustomIcon = (cluster) => {
   let category = "cluster"
   if (childCount > 0) {
     const childMarkers = cluster.getAllChildMarkers()
-    category = childMarkers[0].options.dataPoint.category
+    category = childMarkers[0].options.dataPoint.categoryEraName
     const thereIsOtherCategory = childMarkers.some(
-      (marker) => category !== marker.options.dataPoint.category,
+      (marker) => category !== marker.options.dataPoint.categoryEraName,
     )
     if (thereIsOtherCategory) {
       category = "cluster"
     }
   }
-  category = "operation" // category.toLowerCase()
+  category = category.toLowerCase()
 
   const amountLabel = formatAmount(childCount)
 
@@ -65,7 +65,7 @@ const createClusterCustomIcon = (cluster) => {
 const ClusterByCategoryLayer = () => {
   const clusterGroupRef = useRef()
   const dispatch = useAppDispatch()
-  const dataPoints = useSelector(selectVisibleData)
+  const dataPoints = useSelector(pointsSelector)
 
   const onClusterClick = useCallback(
     (e) => {
@@ -87,7 +87,7 @@ const ClusterByCategoryLayer = () => {
         const address = dataPoint.location
         const marker = L.marker(new L.LatLng(address.lat, address.lon), {
           key: dataPoint.id,
-          title: dataPoint.country,
+          title: address.country,
           icon: customIcon,
           dataPoint,
         })

@@ -1,8 +1,6 @@
 import { CaseReducer, PayloadAction, createSlice } from "@reduxjs/toolkit"
-import {
-  DataPoint,
-  SelectedCluster,
-} from "data/store/features/coordinates/Types"
+import { SelectedCluster } from "data/store/features/coordinates/Types"
+import { EmissionDataPoint } from "../emissions/ranges/EmissionTypes"
 
 const initialState: SelectedCluster = {
   dataPoints: [],
@@ -10,7 +8,7 @@ const initialState: SelectedCluster = {
 
 const selectClusterPointsReducer: CaseReducer<
   SelectedCluster,
-  PayloadAction<Array<DataPoint>>
+  PayloadAction<Array<EmissionDataPoint>>
 > = (state, action) => {
   state.dataPoints = action.payload
 }
