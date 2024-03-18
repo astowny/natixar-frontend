@@ -2,7 +2,7 @@ import { EmissionDataPoint } from "../features/emissions/ranges/EmissionTypes"
 
 export const extractNameOfEra = (era: string | undefined) => {
   if (typeof era === "undefined") {
-    return "Other"
+    return ""
   }
   switch (era.toLowerCase()) {
     case "d":

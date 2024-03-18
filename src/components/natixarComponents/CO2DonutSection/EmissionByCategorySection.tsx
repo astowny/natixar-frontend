@@ -42,9 +42,9 @@ const EmissionByCategorySection = (props: EmissionByCategorySectionProps) => {
       const categoryAggregators: Record<string, ByCategoryItem> = {}
       Object.entries(alignedIndexes.categories).forEach((entry) => {
         const [categoryId, category] = entry
-        let { era } = category
+        const { era } = category
         if (!era) {
-          era = "Other"
+          return
         }
         if (!categoryAggregators[era]) {
           categoryAggregators[era] = {
