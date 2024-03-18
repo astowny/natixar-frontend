@@ -29,7 +29,9 @@ const ContributorUpload = Loadable(
 const WidgetStatistics = Loadable(lazy(() => import("pages/widget/statistics")))
 const WidgetData = Loadable(lazy(() => import("pages/widget/data")))
 const WidgetChart = Loadable(lazy(() => import("pages/widget/chart")))
-const NatixarChart = Loadable(lazy(() => import("pages/natixar/charts")))
+const ClimateChangePage = Loadable(
+  lazy(() => import("pages/natixar/ClimateChangePage")),
+)
 const ScopePage = Loadable(lazy(() => import("pages/natixar/ScopePage")))
 const ContributorsPage = Loadable(
   lazy(() => import("pages/natixar/ContributorsPage")),
@@ -80,7 +82,7 @@ const MainRoutes = {
           children: [
             {
               path: "dashboard",
-              element: <NatixarChart />,
+              element: <ClimateChangePage />,
             },
             {
               path: "scope/:id",

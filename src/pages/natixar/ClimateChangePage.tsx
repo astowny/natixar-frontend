@@ -8,12 +8,12 @@ import MainCard from "components/MainCard"
 
 import IncomeAreaChart from "sections/dashboard/default/IncomeAreaChart"
 import {
-  selectAlignedIndexes,
-  selectVisiblePoints,
+  selectAlignedIndexes as indexSelector,
+  selectVisiblePoints as emissionsSelector,
 } from "data/store/api/EmissionSelectors"
 import { useSelector } from "react-redux"
 import { useGetEmissionRangesQuery } from "data/store/features/emissions/ranges/EmissionRangesClient"
-import EmissionByCategorySection from "../../components/natixarComponents/CO2DonutSection"
+import EmissionByCategorySection from "../../components/natixarComponents/CO2DonutSection/EmissionByCategorySection"
 
 // assets
 import { ChartCard } from "../../components/natixarComponents/ChartCard/ChartCard"
@@ -27,8 +27,9 @@ const NatixarChart = () => {
   const [acquisitionSlot, setAcquisitionSlot] = useState("month")
   const [compare, setCompare] = useState(false)
 
-  const allPoints = useSelector(selectVisiblePoints)
-  const alignedItems = useSelector(selectAlignedIndexes)
+  const alignedIndexes = useSelector(indexSelector)
+  const allPoints = useSelector(emissionsSelector)
+
   useGetEmissionRangesQuery({
     protocol: "ghgprotocol",
     scale: "m",
@@ -55,7 +56,7 @@ const NatixarChart = () => {
           </Typography>
           <EmissionByCategorySection
             allDataPoints={allPoints}
-            alignedIndexes={alignedItems}
+            alignedIndexes={alignedIndexes}
           />
         </MainCard>
       </Grid>

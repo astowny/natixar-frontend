@@ -9,6 +9,7 @@ import {
 } from "data/store/features/emissions/ranges/EmissionTypes"
 import ReactApexChart from "react-apexcharts"
 import { defaultOptions } from "sections/charts/apexchart/ApexDonutChart/constants"
+import { formatEmissionAmount } from "utils/formatAmounts"
 import {
   ChartContainerStyles,
   ContainerStyles,
@@ -38,7 +39,6 @@ const EmissionByCategorySection = (props: EmissionByCategorySectionProps) => {
   useEffect(() => {
     let acceptResult = true
     const aggregateData = async () => {
-      console.log("All data points are:", allDataPoints)
       const categoryAggregators: Record<string, ByCategoryItem> = {}
       Object.entries(alignedIndexes.categories).forEach((entry) => {
         const [categoryId, category] = entry
@@ -57,17 +57,14 @@ const EmissionByCategorySection = (props: EmissionByCategorySectionProps) => {
       })
 
       allDataPoints.forEach((dataPoint) => {
-        const categoryId = dataPoint.categoryId()
-        const category = alignedIndexes.categories[categoryId]
-        let { era } = category
-        if (!era) {
+        let era = dataPoint.categoryEraName
+        if (era === "") {
           era = "Other"
         }
-        categoryAggregators[era].count += dataPoint.emissionIntensity()
+        categoryAggregators[era].count += dataPoint.totalEmissionAmount
       })
 
       if (acceptResult) {
-        // setByCategoryItems(Object.values(categoryAggregators))
         const byCategoryItems = Object.values(categoryAggregators)
 
         const newData: ApexPieChartProps = {
@@ -102,15 +99,22 @@ const EmissionByCategorySection = (props: EmissionByCategorySectionProps) => {
           width={400}
         />
       </Box>
-    </Box>
-  )
-  /*
-        <Box sx={LegendsContainerStyles}>
-        {data.map((legendItem, i) => (
-          <LabelBox legend={legendItem} key={i} />
+
+      <Box sx={LegendsContainerStyles}>
+        {pieChartData.data.map((dataItem) => (
+          <LabelBox
+            legend={{
+              title: dataItem.title,
+              color: dataItem.color,
+              value: formatEmissionAmount(dataItem.value),
+              navLink: dataItem.title.toLowerCase(),
+            }}
+            key={dataItem.title}
+          />
         ))}
       </Box>
- */
+    </Box>
+  )
 }
 
 export default memo(EmissionByCategorySection)

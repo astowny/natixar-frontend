@@ -24,9 +24,8 @@ const LabelBox = ({ legend }: LabelBoxProps) => {
       </Box>
       <Box sx={LabelValueStyles}>
         <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-          32425
+          {legend.value}
         </Typography>
-        <Typography variant="h6">tCO2e</Typography>
       </Box>
       <Box sx={ButtonContainerStyles}>
         <IconButton sx={{ borderRadius: "100%", background: "#E6F7FF" }}>
