@@ -202,10 +202,11 @@ const cdpToEdp = (
   const company = detectCompany(entityId, indexes)
 
   const geoAreaId = cdp[CdpLayoutItem.CDP_LAYOUT_AREA]
+  const geoArea = indexes.areas[geoAreaId]
   const country = detectCountry(geoAreaId, indexes)
   const countryLocation: CountryLocation = {
-    lat: country.details?.lat ?? 0,
-    lon: country.details?.long ?? 0,
+    lat: country.details?.lat ?? geoArea.details?.lat ?? 0,
+    lon: country.details?.long ?? geoArea.details?.long ?? 0,
     country: country.name,
   }
 
