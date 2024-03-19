@@ -115,6 +115,38 @@ const entitiesToCheckboxes = (
     treeItems,
   )
 
+const EntityControlForm = memo(
+  ({
+    allEntities,
+    selectedEntities,
+    selectedLabels,
+    entityHierarchy,
+    checkCallback,
+  }: {
+    allEntities: IndexOf<BusinessEntity>
+    selectedEntities: number[]
+    selectedLabels: string[]
+    entityHierarchy: IdTreeNode[]
+    checkCallback: (id: number, selected: boolean) => void
+  }) => {
+    const entityCheckboxes = entitiesToCheckboxes(
+      allEntities,
+      selectedEntities,
+      entityHierarchy,
+      checkCallback,
+    )
+
+    return (
+      <FormControl sx={{ width: 220 }}>
+        <InputLabel>Business Entity / Facility</InputLabel>
+        <Select value={selectedLabels} renderValue={multiSelectJoiner} multiple>
+          {entityCheckboxes}
+        </Select>
+      </FormControl>
+    )
+  },
+)
+
 const AreaControlForm = memo(
   ({
     selectedAreaLabels,
@@ -208,18 +240,6 @@ const GlobalFilterMenu = ({ ...sxProps }: SxProps) => {
     globalFilter.selectedCategories,
   )
 
-  // useEffect(() => {
-  //   setSelectedBusinessEntities(globalFilter.selectedBusinessEntities)
-  // }, [setSelectedBusinessEntities, globalFilter.selectedBusinessEntities])
-
-  // useEffect(() => {
-  //   setSelectedAreas(globalFilter.selectedGeographicalAreas)
-  // }, [setSelectedAreas, globalFilter.selectedGeographicalAreas])
-
-  // useEffect(() => {
-  //   setSelectedCategories(globalFilter.selectedCategories)
-  // }, [setSelectedCategories, globalFilter.selectedCategories])
-
   const entityLabel = useMemo(
     () =>
       selectedBusinessEntities
@@ -235,6 +255,9 @@ const GlobalFilterMenu = ({ ...sxProps }: SxProps) => {
 
   const onClearClick = useCallback(() => {
     dispatch(clearFilterAction())
+    setSelectedBusinessEntities([])
+    setSelectedAreas([])
+    setSelectedCategories([])
   }, [dispatch, clearFilterAction])
 
   const onApplyClick = useCallback(() => {
@@ -301,13 +324,6 @@ const GlobalFilterMenu = ({ ...sxProps }: SxProps) => {
     return null
   }
 
-  const entityCheckboxes = entitiesToCheckboxes(
-    alignedIndexes.entities,
-    selectedBusinessEntities,
-    alignedIndexes.entityHierarchy,
-    onEntitySelectionChange,
-  )
-
   return (
     <Stack
       direction="row"
@@ -321,12 +337,13 @@ const GlobalFilterMenu = ({ ...sxProps }: SxProps) => {
       }}
     >
       <Typography>Filter</Typography>
-      <FormControl sx={{ width: 220 }}>
-        <InputLabel>Business Entity / Facility</InputLabel>
-        <Select value={entityLabel} renderValue={multiSelectJoiner} multiple>
-          {entityCheckboxes}
-        </Select>
-      </FormControl>
+      <EntityControlForm
+        allEntities={availableEntities}
+        selectedEntities={selectedBusinessEntities}
+        selectedLabels={entityLabel}
+        entityHierarchy={alignedIndexes.entityHierarchy}
+        checkCallback={onEntitySelectionChange}
+      />
 
       <AreaControlForm
         selectedAreaLabels={areaLabel}
