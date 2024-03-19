@@ -91,6 +91,7 @@ const EmissionByKeyStacked = ({
       options={options}
       series={series}
       height="300px"
+      type="bar"
     />
   )
 }
