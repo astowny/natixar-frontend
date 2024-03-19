@@ -1,4 +1,3 @@
-import { memo } from "react"
 import MainCard from "components/MainCard"
 import HeaderWithCategoriesLegend from "components/charts/HeaderWithCategoriesLegend"
 import EmissionByCompany from "components/charts/emissions/EmissionByCompany"
@@ -15,7 +14,7 @@ const ByCompanySection = ({ ...sxProps }: SxProps) => {
   const groupedPoints = useSelector(emissionSelector)
   const indexes = useSelector(indexesSelector)
 
-  return Object.keys(groupedPoints).length <= 0 ? null : (
+  return (
     <MainCard
       sx={{ ...sxProps }}
       contentSX={{ height: 500 }}
@@ -31,4 +30,4 @@ const ByCompanySection = ({ ...sxProps }: SxProps) => {
   )
 }
 
-export default memo(ByCompanySection)
+export default ByCompanySection
