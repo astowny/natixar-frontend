@@ -13,6 +13,10 @@ import { useAppDispatch } from "data/store"
 import { formatAmount } from "data/domain/transformers/EmissionTransformers"
 import { selectClusterPoints } from "data/store/features/coordinates/ClusterSlice"
 import { selectVisiblePoints as pointsSelector } from "data/store/api/EmissionSelectors"
+import {
+  getColorByCategory,
+  getOpaqueColorByCategory,
+} from "utils/CategoryColors"
 
 const customIcon = new L.Icon({
   iconUrl: MapMarker,
@@ -54,9 +58,11 @@ const createClusterCustomIcon = (cluster) => {
 
   const size = sizeByValue(childCount)
   const iconClass = `marker-cluster-category-${category}`
+  // const opaqueCategoryColor = getOpaqueColorByCategory(category)
+  const fillCategoryColor = getColorByCategory(category)
 
   return L.divIcon({
-    html: `<div class="marker-cluster-icon"><span>${amountLabel}</span></div>`,
+    html: `<div class="marker-cluster-icon" style="background:${fillCategoryColor}"><span>${amountLabel}</span></div>`,
     className: `cluster-icon-container ${iconClass}`,
     iconSize: L.point(size, size, true),
   })
