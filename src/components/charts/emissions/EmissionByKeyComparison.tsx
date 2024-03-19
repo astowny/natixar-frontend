@@ -53,10 +53,13 @@ const optionOverrides = (keys: string[]): ApexOptions => ({
 
 const produceSeries = (
   dataSet: Record<string, Record<string, number>>,
+  groupName: string,
   categories: string[],
   keys: string[],
 ) => {
-  const byKeyData = Array(categories.length).fill(Array(keys.length).fill(0))
+  const byKeyData: number[][] = Array(categories.length).fill(
+    Array(keys.length).fill(0),
+  )
 
   Object.entries(dataSet).forEach((entry) => {
     const category = entry[0]
@@ -74,7 +77,8 @@ const produceSeries = (
     const category = entry[0]
     const categoryIndex = categories.indexOf(category)
     return {
-      name: category,
+      name: `${category} (${groupName})`,
+      group: groupName,
       color: getColorByCategory(category),
       data: byKeyData[categoryIndex],
     }
@@ -93,15 +97,26 @@ const EmissionByKeyComparison = ({
   keys: string[]
 } & SxProps) => {
   const categories = Object.keys(dataSetA)
-  const seriesA = produceSeries(dataSetA, categories, keys)
-  const seriesB = produceSeries(dataSetB, categories, keys)
+
+  const previousYearSeries = produceSeries(
+    dataSetB,
+    "Previous year",
+    categories,
+    keys,
+  )
+  const currentYearSeries = produceSeries(
+    dataSetA,
+    "Current year",
+    categories,
+    keys,
+  )
 
   const options = { ...defaultOptions, ...optionOverrides(keys) }
   return (
     <ReactApexChart
       sx={{ sxProps }}
       options={options}
-      series={[...seriesA, ...seriesB]}
+      series={[...previousYearSeries, ...currentYearSeries]}
       height="300px"
       type="bar"
     />
