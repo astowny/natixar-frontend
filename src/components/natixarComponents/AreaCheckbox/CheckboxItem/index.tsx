@@ -31,6 +31,7 @@ export const CheckboxItem = ({
         <IconButton
           size="small"
           variant="outlined"
+          disabled={isSelected}
           onClick={() => setExpanded(!expanded)}
           sx={{
             width: "24px",
@@ -44,7 +45,9 @@ export const CheckboxItem = ({
         </IconButton>
         <FormControlLabel
           label={label}
-          control={<Checkbox onChange={onCheckedListener} />}
+          control={
+            <Checkbox checked={isSelected} onChange={onCheckedListener} />
+          }
         />
       </Box>
       {expanded && children}

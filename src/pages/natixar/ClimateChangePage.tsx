@@ -13,6 +13,7 @@ import {
 } from "data/store/api/EmissionSelectors"
 import { useSelector } from "react-redux"
 import { useGetEmissionRangesQuery } from "data/store/features/emissions/ranges/EmissionRangesClient"
+import TotalEmissionByTimeSection from "sections/charts/emissions/TotalEmissionByTimeSection"
 import EmissionByCategorySection from "../../components/natixarComponents/CO2DonutSection/EmissionByCategorySection"
 
 // assets
@@ -61,18 +62,19 @@ const NatixarChart = () => {
         </MainCard>
       </Grid>
       <Grid item xs={12} md={12} lg={12}>
-        <ChartCard
+        <TotalEmissionByTimeSection emissionPoints={allPoints} />
+        {/* <ChartCard
           title="Total Emissions"
           value="12,900 CO2 (t)"
           date="01 Dec - 31 Feb 2021"
           slot={areaSlot}
           setSlot={setAreaSlot}
-        >
-          {/* <IncomeAreaChart */}
-          {/* allDataPoints={allDataPoints} */}
-          {/* alignedIndexes={alignedItems} */}
-          {/* /> */}
-        </ChartCard>
+        > */}
+        {/* <IncomeAreaChart */}
+        {/* allDataPoints={allDataPoints} */}
+        {/* alignedIndexes={alignedItems} */}
+        {/* /> */}
+        {/* </ChartCard> */}
       </Grid>
       <Grid item xs={12} md={12} lg={12}>
         <ChartCard

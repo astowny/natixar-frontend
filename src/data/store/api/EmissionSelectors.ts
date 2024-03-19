@@ -7,6 +7,9 @@ import {
 export const selectEmissionFilter = (state: RootState) =>
   state.emissionRanges.emissionFilterState
 
+export const selectTimeWindow = (state: RootState) =>
+  state.emissionRanges.overallTimeWindow
+
 export const selectAllVisibleCategories = (
   state: RootState,
 ): IndexOf<EmissionCategory> => state.emissionRanges.alignedIndexes.categories

@@ -3,7 +3,6 @@ import {
   CompressedDataPoint,
   EmissionCategory,
   GeographicalArea,
-  TimeWindow,
 } from "./EmissionTypes"
 
 export interface IndexesContainer {
@@ -12,8 +11,14 @@ export interface IndexesContainer {
   category: EmissionCategory[]
 }
 
+export interface EndpointTimeWindow {
+  start: string
+  end: string
+  step: number | number[]
+}
+
 export interface EmissionRangesPayload {
-  time_range: TimeWindow
+  time_range: EndpointTimeWindow
   indexes: IndexesContainer
   data: CompressedDataPoint[]
 }

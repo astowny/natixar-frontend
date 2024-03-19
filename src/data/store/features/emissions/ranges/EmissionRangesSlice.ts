@@ -1,12 +1,11 @@
 import { CaseReducer, PayloadAction, createSlice } from "@reduxjs/toolkit"
-import { v4 as uuid } from "uuid"
 import {
   extractNameOfEra,
   dataPointsGroupByCompanyAndCategory,
   dataPointsGroupByCountryAndCategory,
+  cdpToEdp,
 } from "data/store/api/EmissionTransformers"
-import { detectCompany, detectCountry } from "data/store/api/DataDetectors"
-import { IndexesContainer } from "./EndpointTypes"
+import { EndpointTimeWindow, IndexesContainer } from "./EndpointTypes"
 import { emissionRangesApi } from "./EmissionRangesClient"
 import {
   AlignedIndexes,
@@ -16,12 +15,9 @@ import {
   IndexOf,
   EmissionRangeState,
   EmissionFilterState,
-  TimeWindow,
   EmissionDataPoint,
   VisibleData,
-  CompressedDataPoint,
-  CdpLayoutItem,
-  CountryLocation,
+  TimeWindow,
 } from "./EmissionTypes"
 
 const initialFilterState: EmissionFilterState = {
@@ -45,9 +41,9 @@ const initialState: EmissionRangeState = {
     emissionsByCountry: {},
   },
   overallTimeWindow: {
-    start: "",
-    end: "",
-    step: 0,
+    startTimestamp: 0,
+    endTimestamp: 0,
+    timeStepInSecondsPattern: [],
   },
   emissionFilterState: { ...initialFilterState },
 }
@@ -134,27 +130,6 @@ const alignIndexes = (originalIndexes: IndexesContainer): AlignedIndexes => {
   }
 }
 
-const calculateTotalAmount = (
-  dataPoint: CompressedDataPoint,
-  overallTimeWindow: TimeWindow,
-): number => {
-  // TODO more accurate step usage
-  const seconds =
-    typeof overallTimeWindow.step === "number"
-      ? overallTimeWindow.step
-      : overallTimeWindow.step[0]
-
-  const duration =
-    seconds *
-    (dataPoint[CdpLayoutItem.CDP_LAYOUT_END] -
-      dataPoint[CdpLayoutItem.CDP_LAYOUT_START] -
-      2 +
-      dataPoint[CdpLayoutItem.CDP_LAYOUT_START_PERCENTAGE] +
-      dataPoint[CdpLayoutItem.CDP_LAYOUT_END_PERCENTAGE])
-
-  return duration * dataPoint[CdpLayoutItem.CDP_LAYOUT_INTENSITY]
-}
-
 /*
 const extractFilters = (indexes: AlignedIndexes): GlobalFilterState => {
   const categories = new Set<string>()
@@ -190,41 +165,6 @@ const extractFilters = (indexes: AlignedIndexes): GlobalFilterState => {
   }
 }
 */
-
-const cdpToEdp = (
-  cdp: CompressedDataPoint,
-  indexes: AlignedIndexes,
-  timeWindow: TimeWindow,
-): EmissionDataPoint => {
-  const categoryId = cdp[CdpLayoutItem.CDP_LAYOUT_CATEGORY]
-  const origEra = indexes.categories[categoryId]?.era
-  const entityId = cdp[CdpLayoutItem.CDP_LAYOUT_ENTITY]
-  const company = detectCompany(entityId, indexes)
-
-  const geoAreaId = cdp[CdpLayoutItem.CDP_LAYOUT_AREA]
-  const geoArea = indexes.areas[geoAreaId]
-  const country = detectCountry(geoAreaId, indexes)
-  const countryLocation: CountryLocation = {
-    lat: country.details?.lat ?? geoArea.details?.lat ?? 0,
-    lon: country.details?.long ?? geoArea.details?.long ?? 0,
-    country: country.name,
-  }
-
-  const totalAmount = calculateTotalAmount(cdp, timeWindow)
-
-  return {
-    id: uuid(),
-    totalEmissionAmount: totalAmount,
-    categoryId,
-    categoryEraName: extractNameOfEra(origEra),
-    entityId,
-    companyId: company.id,
-    companyName: company.name,
-    geoAreaId,
-    countryId: country.id,
-    location: countryLocation,
-  }
-}
 
 function filterRoutine<T>(currentValue: T, filterSelectedValues: T[]): boolean {
   return (
@@ -279,10 +219,9 @@ const extractVisibleData = (
   indexes: AlignedIndexes,
   filter: EmissionFilterState,
 ): VisibleData => {
-  console.log("I extract points with: ", filter)
-  const filteredDataPoints = dataPoints
+  let filteredDataPoints = dataPoints
   if (filter.selectedCategories.length > 0) {
-    filteredDataPoints.filter((dataPoint) => {
+    filteredDataPoints = filteredDataPoints.filter((dataPoint) => {
       const era = dataPoint.categoryEraName
       return filterRoutine(era.toLowerCase(), filter.selectedCategories)
     })
@@ -293,7 +232,7 @@ const extractVisibleData = (
       indexes.entityHierarchy,
     )
 
-    filteredDataPoints.filter((dataPoint) =>
+    filteredDataPoints = filteredDataPoints.filter((dataPoint) =>
       filterRoutine(dataPoint.entityId, expandedEntityIds),
     )
   }
@@ -304,26 +243,24 @@ const extractVisibleData = (
       indexes.areaHierarchy,
     )
 
-    filteredDataPoints.filter((dataPoint) =>
+    filteredDataPoints = filteredDataPoints.filter((dataPoint) =>
       filterRoutine(dataPoint.geoAreaId, expandedGeoAreaIds),
     )
   }
 
   return {
-    emissionPoints: filteredDataPoints,
+    emissionPoints: [...filteredDataPoints],
     emissionsByCompany: dataPointsGroupByCompanyAndCategory(filteredDataPoints),
     emissionsByCountry: dataPointsGroupByCountryAndCategory(filteredDataPoints),
   }
 }
 
-const extractAndProcessVisibleData = (state: EmissionRangeState) => {
-  const newVisibleData = extractVisibleData(
-    state.allPoints,
-    state.alignedIndexes,
-    state.emissionFilterState,
-  )
-  state.visibleData = newVisibleData
-}
+const extractTimeWindow = (endpointTW: EndpointTimeWindow): TimeWindow => ({
+  startTimestamp: new Date(endpointTW.start).getTime(),
+  endTimestamp: new Date(endpointTW.end).getTime(),
+  timeStepInSecondsPattern:
+    typeof endpointTW.step === "number" ? [endpointTW.step] : endpointTW.step,
+})
 
 const setSelectedBusinessEntitiesReducer: CaseReducer<
   EmissionRangeState,
@@ -333,7 +270,12 @@ const setSelectedBusinessEntitiesReducer: CaseReducer<
     ...state.emissionFilterState,
     selectedBusinessEntities: action.payload,
   }
-  extractAndProcessVisibleData(state as EmissionRangeState)
+  const newVisibleData = extractVisibleData(
+    state.allPoints,
+    state.alignedIndexes,
+    state.emissionFilterState,
+  )
+  state.visibleData = { ...newVisibleData }
 }
 
 const setSelectedGeoAreasReducer: CaseReducer<
@@ -344,7 +286,12 @@ const setSelectedGeoAreasReducer: CaseReducer<
     ...state.emissionFilterState,
     selectedGeographicalAreas: action.payload,
   }
-  extractAndProcessVisibleData(state as EmissionRangeState)
+  const newVisibleData = extractVisibleData(
+    state.allPoints,
+    state.alignedIndexes,
+    state.emissionFilterState,
+  )
+  state.visibleData = { ...newVisibleData }
 }
 
 const setSelectedCategoriesReducer: CaseReducer<
@@ -355,7 +302,12 @@ const setSelectedCategoriesReducer: CaseReducer<
     ...state.emissionFilterState,
     selectedCategories: action.payload,
   }
-  extractAndProcessVisibleData(state as EmissionRangeState)
+  const newVisibleData = extractVisibleData(
+    state.allPoints,
+    state.alignedIndexes,
+    state.emissionFilterState,
+  )
+  state.visibleData = { ...newVisibleData }
 }
 
 const setNewFilterReducer: CaseReducer<
@@ -363,7 +315,12 @@ const setNewFilterReducer: CaseReducer<
   PayloadAction<EmissionFilterState>
 > = (state, action) => {
   state.emissionFilterState = { ...action.payload }
-  extractAndProcessVisibleData(state as EmissionRangeState)
+  const newVisibleData = extractVisibleData(
+    state.allPoints,
+    state.alignedIndexes,
+    state.emissionFilterState,
+  )
+  state.visibleData = { ...newVisibleData }
 }
 
 const clearFilterSelectionsReducer: CaseReducer<
@@ -371,7 +328,12 @@ const clearFilterSelectionsReducer: CaseReducer<
   PayloadAction
 > = (state) => {
   state.emissionFilterState = { ...initialFilterState }
-  extractAndProcessVisibleData(state as EmissionRangeState)
+  const newVisibleData = extractVisibleData(
+    state.allPoints,
+    state.alignedIndexes,
+    state.emissionFilterState,
+  )
+  state.visibleData = { ...newVisibleData }
 }
 
 export const emissionsRangeSlice = createSlice({
@@ -389,7 +351,7 @@ export const emissionsRangeSlice = createSlice({
       emissionRangesApi.endpoints.getEmissionRanges.matchFulfilled,
       (state, action) => {
         const alignedIndexes = alignIndexes(action.payload.indexes)
-        const timeWindow = action.payload.time_range
+        const timeWindow = extractTimeWindow(action.payload.time_range)
         const allPoints = action.payload.data.map((cdp) =>
           cdpToEdp(cdp, alignedIndexes, timeWindow),
         )

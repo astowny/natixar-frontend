@@ -10,6 +10,7 @@ import {
 import ReactApexChart from "react-apexcharts"
 import { defaultOptions } from "sections/charts/apexchart/ApexDonutChart/constants"
 import { formatEmissionAmount } from "utils/formatAmounts"
+import { ApexOptions } from "apexcharts"
 import {
   ChartContainerStyles,
   ContainerStyles,
@@ -29,6 +30,24 @@ export interface EmissionByCategorySectionProps {
   alignedIndexes: AlignedIndexes
 }
 
+const optionsOverrides: ApexOptions = {
+  yaxis: {
+    labels: {
+      formatter(val) {
+        return formatEmissionAmount(val)
+      },
+    },
+  },
+  tooltip: {
+    followCursor: true,
+    y: {
+      formatter(val) {
+        return formatEmissionAmount(val)
+      },
+    },
+  },
+}
+
 const EmissionByCategorySection = (props: EmissionByCategorySectionProps) => {
   const { allDataPoints, alignedIndexes } = props
   const [pieChartData, setPieChartData] = useState<ApexPieChartProps>({
@@ -42,9 +61,9 @@ const EmissionByCategorySection = (props: EmissionByCategorySectionProps) => {
       const categoryAggregators: Record<string, ByCategoryItem> = {}
       Object.entries(alignedIndexes.categories).forEach((entry) => {
         const [categoryId, category] = entry
-        let { era } = category
+        const { era } = category
         if (!era) {
-          era = "Other"
+          return
         }
         if (!categoryAggregators[era]) {
           categoryAggregators[era] = {
@@ -93,7 +112,7 @@ const EmissionByCategorySection = (props: EmissionByCategorySectionProps) => {
     <Box sx={ContainerStyles}>
       <Box sx={ChartContainerStyles}>
         <ReactApexChart
-          options={{ ...defaultOptions, labels, colors }}
+          options={{ ...defaultOptions, ...optionsOverrides, labels, colors }}
           series={series}
           type="donut"
           width={400}
