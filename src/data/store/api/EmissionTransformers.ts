@@ -40,16 +40,35 @@ const calculateTotalAmount = (
   dataPoint: CompressedDataPoint,
   timeWindow: TimeWindow,
 ): number => {
-  // TODO more accurate step usage
-  const duration =
-    timeWindow.timeStepInSecondsPattern[0] *
-    (dataPoint[CdpLayoutItem.CDP_LAYOUT_END] -
-      dataPoint[CdpLayoutItem.CDP_LAYOUT_START] -
-      2 +
-      dataPoint[CdpLayoutItem.CDP_LAYOUT_START_PERCENTAGE] +
-      dataPoint[CdpLayoutItem.CDP_LAYOUT_END_PERCENTAGE])
+  const startTimeSlot = dataPoint[CdpLayoutItem.CDP_LAYOUT_START]
+  const endTimeSlot = dataPoint[CdpLayoutItem.CDP_LAYOUT_END]
 
-  return duration * dataPoint[CdpLayoutItem.CDP_LAYOUT_INTENSITY]
+  let currentTimeSlot = startTimeSlot
+  let totalAmount = 0
+  do {
+    const currentSlotDuration = getTimeOffsetForSlot(
+      currentTimeSlot,
+      timeWindow,
+    )
+
+    let amount =
+      dataPoint[CdpLayoutItem.CDP_LAYOUT_INTENSITY] * currentSlotDuration
+    switch (currentTimeSlot) {
+      case startTimeSlot:
+        amount *= dataPoint[CdpLayoutItem.CDP_LAYOUT_START_PERCENTAGE]
+        break
+      case endTimeSlot:
+        amount *= dataPoint[CdpLayoutItem.CDP_LAYOUT_END_PERCENTAGE]
+        break
+      default:
+        break
+    }
+
+    totalAmount += amount
+    currentTimeSlot += 1
+  } while (currentTimeSlot <= endTimeSlot)
+
+  return totalAmount
 }
 
 export const cdpToEdp = (

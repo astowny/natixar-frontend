@@ -31,6 +31,31 @@ export interface EmissionByCategorySectionProps {
 }
 
 const optionsOverrides: ApexOptions = {
+  plotOptions: {
+    pie: {
+      donut: {
+        labels: {
+          show: true,
+          value: {
+            formatter(val) {
+              return formatEmissionAmount(parseInt(val, 10))
+            },
+          },
+          total: {
+            show: true,
+            showAlways: true,
+            formatter(w) {
+              const total = (w.globals.seriesTotals as number[]).reduce(
+                (a, b) => a + b,
+                0,
+              )
+              return formatEmissionAmount(total)
+            },
+          },
+        },
+      },
+    },
+  },
   yaxis: {
     labels: {
       formatter(val) {

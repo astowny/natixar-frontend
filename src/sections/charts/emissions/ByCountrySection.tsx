@@ -1,4 +1,3 @@
-import { memo } from "react"
 import { SxProps } from "@mui/material"
 import HeaderWithCategoriesLegend from "components/charts/HeaderWithCategoriesLegend"
 import EmissionByCountry from "components/charts/emissions/EmissionByCountry"
@@ -14,7 +13,7 @@ const ByCountrySection = ({ ...sxProps }: SxProps) => {
   const indexes = useSelector(indexesSelector)
   const groupedPoints = useSelector(emissionsSelector)
 
-  return Object.keys(groupedPoints).length <= 0 ? null : (
+  return (
     <MainCard
       sx={{ ...sxProps }}
       contentSX={{ height: 500 }}
@@ -30,4 +29,4 @@ const ByCountrySection = ({ ...sxProps }: SxProps) => {
   )
 }
 
-export default memo(ByCountrySection)
+export default ByCountrySection
