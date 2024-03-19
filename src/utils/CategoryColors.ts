@@ -27,3 +27,6 @@ export const getColorByCategory = (category: string): string => {
   }
   return result
 }
+
+export const getOpaqueColorByCategory = (category: string): string =>
+  `${getColorByCategory(category)}BB`
