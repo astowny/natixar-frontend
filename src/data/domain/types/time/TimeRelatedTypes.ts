@@ -28,3 +28,11 @@ export const MONTH_LAYOUT: Record<number, string> = {
   11: "Nov",
   12: "Dec",
 }
+
+export const QUARTERS_LAYOUT = ["Q1", "Q2", "Q3", "Q4"]
+
+export interface TimeSection {
+  scale: TimeMeasurement
+  name: string
+  year: number
+}

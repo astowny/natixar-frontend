@@ -1,4 +1,7 @@
-import { MONTH_LAYOUT } from "data/domain/types/time/TimeRelatedTypes"
+import {
+  MONTH_LAYOUT,
+  TimeSection,
+} from "data/domain/types/time/TimeRelatedTypes"
 
 export const timestampToMonth = (timestamp: number): string => {
   const date = new Date(timestamp)
@@ -18,3 +21,23 @@ export const timestampToQuarter = (timestamp: number): string => {
 
 export const timestampToYear = (timestamp: number): string =>
   new Date(timestamp).getFullYear().toString()
+
+export const compareTimeSections = (a: TimeSection, b: TimeSection): number =>
+  b.year - a.year || a.name.localeCompare(b.name)
+
+export const fillTimeSections = (
+  begin: TimeSection,
+  end: TimeSection,
+): TimeSection[] => {
+  if (begin.scale !== end.scale || compareTimeSections(begin, end) > 0) {
+    return []
+  }
+
+  const currentTimeSection: TimeSection = { ...begin }
+  const result: TimeSection[] = []
+  do {
+    result.push(currentTimeSection)
+    // What to do?
+  } while (compareTimeSections(currentTimeSection, end) <= 0)
+  return result
+}
