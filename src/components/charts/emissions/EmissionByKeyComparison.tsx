@@ -41,7 +41,7 @@ const defaultOptions: ApexOptions = {
   grid: {
     show: true,
     strokeDashArray: 5,
-    // position: "back",
+    position: "back",
   },
 }
 

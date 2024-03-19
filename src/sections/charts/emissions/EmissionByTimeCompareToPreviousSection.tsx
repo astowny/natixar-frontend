@@ -73,7 +73,7 @@ const EmissionByTimeCompareToPreviousSection = ({
     datasetB[category] = Object.fromEntries(
       Object.entries(datasetA[category]).map((entry) => [
         entry[0],
-        entry[1] * -0.3,
+        entry[1] * -Math.random(),
       ]),
     )
   })
