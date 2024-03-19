@@ -1,15 +1,12 @@
-import EmissionByKeyStacked from "components/charts/emissions/EmissionByKeyStacked"
-import { ChartCard } from "components/natixarComponents/ChartCard/ChartCard"
-import { selectTimeWindow as timeWindowSelector } from "data/store/api/EmissionSelectors"
-import { emissionsGroupByTime } from "data/store/api/EmissionTransformers"
-import { EmissionDataPoint } from "data/store/features/emissions/ranges/EmissionTypes"
 import { memo, useMemo, useState } from "react"
-import { useSelector } from "react-redux"
-import { formatEmissionAmount } from "utils/formatAmounts"
 
-export interface TotalEmissionByTimeProps {
-  emissionPoints: EmissionDataPoint[]
-}
+import { selectTimeWindow as timeWindowSelector } from "data/store/api/EmissionSelectors"
+import { useSelector } from "react-redux"
+import { ChartCard } from "components/natixarComponents/ChartCard/ChartCard"
+import { formatEmissionAmount } from "utils/formatAmounts"
+import EmissionByKeyComparison from "components/charts/emissions/EmissionByKeyComparison"
+import { emissionsGroupByTime } from "data/store/api/EmissionTransformers"
+import { TotalEmissionByTimeProps } from "./TotalEmissionByTimeSection"
 
 const monthLayout: Record<number, string> = {
   1: "Jan",
@@ -42,16 +39,12 @@ const timestampToQuarter = (timestamp: number): string => {
   return `Q${quarterNumber}`
 }
 
-const timestampToYear = (timestamp: number): string =>
-  new Date(timestamp).getFullYear().toString()
-
 const detailUnitLayout: Record<string, (time: number) => string> = {
   Month: timestampToMonth,
   Quarter: timestampToQuarter,
-  Year: timestampToYear,
 }
 
-const TotalEmissionByTimeSection = ({
+const EmissionByTimeCompareToPreviousSection = ({
   emissionPoints,
 }: TotalEmissionByTimeProps) => {
   const timeDetailSlots = useMemo(
@@ -59,9 +52,7 @@ const TotalEmissionByTimeSection = ({
     [detailUnitLayout],
   )
   const [timeDetailUnit, setTimeDetailUnit] = useState(timeDetailSlots[0])
-
   const timeWindow = useSelector(timeWindowSelector)
-
   const totalEmissions = useMemo(() => {
     const sumEmission = emissionPoints.reduce(
       (acc, cur) => acc + cur.totalEmissionAmount,
@@ -70,25 +61,30 @@ const TotalEmissionByTimeSection = ({
     return formatEmissionAmount(sumEmission)
   }, [emissionPoints])
 
-  const groupedByTime = emissionsGroupByTime(
+  const datasetA = emissionsGroupByTime(
     emissionPoints,
     timeWindow,
     detailUnitLayout[timeDetailUnit],
   )
 
-  let allKeys = Array.from(
-    new Set(
-      Object.values(groupedByTime).flatMap((byKey) => Object.keys(byKey)),
-    ),
-  )
+  const datasetB: typeof datasetA = {}
 
-  if (timeDetailUnit !== "Month") {
-    allKeys = allKeys.toSorted()
-  }
+  Object.keys(datasetA).forEach((category) => {
+    datasetB[category] = Object.fromEntries(
+      Object.entries(datasetA[category]).map((entry) => [
+        entry[0],
+        entry[1] * -0.3,
+      ]),
+    )
+  })
+
+  const allKeys = Array.from(
+    new Set(Object.values(datasetA).flatMap((byKey) => Object.keys(byKey))),
+  )
 
   return (
     <ChartCard
-      title="Total Emissions"
+      title="Trend stacked bars CO2"
       value={totalEmissions}
       startDate={new Date(timeWindow.startTimestamp)}
       endDate={new Date(timeWindow.endTimestamp)}
@@ -96,9 +92,13 @@ const TotalEmissionByTimeSection = ({
       selectedSlot={timeDetailUnit}
       setSelectedSlot={setTimeDetailUnit}
     >
-      <EmissionByKeyStacked groupedData={groupedByTime} keys={allKeys} />
+      <EmissionByKeyComparison
+        dataSetA={datasetA}
+        dataSetB={datasetB}
+        keys={allKeys}
+      />
     </ChartCard>
   )
 }
 
-export default memo(TotalEmissionByTimeSection)
+export default memo(EmissionByTimeCompareToPreviousSection)

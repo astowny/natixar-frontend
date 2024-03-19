@@ -14,6 +14,7 @@ import {
 import { useSelector } from "react-redux"
 import { useGetEmissionRangesQuery } from "data/store/features/emissions/ranges/EmissionRangesClient"
 import TotalEmissionByTimeSection from "sections/charts/emissions/TotalEmissionByTimeSection"
+import EmissionByTimeCompareToPreviousSection from "sections/charts/emissions/EmissionByTimeCompareToPreviousSection"
 import EmissionByCategorySection from "../../components/natixarComponents/CO2DonutSection/EmissionByCategorySection"
 
 // assets
@@ -63,32 +64,9 @@ const NatixarChart = () => {
       </Grid>
       <Grid item xs={12} md={12} lg={12}>
         <TotalEmissionByTimeSection emissionPoints={allPoints} />
-        {/* <ChartCard
-          title="Total Emissions"
-          value="12,900 CO2 (t)"
-          date="01 Dec - 31 Feb 2021"
-          slot={areaSlot}
-          setSlot={setAreaSlot}
-        > */}
-        {/* <IncomeAreaChart */}
-        {/* allDataPoints={allDataPoints} */}
-        {/* alignedIndexes={alignedItems} */}
-        {/* /> */}
-        {/* </ChartCard> */}
       </Grid>
       <Grid item xs={12} md={12} lg={12}>
-        <ChartCard
-          title="Trend stacked bars CO2"
-          value="12,900 CO2 (t)"
-          date="01 Dec - 08 Jan 2022"
-          slot={acquisitionSlot}
-          setSlot={setAcquisitionSlot}
-          compareButton
-          compare={compare}
-          setCompare={setCompare}
-        >
-          {/* <AcquisitionChart slot={acquisitionSlot} compare={compare} /> */}
-        </ChartCard>
+        <EmissionByTimeCompareToPreviousSection emissionPoints={allPoints} />
       </Grid>
     </Grid>
   )
