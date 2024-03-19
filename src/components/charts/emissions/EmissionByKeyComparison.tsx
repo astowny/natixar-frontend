@@ -30,6 +30,9 @@ const defaultOptions: ApexOptions = {
   dataLabels: {
     enabled: false,
   },
+  legend: {
+    show: false,
+  },
   fill: {
     opacity: 1,
   },
