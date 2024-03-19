@@ -1,12 +1,11 @@
-import { Paper } from "@mui/material"
 import EmissionByKeyStacked from "components/charts/emissions/EmissionByKeyStacked"
 import { ChartCard } from "components/natixarComponents/ChartCard/ChartCard"
-import { timeStamp } from "console"
 import { selectTimeWindow as timeWindowSelector } from "data/store/api/EmissionSelectors"
 import { emissionsGroupByTime } from "data/store/api/EmissionTransformers"
 import { EmissionDataPoint } from "data/store/features/emissions/ranges/EmissionTypes"
-import { memo, useMemo } from "react"
+import { memo, useMemo, useState } from "react"
 import { useSelector } from "react-redux"
+import { formatEmissionAmount } from "utils/formatAmounts"
 
 interface TotalEmissionByTimeProps {
   emissionPoints: EmissionDataPoint[]
@@ -28,45 +27,76 @@ const monthLayout: Record<number, string> = {
 }
 
 const timestampToMonth = (timestamp: number): string => {
-  const monthNumber = new Date(timestamp).getMonth() + 1
-  return monthLayout[monthNumber] ?? ""
+  const date = new Date(timestamp)
+  const monthNumber = date.getMonth() + 1
+  let result = monthLayout[monthNumber]
+  if (result) {
+    result += ` ${date.getFullYear()}`
+  }
+  return result ?? ""
 }
+
+const timestampToQuarter = (timestamp: number): string => {
+  const date = new Date(timestamp)
+  const quarterNumber = 1 + Math.ceil(date.getMonth() / 4)
+  return `Q${quarterNumber}`
+}
+
+const timestampToYear = (timestamp: number): string =>
+  new Date(timestamp).getFullYear().toString()
 
 const detailUnitLayout: Record<string, (time: number) => string> = {
   Month: timestampToMonth,
-  Quarter: timestampToMonth,
-  Year: timestampToMonth,
+  Quarter: timestampToQuarter,
+  Year: timestampToYear,
 }
 
 const TotalEmissionByTimeSection = ({
   emissionPoints,
 }: TotalEmissionByTimeProps) => {
-  // const [timeUnit, setTimeUnit] = useState(TimeMeasurement.MINUTES)
-
-  const timeWindow = useSelector(timeWindowSelector)
   const timeDetailSlots = useMemo(
     () => Object.keys(detailUnitLayout),
     [detailUnitLayout],
   )
+  const [timeDetailUnit, setTimeDetailUnit] = useState(timeDetailSlots[0])
+
+  const timeWindow = useSelector(timeWindowSelector)
+
+  const totalEmissions = useMemo(() => {
+    const sumEmission = emissionPoints.reduce(
+      (acc, cur) => acc + cur.totalEmissionAmount,
+      0,
+    )
+    return formatEmissionAmount(sumEmission)
+  }, [emissionPoints])
 
   const groupedByTime = emissionsGroupByTime(
     emissionPoints,
     timeWindow,
-    timestampToMonth,
+    detailUnitLayout[timeDetailUnit],
   )
+
+  let allKeys = Array.from(
+    new Set(
+      Object.values(groupedByTime).flatMap((byKey) => Object.keys(byKey)),
+    ),
+  )
+
+  if (timeDetailUnit !== "Month") {
+    allKeys = allKeys.toSorted()
+  }
 
   return (
     <ChartCard
       title="Total Emissions"
-      value="12,900 CO2 (t)"
+      value={totalEmissions}
       startDate={new Date(timeWindow.startTimestamp)}
       endDate={new Date(timeWindow.endTimestamp)}
       slots={timeDetailSlots}
+      selectedSlot={timeDetailUnit}
+      setSelectedSlot={setTimeDetailUnit}
     >
-      <EmissionByKeyStacked
-        groupedData={groupedByTime}
-        keys={Object.values(monthLayout)}
-      />
+      <EmissionByKeyStacked groupedData={groupedByTime} keys={allKeys} />
     </ChartCard>
   )
 }

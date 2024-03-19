@@ -24,8 +24,11 @@ const defaultOptions: ApexOptions = {
     bar: {
       columnWidth: "25%",
       barHeight: "70%",
-      borderRadius: 4,
+      // borderRadius: 4,
     },
+  },
+  dataLabels: {
+    enabled: false,
   },
   fill: {
     opacity: 1,
@@ -56,8 +59,6 @@ const EmissionByKeyStacked = ({
   groupedData: Record<string, Record<string, number>>
   keys: string[]
 } & SxProps) => {
-  const options = { ...defaultOptions, ...optionOverrides(keys) }
-
   const categories = Object.keys(groupedData)
   const byKeyData = Array(categories.length).fill(Array(keys.length).fill(0))
 
@@ -85,6 +86,7 @@ const EmissionByKeyStacked = ({
     },
   )
 
+  const options = { ...defaultOptions, ...optionOverrides(keys) }
   return (
     <ReactApexChart
       sx={{ sxProps }}
