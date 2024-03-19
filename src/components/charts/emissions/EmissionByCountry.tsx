@@ -81,6 +81,7 @@ const EmissionByCountry = ({
   emissionData,
   indexes,
 }: EmissionByCountryProps) => {
+  console.log("Received new emission data", emissionData)
   // Area ID -> Country ID
   const countryMappings: Record<number, number> = {}
   Object.values(emissionData)
@@ -93,7 +94,7 @@ const EmissionByCountry = ({
 
   const countryIds = Object.values(countryMappings)
   const countryNames = countryIds.map(
-    (countryId) => indexes.entities[countryId].name,
+    (countryId) => indexes.areas[countryId].name,
   )
 
   const seriesByCategories: { [id: string]: number[] } = {}

@@ -219,9 +219,9 @@ const extractVisibleData = (
   indexes: AlignedIndexes,
   filter: EmissionFilterState,
 ): VisibleData => {
-  const filteredDataPoints = dataPoints
+  let filteredDataPoints = dataPoints
   if (filter.selectedCategories.length > 0) {
-    filteredDataPoints.filter((dataPoint) => {
+    filteredDataPoints = filteredDataPoints.filter((dataPoint) => {
       const era = dataPoint.categoryEraName
       return filterRoutine(era.toLowerCase(), filter.selectedCategories)
     })
@@ -232,7 +232,7 @@ const extractVisibleData = (
       indexes.entityHierarchy,
     )
 
-    filteredDataPoints.filter((dataPoint) =>
+    filteredDataPoints = filteredDataPoints.filter((dataPoint) =>
       filterRoutine(dataPoint.entityId, expandedEntityIds),
     )
   }
@@ -243,27 +243,16 @@ const extractVisibleData = (
       indexes.areaHierarchy,
     )
 
-    filteredDataPoints.filter((dataPoint) =>
+    filteredDataPoints = filteredDataPoints.filter((dataPoint) =>
       filterRoutine(dataPoint.geoAreaId, expandedGeoAreaIds),
     )
   }
 
   return {
-    emissionPoints: filteredDataPoints,
+    emissionPoints: [...filteredDataPoints],
     emissionsByCompany: dataPointsGroupByCompanyAndCategory(filteredDataPoints),
     emissionsByCountry: dataPointsGroupByCountryAndCategory(filteredDataPoints),
   }
-}
-
-const extractAndProcessVisibleData = (
-  state: WritableDraft<EmissionRangeState>,
-) => {
-  const newVisibleData = extractVisibleData(
-    state.allPoints,
-    state.alignedIndexes,
-    state.emissionFilterState,
-  )
-  state.visibleData = newVisibleData
 }
 
 const extractTimeWindow = (endpointTW: EndpointTimeWindow): TimeWindow => ({
@@ -281,7 +270,12 @@ const setSelectedBusinessEntitiesReducer: CaseReducer<
     ...state.emissionFilterState,
     selectedBusinessEntities: action.payload,
   }
-  extractAndProcessVisibleData(state)
+  const newVisibleData = extractVisibleData(
+    state.allPoints,
+    state.alignedIndexes,
+    state.emissionFilterState,
+  )
+  state.visibleData = { ...newVisibleData }
 }
 
 const setSelectedGeoAreasReducer: CaseReducer<
@@ -292,7 +286,12 @@ const setSelectedGeoAreasReducer: CaseReducer<
     ...state.emissionFilterState,
     selectedGeographicalAreas: action.payload,
   }
-  extractAndProcessVisibleData(state as EmissionRangeState)
+  const newVisibleData = extractVisibleData(
+    state.allPoints,
+    state.alignedIndexes,
+    state.emissionFilterState,
+  )
+  state.visibleData = { ...newVisibleData }
 }
 
 const setSelectedCategoriesReducer: CaseReducer<
@@ -303,7 +302,12 @@ const setSelectedCategoriesReducer: CaseReducer<
     ...state.emissionFilterState,
     selectedCategories: action.payload,
   }
-  extractAndProcessVisibleData(state as EmissionRangeState)
+  const newVisibleData = extractVisibleData(
+    state.allPoints,
+    state.alignedIndexes,
+    state.emissionFilterState,
+  )
+  state.visibleData = { ...newVisibleData }
 }
 
 const setNewFilterReducer: CaseReducer<
@@ -311,7 +315,12 @@ const setNewFilterReducer: CaseReducer<
   PayloadAction<EmissionFilterState>
 > = (state, action) => {
   state.emissionFilterState = { ...action.payload }
-  extractAndProcessVisibleData(state as EmissionRangeState)
+  const newVisibleData = extractVisibleData(
+    state.allPoints,
+    state.alignedIndexes,
+    state.emissionFilterState,
+  )
+  state.visibleData = { ...newVisibleData }
 }
 
 const clearFilterSelectionsReducer: CaseReducer<
@@ -319,7 +328,12 @@ const clearFilterSelectionsReducer: CaseReducer<
   PayloadAction
 > = (state) => {
   state.emissionFilterState = { ...initialFilterState }
-  extractAndProcessVisibleData(state as EmissionRangeState)
+  const newVisibleData = extractVisibleData(
+    state.allPoints,
+    state.alignedIndexes,
+    state.emissionFilterState,
+  )
+  state.visibleData = { ...newVisibleData }
 }
 
 export const emissionsRangeSlice = createSlice({
