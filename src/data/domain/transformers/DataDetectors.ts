@@ -1,8 +1,8 @@
 import {
-  AlignedIndexes,
   BusinessEntity,
   GeographicalArea,
-} from "../features/emissions/ranges/EmissionTypes"
+} from "data/domain/types/participants/ContributorsTypes"
+import { AlignedIndexes } from "../types/emissions/EmissionTypes"
 
 export const detectCompany = (
   entityId: number,

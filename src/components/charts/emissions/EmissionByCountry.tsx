@@ -2,17 +2,19 @@ import { memo } from "react"
 import ReactApexChart from "react-apexcharts"
 
 import { getColorByCategory } from "utils/CategoryColors"
-import { formatEmissionAmount } from "utils/formatAmounts"
 import _ from "lodash"
-import { detectCountry } from "data/store/api/DataDetectors"
-import { AlignedIndexes } from "data/store/features/emissions/ranges/EmissionTypes"
+import { detectCountry } from "data/domain/transformers/DataDetectors"
+import { IndexOf } from "data/domain/types/structures/StructuralTypes"
+import { AlignedIndexes } from "data/domain/types/emissions/EmissionTypes"
+import { ApexOptions } from "apexcharts"
+import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
 
 interface EmissionByCountryProps {
-  emissionData: Record<string, Record<number, number>>
+  emissionData: Record<string, IndexOf<number>>
   indexes: AlignedIndexes
 }
 
-const chartOptions = (countries: string[]): ApexCharts.ApexOptions => ({
+const chartOptions = (countries: string[]): ApexOptions => ({
   chart: {
     type: "bar",
     toolbar: {

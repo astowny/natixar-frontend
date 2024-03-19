@@ -3,14 +3,14 @@ import { Box } from "@mui/material"
 import { memo, useEffect, useState } from "react"
 import { getColorByCategory } from "utils/CategoryColors"
 import { ApexPieChartProps } from "sections/charts/apexchart/ApexDonutChart/interface"
+import ReactApexChart from "react-apexcharts"
+import { defaultOptions } from "sections/charts/apexchart/ApexDonutChart/constants"
+import { ApexOptions } from "apexcharts"
 import {
   AlignedIndexes,
   EmissionDataPoint,
-} from "data/store/features/emissions/ranges/EmissionTypes"
-import ReactApexChart from "react-apexcharts"
-import { defaultOptions } from "sections/charts/apexchart/ApexDonutChart/constants"
-import { formatEmissionAmount } from "utils/formatAmounts"
-import { ApexOptions } from "apexcharts"
+} from "data/domain/types/emissions/EmissionTypes"
+import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
 import {
   ChartContainerStyles,
   ContainerStyles,

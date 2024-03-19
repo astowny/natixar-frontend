@@ -10,7 +10,7 @@ import "leaflet/dist/leaflet.css"
 import "./map-style.css"
 
 import { useAppDispatch } from "data/store"
-import { formatAmount } from "utils/formatAmounts"
+import { formatAmount } from "data/domain/transformers/EmissionTransformers"
 import { selectClusterPoints } from "data/store/features/coordinates/ClusterSlice"
 import { selectVisiblePoints as pointsSelector } from "data/store/api/EmissionSelectors"
 

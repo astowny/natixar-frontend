@@ -9,7 +9,7 @@ import ReactApexChart, { Props as ChartProps } from "react-apexcharts"
 // project import
 import useConfig from "hooks/useConfig"
 import { Box } from "@mui/material"
-import { AlignedIndexes } from "data/store/features/emissions/ranges/EmissionTypes"
+import { AlignedIndexes } from "data/domain/EmissionTypes"
 import { DataPoint } from "data/store/features/coordinates/Types"
 
 // chart options

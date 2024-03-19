@@ -3,7 +3,7 @@ import {
   CompressedDataPoint,
   EmissionCategory,
   GeographicalArea,
-} from "./EmissionTypes"
+} from "../../../../domain/types/emissions/EmissionTypes"
 
 export interface IndexesContainer {
   entity: BusinessEntity[]
