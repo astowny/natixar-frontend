@@ -1,13 +1,13 @@
 import { SxProps } from "@mui/system"
 import { ApexOptions } from "apexcharts"
+import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
 import { memo } from "react"
 import ReactApexChart from "react-apexcharts"
-import { getColorByCategory } from "utils/CategoryColors"
-import { formatEmissionAmount } from "utils/formatAmounts"
+import { getOpaqueColorByCategory } from "utils/CategoryColors"
 
 const defaultOptions: ApexOptions = {
   chart: {
-    type: "bar",
+    type: "area",
     stacked: true,
   },
   yaxis: {
@@ -31,6 +31,7 @@ const defaultOptions: ApexOptions = {
     enabled: false,
   },
   fill: {
+    type: "solid",
     opacity: 1,
   },
   stroke: {
@@ -80,7 +81,7 @@ const EmissionByKeyStacked = ({
       const categoryIndex = categories.indexOf(category)
       return {
         name: category,
-        color: getColorByCategory(category),
+        color: getOpaqueColorByCategory(category),
         data: byKeyData[categoryIndex],
       }
     },
@@ -93,7 +94,7 @@ const EmissionByKeyStacked = ({
       options={options}
       series={series}
       height="300px"
-      type="bar"
+      type="area"
     />
   )
 }

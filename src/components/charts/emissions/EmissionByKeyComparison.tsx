@@ -1,9 +1,9 @@
 import { SxProps } from "@mui/system"
 import { ApexOptions } from "apexcharts"
+import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
 import { memo } from "react"
 import ReactApexChart from "react-apexcharts"
 import { getColorByCategory } from "utils/CategoryColors"
-import { formatEmissionAmount } from "utils/formatAmounts"
 
 const defaultOptions: ApexOptions = {
   chart: {

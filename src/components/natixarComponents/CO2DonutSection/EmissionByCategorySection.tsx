@@ -3,14 +3,14 @@ import { Box } from "@mui/material"
 import { memo, useEffect, useState } from "react"
 import { getColorByCategory } from "utils/CategoryColors"
 import { ApexPieChartProps } from "sections/charts/apexchart/ApexDonutChart/interface"
+import ReactApexChart from "react-apexcharts"
+import { defaultOptions } from "sections/charts/apexchart/ApexDonutChart/constants"
+import { ApexOptions } from "apexcharts"
 import {
   AlignedIndexes,
   EmissionDataPoint,
-} from "data/store/features/emissions/ranges/EmissionTypes"
-import ReactApexChart from "react-apexcharts"
-import { defaultOptions } from "sections/charts/apexchart/ApexDonutChart/constants"
-import { formatEmissionAmount } from "utils/formatAmounts"
-import { ApexOptions } from "apexcharts"
+} from "data/domain/types/emissions/EmissionTypes"
+import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
 import {
   ChartContainerStyles,
   ContainerStyles,
@@ -31,31 +31,6 @@ export interface EmissionByCategorySectionProps {
 }
 
 const optionsOverrides: ApexOptions = {
-  plotOptions: {
-    pie: {
-      donut: {
-        labels: {
-          show: true,
-          value: {
-            formatter(val) {
-              return formatEmissionAmount(parseInt(val, 10))
-            },
-          },
-          total: {
-            show: true,
-            showAlways: true,
-            formatter(w) {
-              const total = (w.globals.seriesTotals as number[]).reduce(
-                (a, b) => a + b,
-                0,
-              )
-              return formatEmissionAmount(total)
-            },
-          },
-        },
-      },
-    },
-  },
   yaxis: {
     labels: {
       formatter(val) {
@@ -71,6 +46,44 @@ const optionsOverrides: ApexOptions = {
       },
     },
   },
+}
+
+const totalTextOptions = {
+  show: true,
+  fontSize: "16px",
+  color: "#0B0B0B",
+  fontWeight: "bold",
+}
+
+const totalOptions = (totalEmission: number): ApexOptions => {
+  const formattedEmission = formatEmissionAmount(totalEmission).split(" ")
+
+  return {
+    plotOptions: {
+      pie: {
+        donut: {
+          labels: {
+            show: true,
+            name: {
+              ...totalTextOptions,
+            },
+            value: {
+              ...totalTextOptions,
+            },
+            total: {
+              showAlways: true,
+              label: formattedEmission[0],
+              ...totalTextOptions,
+              // eslint-disable-next-line no-unused-vars
+              formatter(w) {
+                return formattedEmission[1]
+              },
+            },
+          },
+        },
+      },
+    },
+  }
 }
 
 const EmissionByCategorySection = (props: EmissionByCategorySectionProps) => {
@@ -133,11 +146,19 @@ const EmissionByCategorySection = (props: EmissionByCategorySectionProps) => {
   const labels = pieChartData.data.map((a) => a.title)
   const colors = pieChartData.data.map((a) => a.color)
 
+  const totalEmission = series.reduce((a, b) => a + b, 0)
+
   return (
     <Box sx={ContainerStyles}>
       <Box sx={ChartContainerStyles}>
         <ReactApexChart
-          options={{ ...defaultOptions, ...optionsOverrides, labels, colors }}
+          options={{
+            ...defaultOptions,
+            ...optionsOverrides,
+            ...totalOptions(totalEmission),
+            labels,
+            colors,
+          }}
           series={series}
           type="donut"
           width={400}

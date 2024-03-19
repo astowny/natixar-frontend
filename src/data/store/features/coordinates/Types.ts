@@ -1,4 +1,4 @@
-import { EmissionDataPoint } from "../emissions/ranges/EmissionTypes"
+import { EmissionDataPoint } from "../../../domain/types/emissions/EmissionTypes"
 
 interface Location {
   lat: number

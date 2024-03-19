@@ -21,18 +21,20 @@ import {
   selectEmissionFilter as filterStateSelector,
 } from "data/store/api/EmissionSelectors"
 import { useAppDispatch } from "data/store"
-import {
-  BusinessEntity,
-  EmissionFilterState,
-  GeographicalArea,
-  IdTreeNode,
-  IndexOf,
-} from "data/store/features/emissions/ranges/EmissionTypes"
 import { CheckboxItem } from "components/natixarComponents/AreaCheckbox/CheckboxItem"
 import {
   clearFilterSelection as clearFilterAction,
   updateFilterSelection as updateFilterAction,
 } from "data/store/features/emissions/ranges/EmissionRangesSlice"
+import {
+  BusinessEntity,
+  GeographicalArea,
+} from "data/domain/types/participants/ContributorsTypes"
+import {
+  IdTreeNode,
+  IndexOf,
+} from "data/domain/types/structures/StructuralTypes"
+import { EmissionFilterState } from "data/domain/types/emissions/EmissionTypes"
 
 // import { DateRangePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro';
 

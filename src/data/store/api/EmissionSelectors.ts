@@ -1,8 +1,6 @@
+import { EmissionCategory } from "data/domain/types/emissions/EmissionTypes"
+import { IndexOf } from "data/domain/types/structures/StructuralTypes"
 import { RootState } from "data/store"
-import {
-  EmissionCategory,
-  IndexOf,
-} from "../features/emissions/ranges/EmissionTypes"
 
 export const selectEmissionFilter = (state: RootState) =>
   state.emissionRanges.emissionFilterState

@@ -4,21 +4,25 @@ import {
   dataPointsGroupByCompanyAndCategory,
   dataPointsGroupByCountryAndCategory,
   cdpToEdp,
-} from "data/store/api/EmissionTransformers"
-import { EndpointTimeWindow, IndexesContainer } from "./EndpointTypes"
-import { emissionRangesApi } from "./EmissionRangesClient"
+} from "data/domain/transformers/EmissionTransformers"
 import {
   AlignedIndexes,
-  BusinessEntity,
-  GeographicalArea,
-  IdTreeNode,
-  IndexOf,
   EmissionRangeState,
   EmissionFilterState,
   EmissionDataPoint,
   VisibleData,
-  TimeWindow,
-} from "./EmissionTypes"
+} from "data/domain/types/emissions/EmissionTypes"
+import {
+  IdTreeNode,
+  IndexOf,
+} from "data/domain/types/structures/StructuralTypes"
+import {
+  BusinessEntity,
+  GeographicalArea,
+} from "data/domain/types/participants/ContributorsTypes"
+import { TimeWindow } from "data/domain/types/time/TimeRelatedTypes"
+import { EndpointTimeWindow, IndexesContainer } from "./EndpointTypes"
+import { emissionRangesApi } from "./EmissionRangesClient"
 
 const initialFilterState: EmissionFilterState = {
   selectedBusinessEntities: [],

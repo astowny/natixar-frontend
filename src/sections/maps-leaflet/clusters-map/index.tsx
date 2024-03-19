@@ -12,8 +12,7 @@ import {
 } from "data/store/api/EmissionSelectors"
 import { useAppDispatch } from "data/store"
 
-const ClusteredMapSection = (props: SxProps) => {
-  const { ...sxProps } = props
+const ClusteredMapSection = ({ ...sxProps }: SxProps) => {
   const dispatch = useAppDispatch()
   const [tableCloseVeto, setTableCloseVeto] = useState(false)
   const onAnimationEndListener = useCallback(() => {

@@ -3,41 +3,16 @@ import { memo, useMemo, useState } from "react"
 import { selectTimeWindow as timeWindowSelector } from "data/store/api/EmissionSelectors"
 import { useSelector } from "react-redux"
 import { ChartCard } from "components/natixarComponents/ChartCard/ChartCard"
-import { formatEmissionAmount } from "utils/formatAmounts"
+import {
+  emissionsGroupByTime,
+  formatEmissionAmount,
+} from "data/domain/transformers/EmissionTransformers"
 import EmissionByKeyComparison from "components/charts/emissions/EmissionByKeyComparison"
-import { emissionsGroupByTime } from "data/store/api/EmissionTransformers"
+import {
+  timestampToMonth,
+  timestampToQuarter,
+} from "data/domain/transformers/TimeTransformers"
 import { TotalEmissionByTimeProps } from "./TotalEmissionByTimeSection"
-
-const monthLayout: Record<number, string> = {
-  1: "Jan",
-  2: "Feb",
-  3: "Mar",
-  4: "Apr",
-  5: "May",
-  6: "Jun",
-  7: "Jul",
-  8: "Aug",
-  9: "Sep",
-  10: "Oct",
-  11: "Nov",
-  12: "Dec",
-}
-
-const timestampToMonth = (timestamp: number): string => {
-  const date = new Date(timestamp)
-  const monthNumber = date.getMonth() + 1
-  let result = monthLayout[monthNumber]
-  if (result) {
-    result += ` ${date.getFullYear()}`
-  }
-  return result ?? ""
-}
-
-const timestampToQuarter = (timestamp: number): string => {
-  const date = new Date(timestamp)
-  const quarterNumber = 1 + Math.ceil(date.getMonth() / 4)
-  return `Q${quarterNumber}`
-}
 
 const detailUnitLayout: Record<string, (time: number) => string> = {
   Month: timestampToMonth,

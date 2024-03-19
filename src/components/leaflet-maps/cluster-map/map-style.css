@@ -37,13 +37,9 @@ https://github.com/Leaflet/Leaflet.markercluster/blob/master/dist/MarkerCluster.
 }
 
 :root {
-    --color-category-operation: #8474E9;
     --color-category-operation-light: #8474E9BB;
-    --color-category-upstream: #FFA06A;
     --color-category-upstream-light: #FFA06ABB;
-    --color-category-downstream: #80D977;
     --color-category-downstream-light: #80D977BB;
-    --color-category-cluster: #515F66;
     --color-category-cluster-light: #515F66BB;
 }
 
@@ -51,30 +47,14 @@ https://github.com/Leaflet/Leaflet.markercluster/blob/master/dist/MarkerCluster.
     background: var(--color-category-operation-light);
 }
 
-.marker-cluster-category-operation .marker-cluster-icon {
-    background: var(--color-category-operation);
-}
-
 .marker-cluster-category-upstream {
     background: var(--color-category-upstream-light);
-}
-
-.marker-cluster-category-upstream .marker-cluster-icon {
-    background: var(--color-category-upstream);
 }
 
 .marker-cluster-category-downstream {
     background: var(--color-category-downstream-light);
 }
 
-.marker-cluster-category-downstream .marker-cluster-icon {
-    background: var(--color-category-downstream);
-}
-
 .marker-cluster-category-cluster {
     background: var(--color-category-cluster-light);
-}
-
-.marker-cluster-category-cluster .marker-cluster-icon {
-    background: var(--color-category-cluster);
 }

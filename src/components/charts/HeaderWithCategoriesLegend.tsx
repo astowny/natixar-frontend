@@ -8,9 +8,11 @@ interface CategoryHeaderProps {
   categories: string[]
 }
 
-const HeaderWithCategoriesLegend = (props: CategoryHeaderProps & SxProps) => {
-  const { titleText, categories, ...sxProps } = props
-
+const HeaderWithCategoriesLegend = ({
+  titleText,
+  categories,
+  ...sxProps
+}: CategoryHeaderProps & SxProps) => {
   const simpleCategories = categories.filter(
     (category) => !_.isEqual(category.toLowerCase(), "cluster"),
   )

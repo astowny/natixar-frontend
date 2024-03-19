@@ -1,7 +1,7 @@
 import { memo, useMemo } from "react"
 import { Box, Button, Paper, Stack, SxProps, Typography } from "@mui/material"
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"
-import { formatEmissionAmount } from "utils/formatAmounts"
+import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
 import EmissionsByClusterTable from "./EmissionsTable"
 
 import { EmissionsByClusterProps } from "./types"

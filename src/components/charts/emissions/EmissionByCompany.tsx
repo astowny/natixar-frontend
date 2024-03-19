@@ -1,18 +1,20 @@
 import { memo } from "react"
 
 import { getColorByCategory } from "utils/CategoryColors"
-import { formatEmissionAmount } from "utils/formatAmounts"
 import ReactApexChart from "react-apexcharts"
 import _ from "lodash"
-import { AlignedIndexes } from "data/store/features/emissions/ranges/EmissionTypes"
-import { detectCompany } from "data/store/api/DataDetectors"
+import { detectCompany } from "data/domain/transformers/DataDetectors"
+import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
+import { AlignedIndexes } from "data/domain/types/emissions/EmissionTypes"
+import { IndexOf } from "data/domain/types/structures/StructuralTypes"
+import { ApexOptions } from "apexcharts"
 
 interface EmissionByCompanyProps {
-  emissionData: Record<string, Record<number, number>>
+  emissionData: Record<string, IndexOf<number>>
   indexes: AlignedIndexes
 }
 
-const chartOptions = (companies: string[]): ApexCharts.ApexOptions => ({
+const chartOptions = (companies: string[]): ApexOptions => ({
   chart: {
     type: "bar",
     toolbar: {

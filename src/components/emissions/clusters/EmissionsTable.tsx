@@ -11,10 +11,10 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material"
-import { formatEmissionAmount } from "utils/formatAmounts"
 import { CategoryLabel } from "components/categories/CategoriesLegend"
 import _ from "lodash"
-import { EmissionDataPoint } from "data/store/features/emissions/ranges/EmissionTypes"
+import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
+import { EmissionDataPoint } from "data/domain/types/emissions/EmissionTypes"
 import { EmissionsByClusterProps } from "./types"
 
 const tableLayout = {
