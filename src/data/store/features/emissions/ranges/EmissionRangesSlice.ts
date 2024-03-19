@@ -255,7 +255,9 @@ const extractVisibleData = (
   }
 }
 
-const extractAndProcessVisibleData = (state: EmissionRangeState) => {
+const extractAndProcessVisibleData = (
+  state: WritableDraft<EmissionRangeState>,
+) => {
   const newVisibleData = extractVisibleData(
     state.allPoints,
     state.alignedIndexes,
@@ -279,7 +281,7 @@ const setSelectedBusinessEntitiesReducer: CaseReducer<
     ...state.emissionFilterState,
     selectedBusinessEntities: action.payload,
   }
-  extractAndProcessVisibleData(state as EmissionRangeState)
+  extractAndProcessVisibleData(state)
 }
 
 const setSelectedGeoAreasReducer: CaseReducer<

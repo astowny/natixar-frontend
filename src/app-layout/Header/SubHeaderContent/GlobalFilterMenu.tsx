@@ -1,12 +1,5 @@
 // material-ui
-import {
-  ChangeEvent,
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react"
+import { ChangeEvent, memo, useCallback, useMemo, useState } from "react"
 import {
   Button,
   ButtonGroup,
@@ -24,6 +17,7 @@ import { useSelector } from "react-redux"
 import _ from "lodash"
 import {
   selectAlignedIndexes as indexesSelector,
+  selectAllVisibleCategoryEras as categoriesSelector,
   selectEmissionFilter as filterStateSelector,
 } from "data/store/api/EmissionSelectors"
 import { useAppDispatch } from "data/store"
@@ -162,28 +156,69 @@ const AreaControlForm = memo(
   },
 )
 
+const CategoriesControlForm = memo(
+  ({
+    allCategories,
+    selectedCategories,
+    onSelectionChange,
+  }: {
+    allCategories: string[]
+    selectedCategories: string[]
+    onSelectionChange: (
+      event: SelectChangeEvent<typeof selectedCategories>,
+    ) => void
+  }) => {
+    const categoryNodes = allCategories
+      .map((category) => _.capitalize(category))
+      .map((category) => (
+        <MenuItem key={category} value={category}>
+          <CategoryLabel category={category} />
+        </MenuItem>
+      ))
+
+    return (
+      <FormControl sx={{ width: 100 }}>
+        <InputLabel>Scope</InputLabel>
+        <Select
+          value={selectedCategories}
+          renderValue={multiSelectJoiner}
+          onChange={onSelectionChange}
+          multiple
+        >
+          {categoryNodes}
+        </Select>
+      </FormControl>
+    )
+  },
+)
+
 const GlobalFilterMenu = ({ ...sxProps }: SxProps) => {
   const dispatch = useAppDispatch()
   const alignedIndexes = useSelector(indexesSelector)
+  const allCategories = useSelector(categoriesSelector)
   const globalFilter = useSelector(filterStateSelector)
 
   const [selectedBusinessEntities, setSelectedBusinessEntities] = useState<
     number[]
-  >([])
-  const [selectedAreas, setSelectedAreas] = useState<number[]>([])
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+  >(globalFilter.selectedBusinessEntities)
+  const [selectedAreas, setSelectedAreas] = useState<number[]>(
+    globalFilter.selectedGeographicalAreas,
+  )
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(
+    globalFilter.selectedCategories,
+  )
 
-  useEffect(() => {
-    setSelectedBusinessEntities(globalFilter.selectedBusinessEntities)
-  }, [setSelectedBusinessEntities, globalFilter.selectedBusinessEntities])
+  // useEffect(() => {
+  //   setSelectedBusinessEntities(globalFilter.selectedBusinessEntities)
+  // }, [setSelectedBusinessEntities, globalFilter.selectedBusinessEntities])
 
-  useEffect(() => {
-    setSelectedAreas(globalFilter.selectedGeographicalAreas)
-  }, [setSelectedAreas, globalFilter.selectedGeographicalAreas])
+  // useEffect(() => {
+  //   setSelectedAreas(globalFilter.selectedGeographicalAreas)
+  // }, [setSelectedAreas, globalFilter.selectedGeographicalAreas])
 
-  useEffect(() => {
-    setSelectedCategories(globalFilter.selectedCategories)
-  }, [setSelectedCategories, globalFilter.selectedCategories])
+  // useEffect(() => {
+  //   setSelectedCategories(globalFilter.selectedCategories)
+  // }, [setSelectedCategories, globalFilter.selectedCategories])
 
   const entityLabel = useMemo(
     () =>
@@ -256,16 +291,12 @@ const GlobalFilterMenu = ({ ...sxProps }: SxProps) => {
     [setSelectedCategories],
   )
 
-  const {
-    entities: availableEntities,
-    categories: availableCategories,
-    areas: availableAreas,
-  } = alignedIndexes
+  const { entities: availableEntities, areas: availableAreas } = alignedIndexes
 
   const weHaveAnyData =
     Object.keys(availableEntities).length &&
     Object.keys(availableAreas).length &&
-    Object.keys(availableCategories).length
+    Object.keys(allCategories).length
   if (!weHaveAnyData) {
     return null
   }
@@ -276,13 +307,6 @@ const GlobalFilterMenu = ({ ...sxProps }: SxProps) => {
     alignedIndexes.entityHierarchy,
     onEntitySelectionChange,
   )
-  const categoryNodes = Object.keys(availableCategories)
-    .map((category) => _.capitalize(category))
-    .map((category) => (
-      <MenuItem key={category} value={category}>
-        <CategoryLabel category={category} />
-      </MenuItem>
-    ))
 
   return (
     <Stack
@@ -312,17 +336,12 @@ const GlobalFilterMenu = ({ ...sxProps }: SxProps) => {
         checkCallback={onAreaSelectionChange}
       />
 
-      <FormControl sx={{ width: 100 }}>
-        <InputLabel>Scope</InputLabel>
-        <Select
-          value={selectedCategories}
-          renderValue={multiSelectJoiner}
-          onChange={onCategoriesSelectionChange}
-          multiple
-        >
-          {categoryNodes}
-        </Select>
-      </FormControl>
+      <CategoriesControlForm
+        allCategories={allCategories}
+        selectedCategories={selectedCategories}
+        onSelectionChange={onCategoriesSelectionChange}
+      />
+
       <ButtonGroup disableElevation variant="contained">
         <Button
           sx={{
@@ -340,4 +359,4 @@ const GlobalFilterMenu = ({ ...sxProps }: SxProps) => {
   )
 }
 
-export default memo(GlobalFilterMenu)
+export default GlobalFilterMenu
