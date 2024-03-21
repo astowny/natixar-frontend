@@ -6,8 +6,9 @@ import {
   CdpLayoutItem,
   CompressedDataPoint,
   EmissionDataPoint,
-} from "../../domain/types/emissions/EmissionTypes"
+} from "../types/emissions/EmissionTypes"
 import { detectCompany, detectCountry } from "./DataDetectors"
+import { getTimeOffsetForSlot } from "./TimeTransformers"
 
 const emptyDecimal = ".0"
 
@@ -64,17 +65,6 @@ export const extractNameOfEra = (era: string | undefined) => {
     default:
       return era
   }
-}
-
-const getTimeOffsetForSlot = (
-  slotNumber: number,
-  timeWindow: TimeWindow,
-): number => {
-  const n = timeWindow.timeStepInSecondsPattern.length
-  if (n === 0) {
-    return 0
-  }
-  return timeWindow.timeStepInSecondsPattern[slotNumber % n]
 }
 
 const calculateTotalAmount = (
