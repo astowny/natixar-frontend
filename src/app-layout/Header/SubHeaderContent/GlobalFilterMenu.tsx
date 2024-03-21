@@ -34,7 +34,10 @@ import {
   IdTreeNode,
   IndexOf,
 } from "data/domain/types/structures/StructuralTypes"
-import { EmissionFilterState } from "data/domain/types/emissions/EmissionTypes"
+import {
+  EmissionFilterState,
+  EmissionProtocol,
+} from "data/domain/types/emissions/EmissionTypes"
 import { useGetEmissionRangesQuery } from "data/store/features/emissions/ranges/EmissionRangesClient"
 
 // import { DateRangePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro';
@@ -149,6 +152,23 @@ const EntityControlForm = memo(
     )
   },
 )
+
+const ProtocolControlForm = memo(() => {
+  const protocols = Object.values(EmissionProtocol)
+  const protocolItems = protocols.map((protocol) => (
+    <MenuItem value={protocol}>{protocol}</MenuItem>
+  ))
+  const selectedProtocols = [protocols[0]]
+
+  return (
+    <FormControl sx={{ width: 220 }}>
+      <InputLabel>Protocol</InputLabel>
+      <Select value={selectedProtocols} renderValue={multiSelectJoiner}>
+        {protocolItems}
+      </Select>
+    </FormControl>
+  )
+})
 
 const AreaControlForm = memo(
   ({
@@ -373,6 +393,8 @@ const GlobalFilterMenu = ({ ...sxProps }: SxProps) => {
         selectedCategories={selectedCategories}
         onSelectionChange={onCategoriesSelectionChange}
       />
+
+      <ProtocolControlForm />
 
       <ButtonGroup disableElevation variant="contained">
         <Button

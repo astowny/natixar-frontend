@@ -6,6 +6,20 @@ import {
 import { IdTreeNode, IndexOf } from "../structures/StructuralTypes"
 import { TimeWindow } from "../time/TimeRelatedTypes"
 
+export enum EmissionProtocol {
+  GHG = "GHG Protocol",
+  BEGES = "BEGES",
+  BEGESV5 = "BEGES v5",
+}
+
+export enum AirEmissionMeasureUnits {
+  KG_CO2eq = "kgCO2eq",
+  T_CO2eq = "tCO2eq",
+  KT_CO2eq = "ktCO2eq",
+  MT_CO2eq = "MtCO2eq",
+  GT_CO2eq = "GtCO2eq",
+}
+
 export interface EmissionCategory {
   id: number
   parent?: number
