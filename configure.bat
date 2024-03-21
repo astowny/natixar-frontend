@@ -13,7 +13,7 @@ IF NOT EXIST ".env" (
 )
 
 echo Installing dependencies...
-npm ci
+npm install --force
 echo Done
 
 echo Code is updated and ready to start

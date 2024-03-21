@@ -32,18 +32,6 @@ const NatixarChart = () => {
   const alignedIndexes = useSelector(indexSelector)
   const allPoints = useSelector(emissionsSelector)
 
-  useGetEmissionRangesQuery({
-    protocol: "ghgprotocol",
-    scale: "m",
-    timeRanges: [
-      {
-        start: "2023-01-01T00:00:00Z",
-        end: "2023-01-02T00:00:00Z",
-        scale: "m",
-      },
-    ],
-  })
-
   return (
     <Grid container rowSpacing={4.5} columnSpacing={3}>
       {/* <Grid item xs={12} md={12} xl={12}>

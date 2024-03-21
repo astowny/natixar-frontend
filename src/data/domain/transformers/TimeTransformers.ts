@@ -1,6 +1,7 @@
 import {
   MONTH_LAYOUT,
   TimeSection,
+  TimeWindow,
 } from "data/domain/types/time/TimeRelatedTypes"
 
 export const timestampToMonth = (timestamp: number): string => {
@@ -37,7 +38,17 @@ export const fillTimeSections = (
   const result: TimeSection[] = []
   do {
     result.push(currentTimeSection)
-    // What to do?
   } while (compareTimeSections(currentTimeSection, end) <= 0)
   return result
+}
+
+export const getTimeOffsetForSlot = (
+  slotNumber: number,
+  timeWindow: TimeWindow,
+): number => {
+  const n = timeWindow.timeStepInSecondsPattern.length
+  if (n === 0) {
+    return 0
+  }
+  return timeWindow.timeStepInSecondsPattern[slotNumber % n]
 }

@@ -11,15 +11,16 @@ export interface EmissionCategory {
   parent?: number
   name: string
   code?: string
-  era?: string
+  era: string
 }
 
 export interface AlignedIndexes {
   entities: IndexOf<BusinessEntity>
   areas: IndexOf<GeographicalArea>
+  categories: IndexOf<EmissionCategory>
   areaHierarchy: IdTreeNode[]
   entityHierarchy: IdTreeNode[]
-  categories: IndexOf<EmissionCategory>
+  categoryHierarchy: IdTreeNode[]
 }
 
 export type CompressedDataPoint = number[]

@@ -11,6 +11,7 @@ import {
   EmissionFilterState,
   EmissionDataPoint,
   VisibleData,
+  EmissionCategory,
 } from "data/domain/types/emissions/EmissionTypes"
 import {
   IdTreeNode,
@@ -21,6 +22,10 @@ import {
   GeographicalArea,
 } from "data/domain/types/participants/ContributorsTypes"
 import { TimeWindow } from "data/domain/types/time/TimeRelatedTypes"
+import {
+  expandId,
+  extractHierarchyOf,
+} from "data/domain/transformers/StructuralTransformers"
 import { EndpointTimeWindow, IndexesContainer } from "./EndpointTypes"
 import { emissionRangesApi } from "./EmissionRangesClient"
 
@@ -37,6 +42,7 @@ const initialState: EmissionRangeState = {
     categories: {},
     areaHierarchy: [],
     entityHierarchy: [],
+    categoryHierarchy: [],
   },
   allPoints: [],
   visibleData: {
@@ -50,43 +56,6 @@ const initialState: EmissionRangeState = {
     timeStepInSecondsPattern: [],
   },
   emissionFilterState: { ...initialFilterState },
-}
-
-function extractHierarchyOf<T>(
-  indexOfValues: IndexOf<T>,
-  idFunc: (t: T) => number,
-  parentFunc: (t: T) => number | undefined,
-): IdTreeNode[] {
-  if (Object.keys(indexOfValues).length === 0) {
-    return []
-  }
-
-  const indexOfTreeNodes: IndexOf<IdTreeNode> = {}
-  Object.values(indexOfValues).forEach((v) => {
-    const id = idFunc(v)
-    const node: IdTreeNode = {
-      value: id,
-      children: [],
-    }
-    indexOfTreeNodes[id] = node
-  })
-
-  const rootIds = new Set(
-    Object.keys(indexOfValues).map((id) => parseInt(id, 10)),
-  )
-  Object.values(indexOfTreeNodes).forEach((node) => {
-    const myArea = indexOfValues[node.value]
-    const parentId = parentFunc(myArea)
-    if (parentId) {
-      const myParentNode = indexOfTreeNodes[parentId]
-      myParentNode.children.push(node)
-      rootIds.delete(idFunc(myArea))
-    }
-  })
-
-  return Object.values(indexOfTreeNodes).filter((node) =>
-    rootIds.has(node.value),
-  )
 }
 
 const extractAreaHierarchy = (areas: IndexOf<GeographicalArea>): IdTreeNode[] =>
@@ -103,6 +72,15 @@ const extractEntityHierarchy = (
     entities,
     (entity) => entity.id,
     (entity) => entity.parent,
+  )
+
+const extractCategoryHierarchy = (
+  categories: IndexOf<EmissionCategory>,
+): IdTreeNode[] =>
+  extractHierarchyOf(
+    categories,
+    (category) => category.id,
+    (category) => category.parent,
   )
 
 const alignIndexes = (originalIndexes: IndexesContainer): AlignedIndexes => {
@@ -124,6 +102,7 @@ const alignIndexes = (originalIndexes: IndexesContainer): AlignedIndexes => {
 
   const areasTree = extractAreaHierarchy(alignedAreas)
   const entityTree = extractEntityHierarchy(alignedBusinessEntities)
+  const categoryTree = extractCategoryHierarchy(alignedCategories)
 
   return {
     entities: alignedBusinessEntities,
@@ -131,6 +110,7 @@ const alignIndexes = (originalIndexes: IndexesContainer): AlignedIndexes => {
     categories: alignedCategories,
     areaHierarchy: areasTree,
     entityHierarchy: entityTree,
+    categoryHierarchy: categoryTree,
   }
 }
 
@@ -177,47 +157,6 @@ function filterRoutine<T>(currentValue: T, filterSelectedValues: T[]): boolean {
   )
 }
 
-const findTreeNode = (
-  id: number,
-  nodes: IdTreeNode[],
-): IdTreeNode | undefined => {
-  let nodeFound = nodes.find((node) => node.value === id)
-  if (!nodeFound) {
-    nodeFound = nodes.find((node) => findTreeNode(id, node.children))
-  }
-  return nodeFound
-}
-
-const selectExpandedSubTree = (
-  values: number[],
-  nodes: IdTreeNode[],
-  results: number[],
-) => {
-  if (values.length === 0 || nodes.length === 0) {
-    return
-  }
-  const foundNodes: IdTreeNode[] = values
-    .flatMap((value) => findTreeNode(value, nodes))
-    .filter((node) => typeof node !== "undefined")
-    .map((node) => node!!)
-  if (foundNodes.length === 0) {
-    return
-  }
-
-  foundNodes.forEach((node) => {
-    if (!results.includes(node.value)) {
-      results.push(node.value)
-      selectExpandedSubTree(values, node.children, results)
-    }
-  })
-}
-
-const expandId = (ids: number[], nodes: IdTreeNode[]): number[] => {
-  const result: number[] = []
-  selectExpandedSubTree(ids, nodes, result)
-  return result
-}
-
 const extractVisibleData = (
   dataPoints: EmissionDataPoint[],
   indexes: AlignedIndexes,
@@ -227,7 +166,10 @@ const extractVisibleData = (
   if (filter.selectedCategories.length > 0) {
     filteredDataPoints = filteredDataPoints.filter((dataPoint) => {
       const era = dataPoint.categoryEraName
-      return filterRoutine(era.toLowerCase(), filter.selectedCategories)
+      return filterRoutine(
+        era.toLowerCase(),
+        filter.selectedCategories.map((category) => category.toLowerCase()),
+      )
     })
   }
   if (filter.selectedBusinessEntities.length > 0) {
@@ -235,6 +177,7 @@ const extractVisibleData = (
       filter.selectedBusinessEntities,
       indexes.entityHierarchy,
     )
+    console.log("Expanded entity ids: ", expandedEntityIds)
 
     filteredDataPoints = filteredDataPoints.filter((dataPoint) =>
       filterRoutine(dataPoint.entityId, expandedEntityIds),
@@ -246,6 +189,7 @@ const extractVisibleData = (
       filter.selectedGeographicalAreas,
       indexes.areaHierarchy,
     )
+    console.log("Geo area ids: ", expandedGeoAreaIds)
 
     filteredDataPoints = filteredDataPoints.filter((dataPoint) =>
       filterRoutine(dataPoint.geoAreaId, expandedGeoAreaIds),

@@ -3,6 +3,13 @@ import MainCard from "components/MainCard"
 import { ArrowLeftOutlined, RightOutlined } from "@ant-design/icons"
 
 import { useLocation, useNavigate } from "react-router-dom"
+import { useSelector } from "react-redux"
+import { selectAlignedIndexes } from "data/store/api/EmissionSelectors"
+import { EmissionCategory } from "data/domain/types/emissions/EmissionTypes"
+import {
+  IdTreeNode,
+  IndexOf,
+} from "data/domain/types/structures/StructuralTypes"
 import { ScopeTable } from "../../../components/natixarComponents/ScopeTable"
 import Breadcrumb from "../../../components/@extended/Breadcrumbs"
 import { AreaCheckbox } from "../../../components/natixarComponents/AreaCheckbox"
@@ -23,11 +30,48 @@ const rows = [
   createData("Processing of Sold Production", 8000, "6"),
 ]
 
+const findNodeByName = (
+  name: string,
+  categories: IndexOf<EmissionCategory>,
+  hierarchy: IdTreeNode[],
+): IdTreeNode | undefined => {
+  if (hierarchy.length === 0) {
+    return undefined
+  }
+  const onCurrentLevel = hierarchy.find(
+    (node) => categories[node.value].name.toLowerCase() === name.toLowerCase(),
+  )
+
+  if (typeof onCurrentLevel !== "undefined") {
+    return onCurrentLevel
+  }
+
+  let onLevelBelow: IdTreeNode | undefined
+  if (!onCurrentLevel) {
+    for (let i = 0; !onLevelBelow && i < hierarchy.length; i += 1) {
+      onLevelBelow = findNodeByName(name, categories, hierarchy[i].children)
+    }
+  }
+
+  return onLevelBelow
+}
+
 const ScopePage = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const params = new URLSearchParams(location.search)
   const scopeID = params.get("scopeID")
+
+  const { categories, categoryHierarchy } = useSelector(selectAlignedIndexes)
+  const ghgNode = findNodeByName("GHG Protocol", categories, categoryHierarchy)
+
+  const eraNode = scopeID
+    ? findEraNode(scopeID.toLowerCase(), categories, categoryHierarchy)
+    : undefined
+  const eraData = eraNode ? categories[eraNode?.value] : undefined
+
+  console.log("Scope ID is: ", scopeID)
+  console.log("Found this era: ", eraData)
 
   const links = [
     {
@@ -39,6 +83,8 @@ const ScopePage = () => {
       to: "",
     },
   ]
+
+  const eraText = JSON.stringify(eraData)
 
   return (
     <MainCard>
@@ -73,6 +119,7 @@ const ScopePage = () => {
         </Grid>
         <Grid item xs={12} md={12} xl={12}>
           <Typography variant="h5">Scope Emissions bar</Typography>
+          <Typography>{eraText}</Typography>
         </Grid>
         <Grid item xs={12} md={12} xl={12}>
           <ScopeTable data={rows} />

@@ -35,6 +35,7 @@ import {
   IndexOf,
 } from "data/domain/types/structures/StructuralTypes"
 import { EmissionFilterState } from "data/domain/types/emissions/EmissionTypes"
+import { useGetEmissionRangesQuery } from "data/store/features/emissions/ranges/EmissionRangesClient"
 
 // import { DateRangePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro';
 
@@ -228,6 +229,18 @@ const CategoriesControlForm = memo(
 
 const GlobalFilterMenu = ({ ...sxProps }: SxProps) => {
   const dispatch = useAppDispatch()
+  useGetEmissionRangesQuery({
+    protocol: "ghgprotocol",
+    scale: "m",
+    timeRanges: [
+      {
+        start: "2023-01-01T00:00:00Z",
+        end: "2023-01-02T00:00:00Z",
+        scale: "m",
+      },
+    ],
+  })
+
   const alignedIndexes = useSelector(indexesSelector)
   const allCategories = useSelector(categoriesSelector)
   const globalFilter = useSelector(filterStateSelector)
