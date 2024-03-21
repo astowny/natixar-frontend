@@ -85,3 +85,25 @@ export const expandId = (ids: number[], nodes: IdTreeNode[]): number[] => {
   selectExpandedSubTree(foundNodes, addIdToResult)
   return result
 }
+
+export function findNodeBy<T>(
+  criteria: (t: T) => boolean,
+  idIndex: IndexOf<T>,
+  hierarchy: IdTreeNode[],
+): IdTreeNode | undefined {
+  if (hierarchy.length === 0) {
+    return undefined
+  }
+  const onCurrentLevel = hierarchy.find((node) => criteria(idIndex[node.value]))
+
+  if (typeof onCurrentLevel !== "undefined") {
+    return onCurrentLevel
+  }
+
+  let onLevelBelow: IdTreeNode | undefined
+  for (let i = 0; !onLevelBelow && i < hierarchy.length; i += 1) {
+    onLevelBelow = findNodeBy(criteria, idIndex, hierarchy[i].children)
+  }
+
+  return onLevelBelow
+}

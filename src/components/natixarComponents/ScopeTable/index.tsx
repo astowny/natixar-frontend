@@ -16,15 +16,16 @@ import {
 import { LinkOutlined } from "@ant-design/icons"
 import { useLocation, useNavigate } from "react-router-dom"
 import useConfig from "hooks/useConfig"
+import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
 
 // ===========================|| DATA WIDGET - PROJECT TABLE CARD ||=========================== //
-type ScopeTableItemProps = {
-  title: string
-  value: number
-  emissionID: string
+export type ScopeTableItemProps = {
+  name: string
+  amount: number
+  categoryID: string
 }
 
-type ScopeTableProps = {
+export type ScopeTableProps = {
   data: ScopeTableItemProps[]
 }
 
@@ -40,6 +41,8 @@ export const ScopeTable = ({ data }: ScopeTableProps) => {
     navigate(`/contributor/category-analysis/${id}?scopeID=${scopeID}`)
   }
 
+  const totalAmount = data.reduce((acc, cur) => acc + cur.amount, 0.0)
+
   return (
     <TableContainer
       sx={{ border: "1px solid", borderColor: "#e6ebf1", borderRadius: "4px" }}
@@ -53,27 +56,29 @@ export const ScopeTable = ({ data }: ScopeTableProps) => {
           }}
         >
           <TableRow sx={{ height: "70px" }}>
-            <TableCell sx={{ width: "70px" }} align="left">
-              <Typography variant="subtitle2">#</Typography>
-            </TableCell>
             <TableCell sx={{ width: "500px" }}>
               <Typography variant="subtitle2">Title</Typography>
             </TableCell>
             <TableCell>
               <Typography variant="subtitle2">Value</Typography>
             </TableCell>
+            <TableCell>
+              <Typography variant="subtitle2">Amount</Typography>
+            </TableCell>
+            <TableCell>
+              <Typography variant="subtitle2">Actions</Typography>
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.map((row, index) => (
-            <TableRow hover key={index} sx={{ height: "70px" }}>
-              <TableCell align="left">{index + 1}</TableCell>
+          {data.map((row) => (
+            <TableRow hover key={row.categoryID} sx={{ height: "70px" }}>
               <TableCell>
                 <Grid container alignItems="center">
                   <Grid item>
                     <Typography align="left">
                       <Link
-                        onClick={() => handleOnCategoryClick(row.emissionID)}
+                        onClick={() => handleOnCategoryClick(row.categoryID)}
                         sx={{
                           display: "flex",
                           alignItems: "center",
@@ -82,41 +87,29 @@ export const ScopeTable = ({ data }: ScopeTableProps) => {
                           cursor: "pointer",
                         }}
                       >
-                        {row.title}
+                        {row.name}
                         <LinkOutlined />
                       </Link>
                     </Typography>
                   </Grid>
                 </Grid>
               </TableCell>
-              <TableCell
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  columnGap: "30px",
-                  height: "70px",
-                }}
-              >
-                <Box
-                  sx={{
-                    width: "100%",
-                    display: "flex",
-                    alignItems: "center",
-                    columnGap: "10px",
-                  }}
-                >
-                  <LinearProgress
-                    sx={{ width: "100%", backgroundColor: "#F5F5F5" }}
-                    variant="determinate"
-                    value={row.value / 1000}
-                    color="primary"
-                  />
-                  <Typography>{row.value / 1000}K</Typography>
-                </Box>
+              <TableCell>
+                <LinearProgress
+                  sx={{ width: "100%", backgroundColor: "#F5F5F5" }}
+                  variant="determinate"
+                  value={(100.0 * row.amount) / totalAmount}
+                  color="primary"
+                />
+              </TableCell>
+              <TableCell>
+                <Typography>{formatEmissionAmount(row.amount)}</Typography>
+              </TableCell>
+              <TableCell>
                 <Button
                   onClick={() =>
                     navigate(
-                      `/contributor/scope-details/${row.emissionID}?scopeID=${scopeID}`,
+                      `/contributor/scope-details/${row.categoryID}?scopeID=${scopeID}`,
                     )
                   }
                   variant="contained"

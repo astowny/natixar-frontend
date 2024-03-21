@@ -9,6 +9,7 @@ import {
 } from "../types/emissions/EmissionTypes"
 import { detectCompany, detectCountry } from "./DataDetectors"
 import { getTimeOffsetForSlot } from "./TimeTransformers"
+import { IdTreeNode, IndexOf } from "../types/structures/StructuralTypes"
 
 const emptyDecimal = ".0"
 
