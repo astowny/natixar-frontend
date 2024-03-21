@@ -4,12 +4,17 @@ import {
   Button,
   ButtonGroup,
   FormControl,
+  Grid,
   InputLabel,
   MenuItem,
+  Paper,
+  Popover,
   Select,
   SelectChangeEvent,
   Stack,
   SxProps,
+  ToggleButton,
+  ToggleButtonGroup,
   Typography,
 } from "@mui/material"
 import { CategoryLabel } from "components/categories/CategoriesLegend"
@@ -39,6 +44,7 @@ import {
   EmissionProtocol,
 } from "data/domain/types/emissions/EmissionTypes"
 import { useGetEmissionRangesQuery } from "data/store/features/emissions/ranges/EmissionRangesClient"
+import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 
 // import { DateRangePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro';
 
@@ -247,6 +253,74 @@ const CategoriesControlForm = memo(
   },
 )
 
+const DateRangeControlForm = memo(() => {
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
+
+  const handleClick = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      setAnchorEl(event.currentTarget)
+    },
+    [setAnchorEl],
+  )
+
+  const handleClose = useCallback(() => {
+    setAnchorEl(null)
+  }, [setAnchorEl])
+
+  const open = Boolean(anchorEl)
+  const id = open ? "simple-popover" : undefined
+
+  return (
+    <>
+      <Button
+        sx={{
+          color: "primary.contrastText",
+        }}
+        aria-describedby={id}
+        variant="contained"
+        onClick={handleClick}
+      >
+        Date filter
+      </Button>
+      <Popover
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+      >
+        <Paper elevation={3} sx={{ p: ".5rem" }}>
+          <Stack gap=".5rem">
+            <Stack
+              direction="row"
+              gap=".5rem"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <ToggleButtonGroup>
+                <ToggleButton>6 months</ToggleButton>
+                <ToggleButton>12 months</ToggleButton>
+                <ToggleButton>24 months</ToggleButton>
+              </ToggleButtonGroup>
+            </Stack>
+            <Stack gap="1rem" direction="row">
+              <DatePicker label="From" />
+              <DatePicker label="To" />
+            </Stack>
+          </Stack>
+        </Paper>
+      </Popover>
+    </>
+  )
+})
+
 const GlobalFilterMenu = ({ ...sxProps }: SxProps) => {
   const dispatch = useAppDispatch()
   useGetEmissionRangesQuery({
@@ -395,6 +469,8 @@ const GlobalFilterMenu = ({ ...sxProps }: SxProps) => {
       />
 
       <ProtocolControlForm />
+
+      <DateRangeControlForm />
 
       <ButtonGroup disableElevation variant="contained">
         <Button
