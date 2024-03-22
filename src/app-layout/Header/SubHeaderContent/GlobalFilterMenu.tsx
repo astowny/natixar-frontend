@@ -304,11 +304,11 @@ const DateRangeControlForm = memo(() => {
               alignItems="center"
               justifyContent="center"
             >
-              <ToggleButtonGroup>
-                <ToggleButton>6 months</ToggleButton>
-                <ToggleButton>12 months</ToggleButton>
-                <ToggleButton>24 months</ToggleButton>
-              </ToggleButtonGroup>
+              <ButtonGroup>
+                <Button variant="outlined">6 months</Button>
+                <Button variant="outlined">12 months</Button>
+                <Button variant="outlined">24 months</Button>
+              </ButtonGroup>
             </Stack>
             <Stack gap="1rem" direction="row">
               <DatePicker label="From" />
