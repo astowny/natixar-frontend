@@ -22,7 +22,7 @@ import { formatEmissionAmount } from "data/domain/transformers/EmissionTransform
 export type ScopeTableItemProps = {
   name: string
   amount: number
-  categoryID: string
+  categoryID: number
 }
 
 export type ScopeTableProps = {
