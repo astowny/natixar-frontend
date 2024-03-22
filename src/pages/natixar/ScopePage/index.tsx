@@ -8,12 +8,19 @@ import {
   selectAlignedIndexes,
   selectVisiblePoints,
 } from "data/store/api/EmissionSelectors"
-import { EmissionCategory } from "data/domain/types/emissions/EmissionTypes"
+import {
+  EmissionCategory,
+  EmissionDataPoint,
+} from "data/domain/types/emissions/EmissionTypes"
 import {
   IdTreeNode,
   IndexOf,
 } from "data/domain/types/structures/StructuralTypes"
-import { findNodeBy } from "data/domain/transformers/StructuralTransformers"
+import {
+  expandId,
+  findNodeBy,
+} from "data/domain/transformers/StructuralTransformers"
+import { getColorByCategory } from "utils/CategoryColors"
 import {
   ScopeTable,
   ScopeTableItemProps,
@@ -41,10 +48,6 @@ const ScopePage = () => {
     categories,
     protocolNode?.children ?? [],
   )
-  const eraData = eraNode ? categories[eraNode?.value] : undefined
-
-  console.log("Scope ID is: ", scopeID)
-  console.log("Found this era: ", eraData)
 
   const links = [
     {
@@ -57,15 +60,49 @@ const ScopePage = () => {
     },
   ]
 
-  const rows: ScopeTableItemProps[] =
-    eraNode?.children.map((childrenNode) => {
-      const categoryData = categories[childrenNode.value]
+  // Walk over subcategories.
+  const idsToFilterWith: Record<number, number[]> = Object.fromEntries(
+    // Collect all their included ids
+    (eraNode?.children ?? []).map((subcategoryNode) => [
+      subcategoryNode.value,
+      expandId([subcategoryNode.value], categoryHierarchy),
+    ]),
+  )
+  const categoryIds: number[] = Object.keys(idsToFilterWith).map((id) =>
+    parseInt(id, 10),
+  )
+
+  // Then just aggregate data points to different subcategories
+  const dataPointsByCategory: Record<number, EmissionDataPoint[]> = {}
+  categoryIds.forEach((categoryId) => {
+    dataPointsByCategory[categoryId] = []
+  })
+
+  allPoints.forEach((emissionPoint) => {
+    const matchingCategoryId = categoryIds.find((categoryId) =>
+      idsToFilterWith[categoryId].includes(emissionPoint.categoryId),
+    )
+    if (typeof matchingCategoryId !== "undefined") {
+      const pointsForThisCategory = dataPointsByCategory[matchingCategoryId]
+      pointsForThisCategory.push(emissionPoint)
+    }
+  })
+  // Then just sum them and send to the scope table
+
+  const rows: ScopeTableItemProps[] = Object.entries(dataPointsByCategory)
+    .map((entry) => [
+      parseInt(entry[0], 10),
+      entry[1].reduce((acc, cur) => acc + cur.totalEmissionAmount, 0),
+    ])
+    .map((idToEmissionPair) => {
+      const [categoryId, emissionAmount] = idToEmissionPair
+      const categoryData = categories[categoryId]
       return {
         name: categoryData.name,
-        amount: Math.random() * 1000,
-        categoryID: childrenNode.value,
+        amount: emissionAmount,
+        categoryID: categoryId,
       }
-    }) ?? []
+    })
 
   return (
     <MainCard>
@@ -99,7 +136,7 @@ const ScopePage = () => {
           </Box>
         </Grid>
         <Grid item xs={12} md={12} xl={12}>
-          <Typography variant="h5">Scope Emissions bar</Typography>
+          <Typography variant="h5">Detail by Category</Typography>
         </Grid>
         <Grid item xs={12} md={12} xl={12}>
           <ScopeTable data={rows} />
