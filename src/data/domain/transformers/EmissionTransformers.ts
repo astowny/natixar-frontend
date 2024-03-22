@@ -2,6 +2,7 @@ import { v4 as uuid } from "uuid"
 import { TimeWindow } from "data/domain/types/time/TimeRelatedTypes"
 import { CountryLocation } from "data/domain/types/participants/ContributorsTypes"
 import {
+  AirEmissionMeasureUnits,
   AlignedIndexes,
   CdpLayoutItem,
   CompressedDataPoint,
@@ -12,7 +13,6 @@ import { getTimeOffsetForSlot } from "./TimeTransformers"
 
 const emptyDecimal = ".0"
 
-const measureUnits = ["kgCO2eq", "tCO2eq", "ktCO2eq", "MtCO2eq", "GtCO2eq"]
 const MEASURE_UNIT_GRADATION = 1000
 
 export const formatAmount = (amount: number): string => {
@@ -33,6 +33,7 @@ export const formatEmissionAmount = (kgCO2eqAmount: number): string => {
 
   let measureUnitIndex = 0
   let amount = kgCO2eqAmount
+  const measureUnits = Object.values(AirEmissionMeasureUnits)
   while (
     measureUnitIndex < measureUnits.length - 1 && // while we are in the array
     amount >= MEASURE_UNIT_GRADATION // We can pick a bigger measurement

@@ -10,6 +10,8 @@ import RTLLayout from "components/RTLLayout"
 import ScrollTop from "components/ScrollTop"
 import Snackbar from "components/@extended/Snackbar"
 import Notistack from "components/third-party/Notistack"
+import { LocalizationProvider } from "@mui/x-date-pickers"
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
 
 import { store } from "data/store"
 import { Provider } from "react-redux"
@@ -24,14 +26,16 @@ const App = () => (
     <Provider store={store}>
       <RTLLayout>
         <Locales>
-          <ScrollTop>
-            <AuthProvider>
-              <Notistack>
-                <RouterProvider router={router} />
-                <Snackbar />
-              </Notistack>
-            </AuthProvider>
-          </ScrollTop>
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <ScrollTop>
+              <AuthProvider>
+                <Notistack>
+                  <RouterProvider router={router} />
+                  <Snackbar />
+                </Notistack>
+              </AuthProvider>
+            </ScrollTop>
+          </LocalizationProvider>
         </Locales>
       </RTLLayout>
     </Provider>

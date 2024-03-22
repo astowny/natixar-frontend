@@ -4,12 +4,17 @@ import {
   Button,
   ButtonGroup,
   FormControl,
+  Grid,
   InputLabel,
   MenuItem,
+  Paper,
+  Popover,
   Select,
   SelectChangeEvent,
   Stack,
   SxProps,
+  ToggleButton,
+  ToggleButtonGroup,
   Typography,
 } from "@mui/material"
 import { CategoryLabel } from "components/categories/CategoriesLegend"
@@ -34,8 +39,12 @@ import {
   IdTreeNode,
   IndexOf,
 } from "data/domain/types/structures/StructuralTypes"
-import { EmissionFilterState } from "data/domain/types/emissions/EmissionTypes"
+import {
+  EmissionFilterState,
+  EmissionProtocol,
+} from "data/domain/types/emissions/EmissionTypes"
 import { useGetEmissionRangesQuery } from "data/store/features/emissions/ranges/EmissionRangesClient"
+import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 
 // import { DateRangePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro';
 
@@ -150,6 +159,23 @@ const EntityControlForm = memo(
   },
 )
 
+const ProtocolControlForm = memo(() => {
+  const protocols = Object.values(EmissionProtocol)
+  const protocolItems = protocols.map((protocol) => (
+    <MenuItem value={protocol}>{protocol}</MenuItem>
+  ))
+  const selectedProtocols = [protocols[0]]
+
+  return (
+    <FormControl sx={{ width: 220 }}>
+      <InputLabel>Protocol</InputLabel>
+      <Select value={selectedProtocols} renderValue={multiSelectJoiner}>
+        {protocolItems}
+      </Select>
+    </FormControl>
+  )
+})
+
 const AreaControlForm = memo(
   ({
     selectedAreaLabels,
@@ -226,6 +252,74 @@ const CategoriesControlForm = memo(
     )
   },
 )
+
+const DateRangeControlForm = memo(() => {
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
+
+  const handleClick = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      setAnchorEl(event.currentTarget)
+    },
+    [setAnchorEl],
+  )
+
+  const handleClose = useCallback(() => {
+    setAnchorEl(null)
+  }, [setAnchorEl])
+
+  const open = Boolean(anchorEl)
+  const id = open ? "simple-popover" : undefined
+
+  return (
+    <>
+      <Button
+        sx={{
+          color: "primary.contrastText",
+        }}
+        aria-describedby={id}
+        variant="contained"
+        onClick={handleClick}
+      >
+        Date filter
+      </Button>
+      <Popover
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+      >
+        <Paper elevation={3} sx={{ p: ".5rem" }}>
+          <Stack gap=".5rem">
+            <Stack
+              direction="row"
+              gap=".5rem"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <ButtonGroup>
+                <Button variant="outlined">6 months</Button>
+                <Button variant="outlined">12 months</Button>
+                <Button variant="outlined">24 months</Button>
+              </ButtonGroup>
+            </Stack>
+            <Stack gap="1rem" direction="row">
+              <DatePicker label="From" />
+              <DatePicker label="To" />
+            </Stack>
+          </Stack>
+        </Paper>
+      </Popover>
+    </>
+  )
+})
 
 const GlobalFilterMenu = ({ ...sxProps }: SxProps) => {
   const dispatch = useAppDispatch()
@@ -373,6 +467,10 @@ const GlobalFilterMenu = ({ ...sxProps }: SxProps) => {
         selectedCategories={selectedCategories}
         onSelectionChange={onCategoriesSelectionChange}
       />
+
+      <ProtocolControlForm />
+
+      <DateRangeControlForm />
 
       <ButtonGroup disableElevation variant="contained">
         <Button
