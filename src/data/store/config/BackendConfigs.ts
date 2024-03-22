@@ -4,6 +4,9 @@ import axios, { AxiosError, AxiosRequestConfig } from "axios"
 export const backendBaseQuery = () =>
   fetchBaseQuery({ baseUrl: import.meta.env.VITE_NATIXAR_BACKEND_URL })
 
+export const backupBackendBaseQuery = () =>
+  fetchBaseQuery({ baseUrl: import.meta.env.VITE_COLLABRIUM_BACKEND_URL })
+
 export const axiosBaseQuery =
   (
     { baseUrl }: { baseUrl: string } = {

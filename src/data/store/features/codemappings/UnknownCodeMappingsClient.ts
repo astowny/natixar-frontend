@@ -1,5 +1,5 @@
 import { createApi } from "@reduxjs/toolkit/query/react"
-import { backendBaseQuery } from "data/store/config/BackendConfigs"
+import { backupBackendBaseQuery } from "data/store/config/BackendConfigs"
 import { CodeMapping, IncompleteCodeMappingStorage } from "./Types"
 
 interface AllMappingResponse {
@@ -13,7 +13,7 @@ const TAG_TYPE_MAPPING_ID = "UnknownMappingIds"
 
 export const unknownMappingsApi = createApi({
   reducerPath: "unknownMappingsApi",
-  baseQuery: backendBaseQuery(),
+  baseQuery: backupBackendBaseQuery(),
   tagTypes: [TAG_TYPE_MAPPING, TAG_TYPE_MAPPING_ID],
   endpoints: (builder) => ({
     getCurrentUnknownMappings: builder.query<
