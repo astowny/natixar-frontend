@@ -8,24 +8,15 @@ import {
   formatEmissionAmount,
 } from "data/domain/transformers/EmissionTransformers"
 import EmissionByKeyComparison from "components/charts/emissions/EmissionByKeyComparison"
-import {
-  timestampToMonth,
-  timestampToQuarter,
-} from "data/domain/transformers/TimeTransformers"
 import { TotalEmissionByTimeProps } from "./TotalEmissionByTimeSection"
-
-const detailUnitLayout: Record<string, (time: number) => string> = {
-  Month: timestampToMonth,
-  Quarter: timestampToQuarter,
-}
 
 const EmissionByTimeCompareToPreviousSection = ({
   emissionPoints,
+  unitLayout,
+  startDate,
+  endDate,
 }: TotalEmissionByTimeProps) => {
-  const timeDetailSlots = useMemo(
-    () => Object.keys(detailUnitLayout),
-    [detailUnitLayout],
-  )
+  const timeDetailSlots = useMemo(() => Object.keys(unitLayout), [unitLayout])
   const [timeDetailUnit, setTimeDetailUnit] = useState(timeDetailSlots[0])
   const timeWindow = useSelector(timeWindowSelector)
   const totalEmissions = useMemo(() => {
@@ -39,7 +30,7 @@ const EmissionByTimeCompareToPreviousSection = ({
   const datasetA = emissionsGroupByTime(
     emissionPoints,
     timeWindow,
-    detailUnitLayout[timeDetailUnit],
+    unitLayout[timeDetailUnit],
   )
 
   const datasetB: typeof datasetA = {}
@@ -61,8 +52,8 @@ const EmissionByTimeCompareToPreviousSection = ({
     <ChartCard
       title="Trend stacked bars CO2"
       value={totalEmissions}
-      startDate={new Date(timeWindow.startTimestamp)}
-      endDate={new Date(timeWindow.endTimestamp)}
+      startDate={startDate}
+      endDate={endDate}
       slots={timeDetailSlots}
       selectedSlot={timeDetailUnit}
       setSelectedSlot={setTimeDetailUnit}

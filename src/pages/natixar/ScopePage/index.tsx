@@ -11,6 +11,7 @@ import {
 import {
   EmissionCategory,
   EmissionDataPoint,
+  EmissionProtocol,
 } from "data/domain/types/emissions/EmissionTypes"
 import {
   IdTreeNode,
@@ -36,7 +37,7 @@ const ScopePage = () => {
 
   const { categories, categoryHierarchy } = useSelector(selectAlignedIndexes)
   const allPoints = useSelector(selectVisiblePoints)
-  const currentProtocol = "GHG Protocol".toLowerCase()
+  const currentProtocol = EmissionProtocol.BEGES.toLowerCase()
   const protocolNode = findNodeBy(
     (category: EmissionCategory) =>
       category.name.toLowerCase() === currentProtocol,

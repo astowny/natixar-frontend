@@ -22,7 +22,7 @@ const defaultOptions: ApexOptions = {
   },
   plotOptions: {
     bar: {
-      columnWidth: "20%",
+      columnWidth: "50%",
       barHeight: "70%",
       // borderRadius: 4,
     },
@@ -48,6 +48,10 @@ const defaultOptions: ApexOptions = {
 const optionOverrides = (keys: string[]): ApexOptions => ({
   xaxis: {
     categories: [...keys],
+    labels: {
+      rotate: -30,
+      rotateAlways: true,
+    },
   },
 })
 

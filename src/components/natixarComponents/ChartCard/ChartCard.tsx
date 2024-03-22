@@ -17,7 +17,7 @@ type ChartCardProps = {
   selectedSlot?: string
   setSelectedSlot: (newSlot: string) => void
   slots?: string[]
-  startDate?: Date
+  startDate: Date
   endDate: Date
   // compareButton?: boolean
   // compare?: boolean
