@@ -6,7 +6,7 @@ import {
   formatEmissionAmount,
 } from "data/domain/transformers/EmissionTransformers"
 import { EmissionDataPoint } from "data/domain/types/emissions/EmissionTypes"
-import { memo, useMemo, useState } from "react"
+import { memo, useMemo } from "react"
 import { useSelector } from "react-redux"
 
 export interface TotalEmissionByTimeProps {
@@ -14,6 +14,8 @@ export interface TotalEmissionByTimeProps {
   unitLayout: Record<string, (time: number) => string>
   startDate: Date
   endDate: Date
+  timeDetailUnit: string
+  setTimeDetailUnit: (newSlot: string) => void
 }
 
 const TotalEmissionByTimeSection = ({
@@ -21,9 +23,10 @@ const TotalEmissionByTimeSection = ({
   unitLayout,
   startDate,
   endDate,
+  timeDetailUnit,
+  setTimeDetailUnit,
 }: TotalEmissionByTimeProps) => {
   const timeDetailSlots = useMemo(() => Object.keys(unitLayout), [unitLayout])
-  const [timeDetailUnit, setTimeDetailUnit] = useState(timeDetailSlots[0])
   const timeWindow = useSelector(timeWindowSelector)
 
   const totalEmissions = useMemo(() => {

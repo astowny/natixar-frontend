@@ -1,4 +1,4 @@
-import { memo, useMemo, useState } from "react"
+import { memo, useMemo } from "react"
 
 import { selectTimeWindow as timeWindowSelector } from "data/store/api/EmissionSelectors"
 import { useSelector } from "react-redux"
@@ -15,9 +15,10 @@ const EmissionByTimeCompareToPreviousSection = ({
   unitLayout,
   startDate,
   endDate,
+  timeDetailUnit,
+  setTimeDetailUnit,
 }: TotalEmissionByTimeProps) => {
   const timeDetailSlots = useMemo(() => Object.keys(unitLayout), [unitLayout])
-  const [timeDetailUnit, setTimeDetailUnit] = useState(timeDetailSlots[0])
   const timeWindow = useSelector(timeWindowSelector)
   const totalEmissions = useMemo(() => {
     const sumEmission = emissionPoints.reduce(

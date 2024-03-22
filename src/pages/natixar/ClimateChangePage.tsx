@@ -21,6 +21,7 @@ import {
   timestampToYear,
 } from "data/domain/transformers/TimeTransformers"
 import _ from "lodash"
+import { useState } from "react"
 import EmissionByCategorySection from "../../components/natixarComponents/CO2DonutSection/EmissionByCategorySection"
 
 // ==============================|| WIDGET - CHARTS ||============================== //
@@ -37,6 +38,8 @@ const NatixarChart = () => {
   // const [areaSlot, setAreaSlot] = useState("month")
   // const [acquisitionSlot, setAcquisitionSlot] = useState("month")
   // const [compare, setCompare] = useState(false)
+  const [totalUnit, setTotalUnit] = useState("Month")
+  const [comparisonUnit, setComparisonUnit] = useState("Month")
 
   const alignedIndexes = useSelector(indexSelector)
   const allPoints = useSelector(emissionsSelector)
@@ -50,6 +53,9 @@ const NatixarChart = () => {
     _.maxBy(allPoints, (point) => point.endTimeSlot)?.endTimeSlot ?? 0
   maxTime =
     timeWindow.startTimestamp + getTimeOffsetForSlot(maxTime, timeWindow)
+
+  const minDate = new Date(minTime)
+  const maxDate = new Date(maxTime)
 
   return (
     <Grid container rowSpacing={4.5} columnSpacing={3}>
@@ -68,16 +74,20 @@ const NatixarChart = () => {
         <TotalEmissionByTimeSection
           emissionPoints={allPoints}
           unitLayout={detailUnitLayout}
-          startDate={new Date(minTime)}
-          endDate={new Date(maxTime)}
+          startDate={minDate}
+          endDate={maxDate}
+          timeDetailUnit={totalUnit}
+          setTimeDetailUnit={setTotalUnit}
         />
       </Grid>
       <Grid item xs={12} md={12} lg={12}>
         <EmissionByTimeCompareToPreviousSection
           emissionPoints={allPoints}
           unitLayout={detailUnitLayout}
-          startDate={new Date(minTime)}
-          endDate={new Date(maxTime)}
+          startDate={minDate}
+          endDate={maxDate}
+          timeDetailUnit={comparisonUnit}
+          setTimeDetailUnit={setComparisonUnit}
         />
       </Grid>
     </Grid>
