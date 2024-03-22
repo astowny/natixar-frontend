@@ -23,6 +23,7 @@ import "./mappingRowStyles.css"
 
 import { CodeMapping } from "data/store/features/codemappings/Types"
 import KeywordsCellEditor from "./KeywordsCellEditor"
+import NeshCodeCellEditor from "./NeshCodeCellEditor"
 
 /**
 It's 6 for NESH
@@ -92,15 +93,7 @@ const columns: GridColDef[] = [
           {params.formattedValue}
         </Link>
       ) : null,
-    renderEditCell: (params) => (
-      <TextField
-        sx={{
-          mr: ".5rem",
-        }}
-        value={params.value}
-        variant="outlined"
-      />
-    ),
+    renderEditCell: (params) => <NeshCodeCellEditor {...params} />,
   },
   {
     field: "precision",
@@ -139,8 +132,13 @@ interface UnknownMappingsTableProps {
   onRowUpdated: (newRow: CodeMapping) => void
 }
 
-const UnknownMappingsTable = (props: UnknownMappingsTableProps & SxProps) => {
-  const { rows, setRows, mostRecentTimestamp, onRowUpdated, ...sxProps } = props
+const UnknownMappingsTable = ({
+  rows,
+  setRows,
+  mostRecentTimestamp,
+  onRowUpdated,
+  ...sxProps
+}: UnknownMappingsTableProps & SxProps) => {
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
   const handleRowModesModelChange = useCallback(
     (newRowModesModel: GridRowModesModel) => {

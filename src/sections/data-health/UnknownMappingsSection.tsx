@@ -85,51 +85,52 @@ interface NewIdsNotificationProps {
   onClick: () => void
 }
 
-const NewIdsNotification = memo((props: NewIdsNotificationProps & SxProps) => {
-  const { allMappings, onClick, ...sxProps } = props
-  useGetCurrentUnknownMappingIdsQuery(undefined, {
-    pollingInterval: idsRefreshInterval,
-  })
-  const newMappingsCount =
-    allMappings.recentKnownIds.length - allMappings.currentIds.length
-  const mappingsMessageText =
-    newMappingsCount > 0
-      ? `New ${newMappingsCount} mappings`
-      : "Mappings are up-to-date!"
-  const messageColor = newMappingsCount > 0 ? "info" : "success"
+const NewIdsNotification = memo(
+  ({ allMappings, onClick, ...sxProps }: NewIdsNotificationProps & SxProps) => {
+    useGetCurrentUnknownMappingIdsQuery(undefined, {
+      pollingInterval: idsRefreshInterval,
+    })
+    const newMappingsCount =
+      allMappings.recentKnownIds.length - allMappings.currentIds.length
+    const mappingsMessageText =
+      newMappingsCount > 0
+        ? `New ${newMappingsCount} mappings`
+        : "Mappings are up-to-date!"
+    const messageColor = newMappingsCount > 0 ? "info" : "success"
 
-  return (
-    <Collapse in={newMappingsCount > 0}>
-      <Button
-        color={messageColor}
-        onClick={onClick}
-        sx={{
-          width: "100%",
-          border: 0,
-          p: 0,
-          m: 0,
-          ...sxProps,
-        }}
-      >
-        <Stack
-          direction="row"
-          justifyContent="center"
-          alignItems="center"
-          gap={2}
+    return (
+      <Collapse in={newMappingsCount > 0}>
+        <Button
+          color={messageColor}
+          onClick={onClick}
           sx={{
             width: "100%",
-            color: "white",
-            backgroundColor: (theme) => theme.palette.info.main,
-            p: 2,
+            border: 0,
+            p: 0,
+            m: 0,
+            ...sxProps,
           }}
         >
-          <Typography variant="h5">{mappingsMessageText}</Typography>
-          <RefreshIcon color="action" sx={{ color: "secondary" }} />
-        </Stack>
-      </Button>
-    </Collapse>
-  )
-})
+          <Stack
+            direction="row"
+            justifyContent="center"
+            alignItems="center"
+            gap={2}
+            sx={{
+              width: "100%",
+              color: "white",
+              backgroundColor: (theme) => theme.palette.info.main,
+              p: 2,
+            }}
+          >
+            <Typography variant="h5">{mappingsMessageText}</Typography>
+            <RefreshIcon color="action" sx={{ color: "secondary" }} />
+          </Stack>
+        </Button>
+      </Collapse>
+    )
+  },
+)
 
 const OVERLAY_FRAME_PROPS: SxProps = {
   top: 0,
