@@ -49,6 +49,10 @@ const defaultOptions: ApexOptions = {
 const optionOverrides = (keys: string[]): ApexOptions => ({
   xaxis: {
     categories: [...keys],
+    labels: {
+      rotate: -30,
+      rotateAlways: true,
+    },
   },
 })
 

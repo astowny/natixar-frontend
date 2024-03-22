@@ -4,6 +4,12 @@ import {
   TimeWindow,
 } from "data/domain/types/time/TimeRelatedTypes"
 
+export const timestampToHour = (timestamp: number): string =>
+  new Date(timestamp).getHours().toString()
+
+export const timestampToDay = (timestamp: number): string =>
+  new Date(timestamp).getDay().toString()
+
 export const timestampToMonth = (timestamp: number): string => {
   const date = new Date(timestamp)
   const monthNumber = date.getMonth() + 1
@@ -42,7 +48,7 @@ export const fillTimeSections = (
   return result
 }
 
-export const getTimeOffsetForSlot = (
+export const getTimeDeltaForSlot = (
   slotNumber: number,
   timeWindow: TimeWindow,
 ): number => {
@@ -50,5 +56,18 @@ export const getTimeOffsetForSlot = (
   if (n === 0) {
     return 0
   }
-  return timeWindow.timeStepInSecondsPattern[slotNumber % n]
+  return timeWindow.timeStepInSecondsPattern[slotNumber % n] * 1000
+}
+
+export const getTimeOffsetForSlot = (
+  slotNumber: number,
+  timeWindow: TimeWindow,
+): number => {
+  let offset = 0
+  let curSlot = 0
+  while (curSlot < slotNumber) {
+    offset += getTimeDeltaForSlot(curSlot, timeWindow)
+    curSlot += 1
+  }
+  return offset
 }

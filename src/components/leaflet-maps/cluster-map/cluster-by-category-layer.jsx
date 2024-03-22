@@ -3,7 +3,7 @@ import { useSelector } from "react-redux"
 
 import L from "leaflet"
 import MarkerClusterGroup from "react-leaflet-cluster"
-
+import { useMap } from "react-leaflet/hooks"
 import MapMarker from "components/third-party/map/MapMarker"
 
 import "leaflet/dist/leaflet.css"
@@ -13,10 +13,7 @@ import { useAppDispatch } from "data/store"
 import { formatAmount } from "data/domain/transformers/EmissionTransformers"
 import { selectClusterPoints } from "data/store/features/coordinates/ClusterSlice"
 import { selectVisiblePoints as pointsSelector } from "data/store/api/EmissionSelectors"
-import {
-  getColorByCategory,
-  getOpaqueColorByCategory,
-} from "utils/CategoryColors"
+import { getColorByCategory } from "utils/CategoryColors"
 
 const customIcon = new L.Icon({
   iconUrl: MapMarker,
@@ -72,6 +69,7 @@ const ClusterByCategoryLayer = () => {
   const clusterGroupRef = useRef()
   const dispatch = useAppDispatch()
   const dataPoints = useSelector(pointsSelector)
+  const map = useMap()
 
   const onClusterClick = useCallback(
     (e) => {
@@ -104,6 +102,10 @@ const ClusterByCategoryLayer = () => {
         const clusterGr = clusterGroupRef.current
         clusterGr.clearLayers()
         clusterGr.addLayers(markers)
+        map.fitBounds(clusterGr.getBounds(), {
+          animate: true,
+          padding: [20, 20],
+        })
       }
     }
 

@@ -6,33 +6,27 @@ import {
   formatEmissionAmount,
 } from "data/domain/transformers/EmissionTransformers"
 import { EmissionDataPoint } from "data/domain/types/emissions/EmissionTypes"
-import { memo, useMemo, useState } from "react"
+import { memo, useMemo } from "react"
 import { useSelector } from "react-redux"
-import {
-  timestampToMonth,
-  timestampToQuarter,
-  timestampToYear,
-} from "data/domain/transformers/TimeTransformers"
 
 export interface TotalEmissionByTimeProps {
   emissionPoints: EmissionDataPoint[]
-}
-
-const detailUnitLayout: Record<string, (time: number) => string> = {
-  Month: timestampToMonth,
-  Quarter: timestampToQuarter,
-  Year: timestampToYear,
+  unitLayout: Record<string, (time: number) => string>
+  startDate: Date
+  endDate: Date
+  timeDetailUnit: string
+  setTimeDetailUnit: (newSlot: string) => void
 }
 
 const TotalEmissionByTimeSection = ({
   emissionPoints,
+  unitLayout,
+  startDate,
+  endDate,
+  timeDetailUnit,
+  setTimeDetailUnit,
 }: TotalEmissionByTimeProps) => {
-  const timeDetailSlots = useMemo(
-    () => Object.keys(detailUnitLayout),
-    [detailUnitLayout],
-  )
-  const [timeDetailUnit, setTimeDetailUnit] = useState(timeDetailSlots[0])
-
+  const timeDetailSlots = useMemo(() => Object.keys(unitLayout), [unitLayout])
   const timeWindow = useSelector(timeWindowSelector)
 
   const totalEmissions = useMemo(() => {
@@ -46,25 +40,21 @@ const TotalEmissionByTimeSection = ({
   const groupedByTime = emissionsGroupByTime(
     emissionPoints,
     timeWindow,
-    detailUnitLayout[timeDetailUnit],
+    unitLayout[timeDetailUnit],
   )
 
-  let allKeys = Array.from(
+  const allKeys = Array.from(
     new Set(
       Object.values(groupedByTime).flatMap((byKey) => Object.keys(byKey)),
     ),
   )
 
-  if (timeDetailUnit !== "Month") {
-    allKeys = allKeys.toSorted()
-  }
-
   return (
     <ChartCard
       title="Total Emissions"
       value={totalEmissions}
-      startDate={new Date(timeWindow.startTimestamp)}
-      endDate={new Date(timeWindow.endTimestamp)}
+      startDate={startDate}
+      endDate={endDate}
       slots={timeDetailSlots}
       selectedSlot={timeDetailUnit}
       setSelectedSlot={setTimeDetailUnit}

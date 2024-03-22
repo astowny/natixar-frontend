@@ -9,7 +9,7 @@ import {
   EmissionDataPoint,
 } from "../types/emissions/EmissionTypes"
 import { detectCompany, detectCountry } from "./DataDetectors"
-import { getTimeOffsetForSlot } from "./TimeTransformers"
+import { getTimeDeltaForSlot, getTimeOffsetForSlot } from "./TimeTransformers"
 
 const emptyDecimal = ".0"
 
@@ -78,10 +78,7 @@ const calculateTotalAmount = (
   let currentTimeSlot = startTimeSlot
   let totalAmount = 0
   do {
-    const currentSlotDuration = getTimeOffsetForSlot(
-      currentTimeSlot,
-      timeWindow,
-    )
+    const currentSlotDuration = getTimeDeltaForSlot(currentTimeSlot, timeWindow)
 
     let amount =
       dataPoint[CdpLayoutItem.CDP_LAYOUT_INTENSITY] * currentSlotDuration
@@ -189,21 +186,21 @@ export const emissionsGroupByTime = (
     const byCategory = result[categoryEra]
 
     let currentTimeSlot = emissionPoint.startTimeSlot
-    let totalTimeOffset: number = 0
+    let totalTimeOffset = getTimeOffsetForSlot(
+      emissionPoint.startTimeSlot,
+      timeWindow,
+    )
     do {
       const timeKey = timeMeasureKeyFn(
         timeWindow.startTimestamp + totalTimeOffset,
       )
-      const currentSlotOffset = getTimeOffsetForSlot(
-        currentTimeSlot,
-        timeWindow,
-      )
+      const currentSlotDelta = getTimeDeltaForSlot(currentTimeSlot, timeWindow)
 
       if (!byCategory[timeKey]) {
         byCategory[timeKey] = 0
       }
 
-      let amount = emissionPoint.emissionIntensity * currentSlotOffset
+      let amount = emissionPoint.emissionIntensity * currentSlotDelta
       switch (currentTimeSlot) {
         case emissionPoint.startTimeSlot:
           amount *= emissionPoint.startEmissionPercentage
@@ -216,7 +213,7 @@ export const emissionsGroupByTime = (
       }
       byCategory[timeKey] = amount
 
-      totalTimeOffset += getTimeOffsetForSlot(currentTimeSlot, timeWindow)
+      totalTimeOffset += currentSlotDelta
       currentTimeSlot += 1
     } while (currentTimeSlot <= emissionPoint.endTimeSlot)
   })
