@@ -107,7 +107,7 @@ const MultiFileUpload = ({
             <PlaceholderContent type={type} />
           </DropzoneWrapper>
           {type === DropzopType.standard && files && files.length > 1 && (
-            <Button variant="contained" color="error" onClick={onRemoveAll}>
+            <Button variant="outlined" color="error" onClick={onRemoveAll}>
               Remove all
             </Button>
           )}
@@ -132,7 +132,12 @@ const MultiFileUpload = ({
           spacing={1.5}
           sx={{ mt: 1.5 }}
         >
-          <Button color="inherit" size="small" onClick={onRemoveAll}>
+          <Button
+            color="inherit"
+            size="small"
+            variant="outlined"
+            onClick={onRemoveAll}
+          >
             Remove all
           </Button>
           <Button size="small" variant="contained" onClick={onUpload}>
