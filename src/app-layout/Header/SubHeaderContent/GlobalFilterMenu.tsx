@@ -1,36 +1,29 @@
 // material-ui
-import { ChangeEvent, memo, useCallback, useMemo, useState } from "react"
 import {
+  Box,
   Button,
   ButtonGroup,
   FormControl,
-  Grid,
   InputLabel,
   MenuItem,
+  Modal,
   Paper,
   Popover,
   Select,
   SelectChangeEvent,
   Stack,
   SxProps,
-  ToggleButton,
-  ToggleButtonGroup,
   Typography,
 } from "@mui/material"
+import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import { CategoryLabel } from "components/categories/CategoriesLegend"
-import { useSelector } from "react-redux"
-import _ from "lodash"
-import {
-  selectAlignedIndexes as indexesSelector,
-  selectAllVisibleCategoryEras as categoriesSelector,
-  selectEmissionFilter as filterStateSelector,
-} from "data/store/api/EmissionSelectors"
-import { useAppDispatch } from "data/store"
 import { CheckboxItem } from "components/natixarComponents/AreaCheckbox/CheckboxItem"
+import { extractIdsOfIndex } from "data/domain/transformers/StructuralTransformers"
 import {
-  clearFilterSelection as clearFilterAction,
-  updateFilterSelection as updateFilterAction,
-} from "data/store/features/emissions/ranges/EmissionRangesSlice"
+  AlignedIndexes,
+  EmissionFilterState,
+  EmissionProtocol,
+} from "data/domain/types/emissions/EmissionTypes"
 import {
   BusinessEntity,
   GeographicalArea,
@@ -39,12 +32,22 @@ import {
   IdTreeNode,
   IndexOf,
 } from "data/domain/types/structures/StructuralTypes"
+import { useAppDispatch } from "data/store"
 import {
-  EmissionFilterState,
-  EmissionProtocol,
-} from "data/domain/types/emissions/EmissionTypes"
+  selectAllVisibleCategoryEras as categoriesSelector,
+  selectEmissionFilter as filterStateSelector,
+  selectAlignedIndexes as indexesSelector,
+} from "data/store/api/EmissionSelectors"
 import { useGetEmissionRangesQuery } from "data/store/features/emissions/ranges/EmissionRangesClient"
-import { DatePicker } from "@mui/x-date-pickers/DatePicker"
+import {
+  clearFilterSelection as clearFilterAction,
+  updateFilterSelection as updateFilterAction,
+} from "data/store/features/emissions/ranges/EmissionRangesSlice"
+import { useGenerateReportMutation } from "data/store/features/reports/ReportGenerationClient"
+import _ from "lodash"
+import { ChangeEvent, memo, useCallback, useMemo, useState } from "react"
+import { useSelector } from "react-redux"
+import ReportSendSection from "sections/reports/ReportSendSection"
 
 // import { DateRangePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro';
 
@@ -321,6 +324,64 @@ const DateRangeControlForm = memo(() => {
   )
 })
 
+const ReportGeneratorControl = memo(
+  ({
+    filter,
+    indexes,
+    onClick,
+    ...sxProps
+  }: {
+    filter: EmissionFilterState
+    indexes: AlignedIndexes
+    onClick: VoidFunction
+  } & SxProps) => {
+    const [open, setOpen] = useState(false)
+    const handleOpen = () => setOpen(true)
+    const handleClose = () => setOpen(false)
+    const [generateReport, { isLoading: isUpdating }] =
+      useGenerateReportMutation()
+    const onGenerateClick = useCallback(() => {
+      const reportParams: EmissionFilterState = {
+        selectedBusinessEntities:
+          filter.selectedBusinessEntities.length > 0
+            ? filter.selectedBusinessEntities
+            : extractIdsOfIndex(indexes.entities),
+        selectedGeographicalAreas:
+          filter.selectedGeographicalAreas.length > 0
+            ? filter.selectedGeographicalAreas
+            : extractIdsOfIndex(indexes.areas),
+        selectedCategories:
+          filter.selectedCategories.length > 0
+            ? filter.selectedCategories
+            : extractIdsOfIndex(indexes.categories),
+      }
+
+      generateReport(reportParams)
+      setOpen(false)
+    }, [filter, generateReport, setOpen])
+
+    return (
+      <Box>
+        <Button variant="outlined" onClick={handleOpen} sx={{ ...sxProps }}>
+          Report
+        </Button>
+        <Modal
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <ReportSendSection
+            parameters={filter}
+            indexes={indexes}
+            onGenerateClick={onGenerateClick}
+          />
+        </Modal>
+      </Box>
+    )
+  },
+)
+
 const GlobalFilterMenu = ({ ...sxProps }: SxProps) => {
   const dispatch = useAppDispatch()
   useGetEmissionRangesQuery({
@@ -485,6 +546,8 @@ const GlobalFilterMenu = ({ ...sxProps }: SxProps) => {
           Clear
         </Button>
       </ButtonGroup>
+
+      <ReportGeneratorControl filter={globalFilter} indexes={alignedIndexes} />
     </Stack>
   )
 }

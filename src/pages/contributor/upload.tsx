@@ -11,13 +11,19 @@ import { AppstoreOutlined, UnorderedListOutlined } from "@ant-design/icons"
 import { Formik } from "formik"
 import * as yup from "yup"
 import { useTheme } from "@mui/material/styles"
-import UploadSingleFile from "components/third-party/dropzone/SingleFile"
 import UploadMultiFile from "components/third-party/dropzone/MultiFile"
 import { useState } from "react"
+import { useSendFilesMutation } from "data/store/features/fileupload/FileUploadClient"
 
 const ContributorUpload = () => {
   const [list, setList] = useState(false)
   const theme = useTheme()
+  const [sendFiles, { isLoading: isUpdating }] = useSendFilesMutation()
+
+  const sendSomeData = () => {
+    console.log("Sending data...")
+    sendFiles("Some data")
+  }
 
   return (
     <>
@@ -25,6 +31,7 @@ const ContributorUpload = () => {
         Upload
       </Typography>
       <Grid container spacing={3}>
+        {isUpdating ? "Loading" : null}
         <Grid item xs={12}>
           <MainCard
             title="Upload multiple files"
@@ -67,6 +74,7 @@ const ContributorUpload = () => {
                           setFieldValue={setFieldValue}
                           files={values.files}
                           error={touched.files && !!errors.files}
+                          onUpload={sendSomeData}
                         />
                       </Stack>
                       {touched.files && errors.files && (
