@@ -11,6 +11,8 @@ import { coordinateApi } from "./features/coordinates/CoordinateClient"
 import { emissionRangesApi } from "./features/emissions/ranges/EmissionRangesClient"
 import { unknownMappingsApi } from "./features/codemappings/UnknownCodeMappingsClient"
 import { networkCheckApi } from "./features/networkIndication/NetworkCheckClient"
+import { fileUploadApi } from "./features/fileupload/FileUploadClient"
+import { reportGenerationApi } from "./features/reports/ReportGenerationClient"
 
 export const store = configureStore({
   reducer: {
@@ -23,6 +25,8 @@ export const store = configureStore({
     [emissionRangesApi.reducerPath]: emissionRangesApi.reducer,
     [unknownMappingsApi.reducerPath]: unknownMappingsApi.reducer,
     [networkCheckApi.reducerPath]: networkCheckApi.reducer,
+    [fileUploadApi.reducerPath]: fileUploadApi.reducer,
+    [reportGenerationApi.reducerPath]: reportGenerationApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -30,6 +34,8 @@ export const store = configureStore({
       emissionRangesApi.middleware,
       unknownMappingsApi.middleware,
       networkCheckApi.middleware,
+      fileUploadApi.middleware,
+      reportGenerationApi.middleware,
     ),
 })
 

@@ -1,34 +1,29 @@
 // material-ui
-import { Grid, IconButton, Stack, Typography } from "@mui/material"
+import {
+  IconButton,
+  FormHelperText,
+  Grid,
+  Stack,
+  Typography,
+} from "@mui/material"
 import MainCard from "components/MainCard"
 import { AppstoreOutlined, UnorderedListOutlined } from "@ant-design/icons"
 import { Formik } from "formik"
 import * as yup from "yup"
-import { FormHelperText } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
-import UploadSingleFile from "components/third-party/dropzone/SingleFile"
 import UploadMultiFile from "components/third-party/dropzone/MultiFile"
 import { useState } from "react"
-
-// table data
-const createData = (year: number, methodology: string, amount: number) => ({
-  year,
-  methodology,
-  amount,
-})
-
-const rows = [
-  createData(2024, "Emission Factors", 63.5),
-  createData(2023, "Emission Factors", 32),
-  createData(2022, "Emission Factors", 10),
-  createData(2021, "Emission Factors", 34),
-  createData(2020, "Emission Factors", 76),
-  createData(2019, "Emission Factors", 8.4),
-]
+import { useSendFilesMutation } from "data/store/features/fileupload/FileUploadClient"
 
 const ContributorUpload = () => {
   const [list, setList] = useState(false)
   const theme = useTheme()
+  const [sendFiles, { isLoading: isUpdating }] = useSendFilesMutation()
+
+  const sendSomeData = () => {
+    console.log("Sending data...")
+    sendFiles("Some data")
+  }
 
   return (
     <>
@@ -36,9 +31,10 @@ const ContributorUpload = () => {
         Upload
       </Typography>
       <Grid container spacing={3}>
+        {isUpdating ? "Loading" : null}
         <Grid item xs={12}>
           <MainCard
-            title="Upload Multiple File"
+            title="Upload multiple files"
             sx={{ bgcolor: theme.palette.grey.A100 }}
             secondary={
               <Stack direction="row" alignItems="center" spacing={1.25}>
@@ -78,6 +74,7 @@ const ContributorUpload = () => {
                           setFieldValue={setFieldValue}
                           files={values.files}
                           error={touched.files && !!errors.files}
+                          onUpload={sendSomeData}
                         />
                       </Stack>
                       {touched.files && errors.files && (
@@ -95,9 +92,9 @@ const ContributorUpload = () => {
             </Formik>
           </MainCard>
         </Grid>
-        <Grid item xs={12}>
+        {/* <Grid item xs={12}>
           <MainCard
-            title="Upload Single File"
+            title="Upload a single file"
             sx={{ bgcolor: theme.palette.grey.A100 }}
           >
             <Formik
@@ -134,7 +131,7 @@ const ContributorUpload = () => {
               )}
             </Formik>
           </MainCard>
-        </Grid>
+        </Grid> */}
       </Grid>
     </>
   )

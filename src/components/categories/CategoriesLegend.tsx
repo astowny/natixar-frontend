@@ -32,8 +32,10 @@ interface CategoriesLegendProps {
   categories: string[]
 }
 
-const CategoriesLegend = (props: CategoriesLegendProps & SxProps) => {
-  const { categories, ...sxProps } = props
+const CategoriesLegend = ({
+  categories,
+  ...sxProps
+}: CategoriesLegendProps & SxProps) => {
   const categoryLabels = categories
     .map((category) => _.capitalize(category))
     .map((category) => <CategoryBadge key={category} category={category} />)
