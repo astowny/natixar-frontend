@@ -1,11 +1,3 @@
-@REM echo  Fetching updates...
-@REM git fetch
-@REM echo Done
-
-@REM echo Upgrading sources...
-@REM git checkout origin/main
-@REM echo Done
-
 IF NOT EXIST ".env" (
     echo Setting up configuration
     copy .env.example .env
