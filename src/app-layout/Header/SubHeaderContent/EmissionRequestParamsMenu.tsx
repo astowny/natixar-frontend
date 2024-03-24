@@ -129,6 +129,29 @@ const DateRangeControlForm = memo(({ timeRange }: { timeRange: TimeRange }) => {
     },
     [dispatch, selectTimeRange],
   )
+
+  const startChangeCallback = useCallback(
+    (startTime: number) => {
+      const newTimeRange: TimeRange = {
+        start: startTime,
+        end: timeRange.end,
+      }
+      dispatch(selectTimeRange(newTimeRange))
+    },
+    [dispatch, selectTimeRange],
+  )
+
+  const endChangeCallback = useCallback(
+    (endTime: number) => {
+      const newTimeRange: TimeRange = {
+        start: timeRange.start,
+        end: endTime,
+      }
+      dispatch(selectTimeRange(newTimeRange))
+    },
+    [dispatch, selectTimeRange],
+  )
+
   const timeRangeStr = useMemo(
     () => getShortDescriptionForTimeRange(timeRange),
     [timeRange],
@@ -191,11 +214,13 @@ const DateRangeControlForm = memo(({ timeRange }: { timeRange: TimeRange }) => {
                 sx={{ width: "10rem" }}
                 label="From"
                 value={timeRange.start}
+                onChange={startChangeCallback}
               />
               <DatePicker
                 sx={{ width: "10rem" }}
                 label="To"
                 value={timeRange.end}
+                onChange={endChangeCallback}
               />
             </Stack>
           </Stack>

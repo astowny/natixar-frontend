@@ -72,5 +72,5 @@ export const getShortDescriptionForTimeRange = (
   timeRange: TimeRange,
 ): string => {
   const sameYear = isSameYear(timeRange.start, timeRange.end)
-  return `${format(timeRange.start, sameYear ? "MMM d" : "MMM d y")} - ${format(timeRange.end, "MMM d y")}`
+  return `${format(timeRange.start, sameYear ? "d MMM" : "d MMM y")} - ${format(timeRange.end, "d MMM y")}`
 }
