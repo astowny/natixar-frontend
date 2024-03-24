@@ -1,4 +1,5 @@
 // material-ui
+import DateRangeIcon from "@mui/icons-material/DateRange"
 import {
   Box,
   Button,
@@ -14,13 +15,15 @@ import {
 } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
 import { DatePicker } from "@mui/x-date-pickers"
-import DateRangeIcon from "@mui/icons-material/DateRange"
 import {
   getShortDescriptionForTimeRange,
   getTimeRangeFor,
 } from "data/domain/transformers/TimeTransformers"
 import { EmissionProtocol } from "data/domain/types/emissions/EmissionTypes"
-import { TimeRange } from "data/domain/types/time/TimeRelatedTypes"
+import {
+  TimeMeasurement,
+  TimeRange,
+} from "data/domain/types/time/TimeRelatedTypes"
 import { useAppDispatch } from "data/store"
 import { selectEmissionRangeRequestParameters } from "data/store/api/EmissionSelectors"
 import { useGetEmissionRangesQuery } from "data/store/features/emissions/ranges/EmissionRangesClient"
@@ -28,6 +31,8 @@ import {
   selectProtocol,
   selectTimeRange,
 } from "data/store/features/emissions/ranges/EmissionRangesSlice"
+import { formatProtocolForRangesEndpoint } from "data/store/features/emissions/ranges/EndpointTypes"
+import formatISO from "date-fns/formatISO"
 import { memo, useCallback, useMemo, useState } from "react"
 import { useSelector } from "react-redux"
 
@@ -191,27 +196,31 @@ const DateRangeControlForm = memo(({ timeRange }: { timeRange: TimeRange }) => {
 })
 
 const RequestParametersControl = () => {
-  const dataRequestParameters = useSelector(
+  const { timeRangeOfInterest, protocol } = useSelector(
     selectEmissionRangeRequestParameters,
   )
-  useGetEmissionRangesQuery({
-    protocol: "ghgprotocol",
-    scale: "m",
-    timeRanges: [
-      {
-        start: "2023-01-01T00:00:00Z",
-        end: "2023-01-02T00:00:00Z",
-        scale: "m",
-      },
-    ],
-  })
+  const scale = TimeMeasurement.MINUTES
+  useGetEmissionRangesQuery(
+    {
+      protocol: formatProtocolForRangesEndpoint(protocol),
+      scale,
+      timeRanges: [
+        {
+          start: formatISO(timeRangeOfInterest.start),
+          end: formatISO(timeRangeOfInterest.end),
+          scale,
+        },
+      ],
+    },
+    {
+      pollingInterval: 5000,
+    },
+  )
 
   return (
-    <Stack direction="row">
-      <DateRangeControlForm
-        timeRange={dataRequestParameters.timeRangeOfInterest}
-      />
-      <Protocol selectedProtocol={dataRequestParameters.protocol} />
+    <Stack direction="row" gap=".5rem">
+      <DateRangeControlForm timeRange={timeRangeOfInterest} />
+      <Protocol selectedProtocol={protocol} />
     </Stack>
   )
 }

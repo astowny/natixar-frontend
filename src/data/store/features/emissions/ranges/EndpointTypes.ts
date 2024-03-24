@@ -1,8 +1,11 @@
 import {
   BusinessEntity,
+  GeographicalArea,
+} from "data/domain/types/participants/ContributorsTypes"
+import {
   CompressedDataPoint,
   EmissionCategory,
-  GeographicalArea,
+  EmissionProtocol as DomainEmissionProtocol,
 } from "../../../../domain/types/emissions/EmissionTypes"
 
 export interface IndexesContainer {
@@ -36,4 +39,25 @@ export interface EmissionRangesRequest {
   timeRanges: TimeRangeRequest[]
   protocol: EmissionProtocol
   scale: TimeRangeScale
+}
+
+export const formatProtocolForRangesEndpoint = (
+  protocol: DomainEmissionProtocol,
+): EmissionProtocol => {
+  let result: EmissionProtocol
+  switch (protocol) {
+    case DomainEmissionProtocol.GHG:
+      result = "ghgprotocol"
+      break
+    case DomainEmissionProtocol.BEGES:
+      result = "beges"
+      break
+    case DomainEmissionProtocol.BEGESV5:
+      result = "begesv5"
+      break
+    default:
+      result = "ghgprotocol"
+      break
+  }
+  return result
 }
