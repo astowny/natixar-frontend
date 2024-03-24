@@ -12,6 +12,7 @@ import {
   EmissionDataPoint,
   VisibleData,
   EmissionCategory,
+  EmissionProtocol,
 } from "data/domain/types/emissions/EmissionTypes"
 import {
   IdTreeNode,
@@ -21,11 +22,12 @@ import {
   BusinessEntity,
   GeographicalArea,
 } from "data/domain/types/participants/ContributorsTypes"
-import { TimeWindow } from "data/domain/types/time/TimeRelatedTypes"
+import { TimeRange, TimeWindow } from "data/domain/types/time/TimeRelatedTypes"
 import {
   expandId,
   extractHierarchyOf,
 } from "data/domain/transformers/StructuralTransformers"
+import { getTimeRangeFor } from "data/domain/transformers/TimeTransformers"
 import { EndpointTimeWindow, IndexesContainer } from "./EndpointTypes"
 import { emissionRangesApi } from "./EmissionRangesClient"
 
@@ -56,6 +58,10 @@ const initialState: EmissionRangeState = {
     timeStepInSecondsPattern: [],
   },
   emissionFilterState: { ...initialFilterState },
+  dataRetrievalParameters: {
+    timeRangeOfInterest: getTimeRangeFor(12),
+    protocol: EmissionProtocol.GHG,
+  },
 }
 
 const extractAreaHierarchy = (areas: IndexOf<GeographicalArea>): IdTreeNode[] =>
@@ -177,7 +183,6 @@ const extractVisibleData = (
       filter.selectedBusinessEntities,
       indexes.entityHierarchy,
     )
-    console.log("Expanded entity ids: ", expandedEntityIds)
 
     filteredDataPoints = filteredDataPoints.filter((dataPoint) =>
       filterRoutine(dataPoint.entityId, expandedEntityIds),
@@ -189,7 +194,6 @@ const extractVisibleData = (
       filter.selectedGeographicalAreas,
       indexes.areaHierarchy,
     )
-    console.log("Geo area ids: ", expandedGeoAreaIds)
 
     filteredDataPoints = filteredDataPoints.filter((dataPoint) =>
       filterRoutine(dataPoint.geoAreaId, expandedGeoAreaIds),
@@ -284,6 +288,20 @@ const clearFilterSelectionsReducer: CaseReducer<
   state.visibleData = { ...newVisibleData }
 }
 
+const selectTimeRangeReducer: CaseReducer<
+  EmissionRangeState,
+  PayloadAction<TimeRange>
+> = (state, action) => {
+  state.dataRetrievalParameters.timeRangeOfInterest = action.payload
+}
+
+const selectProtocolReducer: CaseReducer<
+  EmissionRangeState,
+  PayloadAction<EmissionProtocol>
+> = (state, action) => {
+  state.dataRetrievalParameters.protocol = action.payload
+}
+
 export const emissionsRangeSlice = createSlice({
   name: "emissionRanges",
   initialState,
@@ -292,6 +310,8 @@ export const emissionsRangeSlice = createSlice({
     selectGeoAreas: setSelectedGeoAreasReducer,
     selectCategories: setSelectedCategoriesReducer,
     updateFilterSelection: setNewFilterReducer,
+    selectTimeRange: selectTimeRangeReducer,
+    selectProtocol: selectProtocolReducer,
     clearFilterSelection: clearFilterSelectionsReducer,
   },
   extraReducers: (builder) => {
@@ -326,5 +346,7 @@ export const {
   selectCategories,
   updateFilterSelection,
   clearFilterSelection,
+  selectTimeRange,
+  selectProtocol,
 } = emissionsRangeSlice.actions
 export default emissionsRangeSlice.reducer

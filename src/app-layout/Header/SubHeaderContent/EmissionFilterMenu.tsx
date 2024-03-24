@@ -7,23 +7,20 @@ import {
   InputLabel,
   MenuItem,
   Modal,
-  Paper,
-  Popover,
   Select,
   SelectChangeEvent,
   Stack,
   SxProps,
   Typography,
 } from "@mui/material"
-import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import { CategoryLabel } from "components/categories/CategoriesLegend"
 import { CheckboxItem } from "components/natixarComponents/AreaCheckbox/CheckboxItem"
 import { extractIdsOfIndex } from "data/domain/transformers/StructuralTransformers"
 import {
   AlignedIndexes,
   EmissionFilterState,
-  EmissionProtocol,
 } from "data/domain/types/emissions/EmissionTypes"
+import DownloadIcon from "@mui/icons-material/Download"
 import {
   BusinessEntity,
   GeographicalArea,
@@ -38,7 +35,6 @@ import {
   selectEmissionFilter as filterStateSelector,
   selectAlignedIndexes as indexesSelector,
 } from "data/store/api/EmissionSelectors"
-import { useGetEmissionRangesQuery } from "data/store/features/emissions/ranges/EmissionRangesClient"
 import {
   clearFilterSelection as clearFilterAction,
   updateFilterSelection as updateFilterAction,
@@ -162,23 +158,6 @@ const EntityControlForm = memo(
   },
 )
 
-const ProtocolControlForm = memo(() => {
-  const protocols = Object.values(EmissionProtocol)
-  const protocolItems = protocols.map((protocol) => (
-    <MenuItem value={protocol}>{protocol}</MenuItem>
-  ))
-  const selectedProtocols = [protocols[0]]
-
-  return (
-    <FormControl sx={{ width: 220 }}>
-      <InputLabel>Protocol</InputLabel>
-      <Select value={selectedProtocols} renderValue={multiSelectJoiner}>
-        {protocolItems}
-      </Select>
-    </FormControl>
-  )
-})
-
 const AreaControlForm = memo(
   ({
     selectedAreaLabels,
@@ -256,84 +235,14 @@ const CategoriesControlForm = memo(
   },
 )
 
-const DateRangeControlForm = memo(() => {
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
-
-  const handleClick = useCallback(
-    (event: React.MouseEvent<HTMLButtonElement>) => {
-      setAnchorEl(event.currentTarget)
-    },
-    [setAnchorEl],
-  )
-
-  const handleClose = useCallback(() => {
-    setAnchorEl(null)
-  }, [setAnchorEl])
-
-  const open = Boolean(anchorEl)
-  const id = open ? "simple-popover" : undefined
-
-  return (
-    <>
-      <Button
-        sx={{
-          color: "primary.contrastText",
-        }}
-        aria-describedby={id}
-        variant="contained"
-        onClick={handleClick}
-      >
-        Date filter
-      </Button>
-      <Popover
-        id={id}
-        open={open}
-        anchorEl={anchorEl}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "center",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "center",
-        }}
-      >
-        <Paper elevation={3} sx={{ p: ".5rem" }}>
-          <Stack gap=".5rem">
-            <Stack
-              direction="row"
-              gap=".5rem"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <ButtonGroup>
-                <Button variant="outlined">6 months</Button>
-                <Button variant="outlined">12 months</Button>
-                <Button variant="outlined">24 months</Button>
-              </ButtonGroup>
-            </Stack>
-            <Stack gap="1rem" direction="row">
-              <DatePicker label="From" />
-              <DatePicker label="To" />
-            </Stack>
-          </Stack>
-        </Paper>
-      </Popover>
-    </>
-  )
-})
-
 const ReportGeneratorControl = memo(
   ({
     filter,
     indexes,
-    onClick,
     ...sxProps
   }: {
     filter: EmissionFilterState
     indexes: AlignedIndexes
-    onClick: VoidFunction
   } & SxProps) => {
     const [open, setOpen] = useState(false)
     const handleOpen = () => setOpen(true)
@@ -362,7 +271,12 @@ const ReportGeneratorControl = memo(
 
     return (
       <Box>
-        <Button variant="outlined" onClick={handleOpen} sx={{ ...sxProps }}>
+        <Button
+          variant="outlined"
+          endIcon={<DownloadIcon />}
+          onClick={handleOpen}
+          sx={{ ...sxProps }}
+        >
           Report
         </Button>
         <Modal
@@ -384,17 +298,6 @@ const ReportGeneratorControl = memo(
 
 const GlobalFilterMenu = ({ ...sxProps }: SxProps) => {
   const dispatch = useAppDispatch()
-  useGetEmissionRangesQuery({
-    protocol: "ghgprotocol",
-    scale: "m",
-    timeRanges: [
-      {
-        start: "2023-01-01T00:00:00Z",
-        end: "2023-01-02T00:00:00Z",
-        scale: "m",
-      },
-    ],
-  })
 
   const alignedIndexes = useSelector(indexesSelector)
   const allCategories = useSelector(categoriesSelector)
@@ -528,10 +431,6 @@ const GlobalFilterMenu = ({ ...sxProps }: SxProps) => {
         selectedCategories={selectedCategories}
         onSelectionChange={onCategoriesSelectionChange}
       />
-
-      <ProtocolControlForm />
-
-      <DateRangeControlForm />
 
       <ButtonGroup disableElevation variant="contained">
         <Button

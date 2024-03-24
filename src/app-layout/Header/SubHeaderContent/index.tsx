@@ -7,9 +7,8 @@ import useConfig from "hooks/useConfig"
 import { MenuOrientation } from "types/config"
 import DrawerHeader from "../../Drawer/DrawerHeader"
 
-// types
-import Protocol from "./Protocol"
-import GlobalFilterMenu from "./GlobalFilterMenu"
+import EmissionFilterMenu from "./EmissionFilterMenu"
+import EmissionRequestParamsMenu from "./EmissionRequestParamsMenu"
 
 // ==============================|| HEADER - CONTENT ||============================== //
 
@@ -23,9 +22,9 @@ const SubHeaderContent = () => {
       {menuOrientation === MenuOrientation.HORIZONTAL && !downLG && (
         <DrawerHeader open />
       )}
-      {!downLG && <GlobalFilterMenu />}
+      {!downLG && <EmissionFilterMenu />}
       {downLG && <Box sx={{ width: "100%", ml: 1 }} />}
-      {!downLG && <Protocol />}
+      {!downLG && <EmissionRequestParamsMenu />}
     </>
   )
 }

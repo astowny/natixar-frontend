@@ -1,33 +1,24 @@
 import {
-  MONTH_LAYOUT,
+  TimeRange,
   TimeSection,
   TimeWindow,
 } from "data/domain/types/time/TimeRelatedTypes"
+import { format, subMonths } from "date-fns"
 
 export const timestampToHour = (timestamp: number): string =>
-  new Date(timestamp).getHours().toString()
+  format(timestamp, "	p")
 
 export const timestampToDay = (timestamp: number): string =>
-  new Date(timestamp).getDay().toString()
+  format(timestamp, "PP")
 
-export const timestampToMonth = (timestamp: number): string => {
-  const date = new Date(timestamp)
-  const monthNumber = date.getMonth() + 1
-  let result = MONTH_LAYOUT[monthNumber]
-  if (result) {
-    result += ` ${date.getFullYear()}`
-  }
-  return result ?? ""
-}
+export const timestampToMonth = (timestamp: number): string =>
+  format(timestamp, "MMM")
 
-export const timestampToQuarter = (timestamp: number): string => {
-  const date = new Date(timestamp)
-  const quarterNumber = 1 + Math.ceil(date.getMonth() / 4)
-  return `Q${quarterNumber}`
-}
+export const timestampToQuarter = (timestamp: number): string =>
+  format(timestamp, "QQQ")
 
 export const timestampToYear = (timestamp: number): string =>
-  new Date(timestamp).getFullYear().toString()
+  format(timestamp, "yyyy")
 
 export const compareTimeSections = (a: TimeSection, b: TimeSection): number =>
   b.year - a.year || a.name.localeCompare(b.name)
@@ -71,3 +62,11 @@ export const getTimeOffsetForSlot = (
   }
   return offset
 }
+
+export const getTimeRangeFor = (scale: number): TimeRange => {
+  const now = new Date().getTime()
+  return { start: subMonths(now, Math.abs(scale)).getTime(), end: now }
+}
+
+export const getShortDescriptionForTimeRange = (timeRange: TimeRange): string =>
+  `${format(timeRange.start, "P")} - ${format(timeRange.end, "P")}`

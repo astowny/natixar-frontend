@@ -8,6 +8,15 @@ export const selectEmissionFilter = (state: RootState) =>
 export const selectTimeWindow = (state: RootState) =>
   state.emissionRanges.overallTimeWindow
 
+export const selectRequestTimeRange = (state: RootState) =>
+  state.emissionRanges.dataRetrievalParameters.timeRangeOfInterest
+
+export const selectRequestEmissionProtocol = (state: RootState) =>
+  state.emissionRanges.dataRetrievalParameters.protocol
+
+export const selectEmissionRangeRequestParameters = (state: RootState) =>
+  state.emissionRanges.dataRetrievalParameters
+
 export const selectAllVisibleCategories = (
   state: RootState,
 ): IndexOf<EmissionCategory> => state.emissionRanges.alignedIndexes.categories
