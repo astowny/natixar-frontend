@@ -1,6 +1,6 @@
-import { Box } from "@mui/material"
+import { Box, Drawer } from "@mui/material"
 
-import { memo, useEffect, useState } from "react"
+import { memo, useCallback, useEffect, useState } from "react"
 import { getColorByCategory } from "utils/CategoryColors"
 import { ApexPieChartProps } from "sections/charts/apexchart/ApexDonutChart/interface"
 import ReactApexChart from "react-apexcharts"
@@ -9,8 +9,12 @@ import { ApexOptions } from "apexcharts"
 import {
   AlignedIndexes,
   EmissionDataPoint,
+  EmissionProtocol,
 } from "data/domain/types/emissions/EmissionTypes"
 import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
+import TopContributorsSection from "sections/contributor/top-contributors/TopContributorsSection"
+import { selectEmissionRangeRequestParameters } from "data/store/api/EmissionSelectors"
+import { useSelector } from "react-redux"
 import {
   ChartContainerStyles,
   ContainerStyles,
@@ -31,15 +35,6 @@ export interface EmissionByCategorySectionProps {
 }
 
 const optionsOverrides: ApexOptions = {
-  chart: {
-    events: {
-      click(event, chartContext, config) {
-        console.log("We clicked on: ", event)
-        console.log("Context is: ", chartContext)
-        console.log("Config is: ", config)
-      },
-    },
-  },
   yaxis: {
     labels: {
       formatter(val) {
@@ -64,10 +59,23 @@ const totalTextOptions = {
   fontWeight: "bold",
 }
 
-const totalOptions = (totalEmission: number): ApexOptions => {
+const configurableOptions = (
+  totalEmission: number,
+  onScopeClick: (scope: number) => void,
+): ApexOptions => {
   const formattedEmission = formatEmissionAmount(totalEmission).split(" ")
 
   return {
+    chart: {
+      events: {
+        click(event, chartContext, config) {
+          console.log("We clicked on: ", event)
+          console.log("Context is: ", chartContext)
+          console.log("Config is: ", config)
+          onScopeClick(1234)
+        },
+      },
+    },
     plotOptions: {
       pie: {
         donut: {
@@ -95,12 +103,16 @@ const totalOptions = (totalEmission: number): ApexOptions => {
   }
 }
 
-const EmissionByCategorySection = (props: EmissionByCategorySectionProps) => {
-  const { allDataPoints, alignedIndexes } = props
+const EmissionByCategorySection = ({
+  allDataPoints,
+  alignedIndexes,
+}: EmissionByCategorySectionProps) => {
   const [pieChartData, setPieChartData] = useState<ApexPieChartProps>({
     data: [],
     totalLabel: "",
   })
+  const [openTopContributors, setOpenTopContributors] = useState(false)
+  const [selectedCategory, setSelectedCategory] = useState(0)
 
   useEffect(() => {
     let acceptResult = true
@@ -157,6 +169,14 @@ const EmissionByCategorySection = (props: EmissionByCategorySectionProps) => {
 
   const totalEmission = series.reduce((a, b) => a + b, 0)
 
+  const onScopeClick = useCallback(
+    (category: number) => {
+      setSelectedCategory(category)
+      setOpenTopContributors(true)
+    },
+    [setSelectedCategory, setOpenTopContributors],
+  )
+
   return (
     <Box sx={ContainerStyles}>
       <Box sx={ChartContainerStyles}>
@@ -164,7 +184,7 @@ const EmissionByCategorySection = (props: EmissionByCategorySectionProps) => {
           options={{
             ...defaultOptions,
             ...optionsOverrides,
-            ...totalOptions(totalEmission),
+            ...configurableOptions(totalEmission, onScopeClick),
             labels,
             colors,
           }}
@@ -187,6 +207,24 @@ const EmissionByCategorySection = (props: EmissionByCategorySectionProps) => {
           />
         ))}
       </Box>
+      <Drawer
+        anchor="right"
+        open={openTopContributors}
+        onClose={() => setOpenTopContributors(false)}
+      >
+        <Box
+          sx={{
+            width: "40%",
+            maxWidth: "80%",
+          }}
+        />
+        <TopContributorsSection
+          sx={{ width: "100%" }}
+          categoryId={selectedCategory}
+          indexes={alignedIndexes}
+          dataPoints={allDataPoints}
+        />
+      </Drawer>
     </Box>
   )
 }
