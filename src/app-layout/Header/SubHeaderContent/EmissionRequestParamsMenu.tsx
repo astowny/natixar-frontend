@@ -11,6 +11,7 @@ import {
   Paper,
   Popover,
   Stack,
+  SxProps,
   Typography,
 } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
@@ -195,7 +196,7 @@ const DateRangeControlForm = memo(({ timeRange }: { timeRange: TimeRange }) => {
   )
 })
 
-const RequestParametersControl = () => {
+const RequestParametersControl = ({ ...sxProps }: SxProps) => {
   const { timeRangeOfInterest, protocol } = useSelector(
     selectEmissionRangeRequestParameters,
   )
@@ -218,7 +219,7 @@ const RequestParametersControl = () => {
   )
 
   return (
-    <Stack direction="row" gap=".5rem">
+    <Stack direction="row" gap=".5rem" sx={{ ...sxProps }}>
       <DateRangeControlForm timeRange={timeRangeOfInterest} />
       <Protocol selectedProtocol={protocol} />
     </Stack>
