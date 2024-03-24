@@ -1,29 +1,34 @@
 import { Box, Drawer } from "@mui/material"
 
-import { memo, useCallback, useEffect, useState } from "react"
-import { getColorByCategory } from "utils/CategoryColors"
-import { ApexPieChartProps } from "sections/charts/apexchart/ApexDonutChart/interface"
-import ReactApexChart from "react-apexcharts"
-import { defaultOptions } from "sections/charts/apexchart/ApexDonutChart/constants"
+import { filter, sum, summarize, tidy } from "@tidyjs/tidy"
 import { ApexOptions } from "apexcharts"
+import {
+  extractNameOfEra,
+  formatEmissionAmount,
+  getScopesOfProtocol,
+} from "data/domain/transformers/EmissionTransformers"
+import { expandId } from "data/domain/transformers/StructuralTransformers"
 import {
   AlignedIndexes,
   EmissionDataPoint,
-  EmissionProtocol,
 } from "data/domain/types/emissions/EmissionTypes"
-import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
-import TopContributorsSection from "sections/contributor/top-contributors/TopContributorsSection"
-import { selectEmissionRangeRequestParameters } from "data/store/api/EmissionSelectors"
+import { selectRequestEmissionProtocol } from "data/store/api/EmissionSelectors"
+import { memo, useCallback, useEffect, useMemo, useState } from "react"
+import ReactApexChart from "react-apexcharts"
 import { useSelector } from "react-redux"
+import { defaultOptions } from "sections/charts/apexchart/ApexDonutChart/constants"
+import { ApexPieChartProps } from "sections/charts/apexchart/ApexDonutChart/interface"
+import TopContributorsSection from "sections/contributor/top-contributors/TopContributorsSection"
+import { getColorByCategory } from "utils/CategoryColors"
+import LabelBox from "./LabelBox"
 import {
   ChartContainerStyles,
   ContainerStyles,
   LegendsContainerStyles,
 } from "./styled"
-import LabelBox from "./LabelBox"
 
 interface ByCategoryItem {
-  categoryId: string
+  categoryId: number
   count: number
   categoryName: string
   categoryColor: string
@@ -107,6 +112,7 @@ const EmissionByCategorySection = ({
   allDataPoints,
   alignedIndexes,
 }: EmissionByCategorySectionProps) => {
+  const protocol = useSelector(selectRequestEmissionProtocol)
   const [pieChartData, setPieChartData] = useState<ApexPieChartProps>({
     data: [],
     totalLabel: "",
@@ -114,32 +120,34 @@ const EmissionByCategorySection = ({
   const [openTopContributors, setOpenTopContributors] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState(0)
 
+  const scopes = useMemo(
+    () => getScopesOfProtocol(protocol, alignedIndexes.categories),
+    [protocol, alignedIndexes.categories],
+  )
+
   useEffect(() => {
     let acceptResult = true
     const aggregateData = async () => {
       const categoryAggregators: Record<string, ByCategoryItem> = {}
-      Object.entries(alignedIndexes.categories).forEach((entry) => {
-        const [categoryId, category] = entry
-        const { era } = category
-        if (!era) {
-          return
-        }
-        if (!categoryAggregators[era]) {
-          categoryAggregators[era] = {
-            categoryId,
-            count: 0,
-            categoryName: era,
-            categoryColor: getColorByCategory(era ?? ""),
-          }
-        }
-      })
 
-      allDataPoints.forEach((dataPoint) => {
-        let era = dataPoint.categoryEraName
-        if (era === "") {
-          era = "Other"
+      scopes.forEach((scope) => {
+        const allIdsOfInterest = expandId(
+          [scope.id],
+          alignedIndexes.categoryHierarchy,
+        )
+        const total = tidy(
+          allDataPoints,
+          filter((edp) => allIdsOfInterest.includes(edp.categoryId)),
+          summarize({ totalEmission: sum("totalEmissionAmount") }),
+        )[0].totalEmission
+
+        const era = extractNameOfEra(scope.era)
+        categoryAggregators[era] = {
+          categoryId: scope.id,
+          count: total,
+          categoryName: scope.name,
+          categoryColor: getColorByCategory(era),
         }
-        categoryAggregators[era].count += dataPoint.totalEmissionAmount
       })
 
       if (acceptResult) {
@@ -211,15 +219,16 @@ const EmissionByCategorySection = ({
         anchor="right"
         open={openTopContributors}
         onClose={() => setOpenTopContributors(false)}
+        sx={{
+          width: "40dvw",
+          maxWidth: "80dvw",
+        }}
       >
-        <Box
-          sx={{
-            width: "40%",
-            maxWidth: "80%",
-          }}
-        />
         <TopContributorsSection
-          sx={{ width: "100%" }}
+          sx={{
+            width: "40dvw",
+            maxWidth: "80dvw",
+          }}
           categoryId={selectedCategory}
           indexes={alignedIndexes}
           dataPoints={allDataPoints}

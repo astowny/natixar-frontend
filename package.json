@@ -47,6 +47,7 @@
     "@tanstack/react-virtual": "^3.0.0-alpha.0",
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^14.0.0",
+    "@tidyjs/tidy": "^2.5.2",
     "@types/leaflet": "^1.9.8",
     "@types/leaflet.markercluster": "^1.5.4",
     "@vitejs/plugin-react": "^4.1.0",

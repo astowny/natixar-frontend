@@ -27,7 +27,7 @@ export interface EmissionRangesPayload {
 }
 
 export type TimeRangeScale = "m" | "h" | "d" | "w" | "M" | "Q" | "y"
-export type EmissionProtocol = "ghgprotocol" | "beges" | "begesv5"
+export type EndpointEmissionProtocol = "ghgprotocol" | "beges" | "begesv5"
 
 export interface TimeRangeRequest {
   start: string
@@ -37,14 +37,14 @@ export interface TimeRangeRequest {
 
 export interface EmissionRangesRequest {
   timeRanges: TimeRangeRequest[]
-  protocol: EmissionProtocol
+  protocol: EndpointEmissionProtocol
   scale: TimeRangeScale
 }
 
 export const formatProtocolForRangesEndpoint = (
   protocol: DomainEmissionProtocol,
-): EmissionProtocol => {
-  let result: EmissionProtocol
+): EndpointEmissionProtocol => {
+  let result: EndpointEmissionProtocol
   switch (protocol) {
     case DomainEmissionProtocol.GHG:
       result = "ghgprotocol"

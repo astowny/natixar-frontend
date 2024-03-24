@@ -8,18 +8,21 @@ export const selectEmissionFilter = (state: RootState) =>
 export const selectTimeWindow = (state: RootState) =>
   state.emissionRanges.overallTimeWindow
 
-export const selectRequestTimeRange = (state: RootState) =>
-  state.emissionRanges.dataRetrievalParameters.timeRangeOfInterest
-
-export const selectRequestEmissionProtocol = (state: RootState) =>
-  state.emissionRanges.dataRetrievalParameters.protocol
-
 export const selectEmissionRangeRequestParameters = (state: RootState) =>
   state.emissionRanges.dataRetrievalParameters
 
+export const selectRequestTimeRange = (state: RootState) =>
+  selectEmissionRangeRequestParameters(state).timeRangeOfInterest
+
+export const selectRequestEmissionProtocol = (state: RootState) =>
+  selectEmissionRangeRequestParameters(state).protocol
+
+export const selectAlignedIndexes = (state: RootState) =>
+  state.emissionRanges.alignedIndexes
+
 export const selectAllVisibleCategories = (
   state: RootState,
-): IndexOf<EmissionCategory> => state.emissionRanges.alignedIndexes.categories
+): IndexOf<EmissionCategory> => selectAlignedIndexes(state).categories
 
 export const selectAllVisibleCategoryEras = (state: RootState) => {
   const allCategories = Object.values(selectAllVisibleCategories(state))
@@ -28,9 +31,6 @@ export const selectAllVisibleCategoryEras = (state: RootState) => {
     .filter((era) => era !== "")
   return [...new Set<string>(allCategoryNames)]
 }
-
-export const selectAlignedIndexes = (state: RootState) =>
-  state.emissionRanges.alignedIndexes
 
 export const selectVisiblePoints = (state: RootState) =>
   state.emissionRanges.visibleData.emissionPoints

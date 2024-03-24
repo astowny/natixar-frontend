@@ -6,10 +6,13 @@ import {
   AlignedIndexes,
   CdpLayoutItem,
   CompressedDataPoint,
+  EmissionCategory,
   EmissionDataPoint,
+  EmissionProtocol,
 } from "../types/emissions/EmissionTypes"
 import { detectCompany, detectCountry } from "./DataDetectors"
 import { getTimeDeltaForSlot, getTimeOffsetForSlot } from "./TimeTransformers"
+import { IdTreeNode, IndexOf } from "../types/structures/StructuralTypes"
 
 const emptyDecimal = ".0"
 
@@ -219,4 +222,20 @@ export const emissionsGroupByTime = (
   })
 
   return result
+}
+
+export const getScopesOfProtocol = (
+  protocol: EmissionProtocol,
+  categoriesIndex: IndexOf<EmissionCategory>,
+): EmissionCategory[] => {
+  // Find scopes of the current protocol
+  const categories = Object.values(categoriesIndex)
+  const protocolId = categories.find(
+    (category) => category.name.toLowerCase() === protocol.toLowerCase(),
+  )?.id
+  if (typeof protocolId === "undefined") {
+    return []
+  }
+  const scopes = categories.filter((category) => protocolId === category.parent)
+  return scopes
 }
