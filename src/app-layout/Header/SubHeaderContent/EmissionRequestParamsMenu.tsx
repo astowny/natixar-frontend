@@ -131,9 +131,9 @@ const DateRangeControlForm = memo(({ timeRange }: { timeRange: TimeRange }) => {
   )
 
   const startChangeCallback = useCallback(
-    (startTime: number) => {
+    (startTime: Date) => {
       const newTimeRange: TimeRange = {
-        start: startTime,
+        start: startTime.getTime(),
         end: timeRange.end,
       }
       dispatch(selectTimeRange(newTimeRange))
@@ -142,10 +142,10 @@ const DateRangeControlForm = memo(({ timeRange }: { timeRange: TimeRange }) => {
   )
 
   const endChangeCallback = useCallback(
-    (endTime: number) => {
+    (endTime: Date) => {
       const newTimeRange: TimeRange = {
         start: timeRange.start,
-        end: endTime,
+        end: endTime.getTime(),
       }
       dispatch(selectTimeRange(newTimeRange))
     },

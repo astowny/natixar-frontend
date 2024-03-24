@@ -31,6 +31,15 @@ export interface EmissionByCategorySectionProps {
 }
 
 const optionsOverrides: ApexOptions = {
+  chart: {
+    events: {
+      click(event, chartContext, config) {
+        console.log("We clicked on: ", event)
+        console.log("Context is: ", chartContext)
+        console.log("Config is: ", config)
+      },
+    },
+  },
   yaxis: {
     labels: {
       formatter(val) {
