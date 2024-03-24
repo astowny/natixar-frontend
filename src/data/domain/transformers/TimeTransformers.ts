@@ -4,7 +4,7 @@ import {
   TimeSection,
   TimeWindow,
 } from "data/domain/types/time/TimeRelatedTypes"
-import { subMonths } from "date-fns"
+import { format, subMonths } from "date-fns"
 
 export const timestampToHour = (timestamp: number): string =>
   new Date(timestamp).getHours().toString()
@@ -78,3 +78,6 @@ export const getTimeRangeFor = (scale: number): TimeRange => {
   const now = new Date().getTime()
   return { start: subMonths(now, Math.abs(scale)).getTime(), end: now }
 }
+
+export const getShortDescriptionForTimeRange = (timeRange: TimeRange): string =>
+  `${format(timeRange.start, "P")} - ${format(timeRange.end, "P")}`

@@ -20,6 +20,7 @@ import {
   AlignedIndexes,
   EmissionFilterState,
 } from "data/domain/types/emissions/EmissionTypes"
+import DownloadIcon from "@mui/icons-material/Download"
 import {
   BusinessEntity,
   GeographicalArea,
@@ -270,7 +271,12 @@ const ReportGeneratorControl = memo(
 
     return (
       <Box>
-        <Button variant="outlined" onClick={handleOpen} sx={{ ...sxProps }}>
+        <Button
+          variant="outlined"
+          endIcon={<DownloadIcon />}
+          onClick={handleOpen}
+          sx={{ ...sxProps }}
+        >
           Report
         </Button>
         <Modal

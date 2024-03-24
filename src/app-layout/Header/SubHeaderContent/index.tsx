@@ -7,9 +7,8 @@ import useConfig from "hooks/useConfig"
 import { MenuOrientation } from "types/config"
 import DrawerHeader from "../../Drawer/DrawerHeader"
 
-// types
-import Protocol from "./Protocol"
 import EmissionFilterMenu from "./EmissionFilterMenu"
+import EmissionRequestParamsMenu from "./EmissionRequestParamsMenu"
 
 // ==============================|| HEADER - CONTENT ||============================== //
 
@@ -25,7 +24,7 @@ const SubHeaderContent = () => {
       )}
       {!downLG && <EmissionFilterMenu />}
       {downLG && <Box sx={{ width: "100%", ml: 1 }} />}
-      {!downLG && <Protocol />}
+      {!downLG && <EmissionRequestParamsMenu />}
     </>
   )
 }

@@ -14,7 +14,11 @@ import {
 } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
 import { DatePicker } from "@mui/x-date-pickers"
-import { getTimeRangeFor } from "data/domain/transformers/TimeTransformers"
+import DateRangeIcon from "@mui/icons-material/DateRange"
+import {
+  getShortDescriptionForTimeRange,
+  getTimeRangeFor,
+} from "data/domain/transformers/TimeTransformers"
 import { EmissionProtocol } from "data/domain/types/emissions/EmissionTypes"
 import { TimeRange } from "data/domain/types/time/TimeRelatedTypes"
 import { useAppDispatch } from "data/store"
@@ -24,7 +28,7 @@ import {
   selectProtocol,
   selectTimeRange,
 } from "data/store/features/emissions/ranges/EmissionRangesSlice"
-import { memo, useCallback, useState } from "react"
+import { memo, useCallback, useMemo, useState } from "react"
 import { useSelector } from "react-redux"
 
 // ==============================|| HEADER CONTENT - SEARCH ||============================== //
@@ -119,6 +123,10 @@ const DateRangeControlForm = memo(({ timeRange }: { timeRange: TimeRange }) => {
     },
     [dispatch, selectTimeRange],
   )
+  const timeRangeStr = useMemo(
+    () => getShortDescriptionForTimeRange(timeRange),
+    [timeRange],
+  )
 
   const open = Boolean(anchorEl)
   const id = open ? "simple-popover" : undefined
@@ -133,8 +141,9 @@ const DateRangeControlForm = memo(({ timeRange }: { timeRange: TimeRange }) => {
         aria-describedby={id}
         variant="contained"
         onClick={handleClick}
+        endIcon={<DateRangeIcon />}
       >
-        <Typography noWrap>Date filter</Typography>
+        <Typography noWrap>{timeRangeStr}</Typography>
       </Button>
       <Popover
         id={id}
