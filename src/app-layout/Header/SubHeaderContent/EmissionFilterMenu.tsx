@@ -7,23 +7,18 @@ import {
   InputLabel,
   MenuItem,
   Modal,
-  Paper,
-  Popover,
   Select,
   SelectChangeEvent,
   Stack,
   SxProps,
   Typography,
 } from "@mui/material"
-import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import { CategoryLabel } from "components/categories/CategoriesLegend"
 import { CheckboxItem } from "components/natixarComponents/AreaCheckbox/CheckboxItem"
 import { extractIdsOfIndex } from "data/domain/transformers/StructuralTransformers"
-import { getTimeRangeFor } from "data/domain/transformers/TimeTransformers"
 import {
   AlignedIndexes,
   EmissionFilterState,
-  EmissionProtocol,
 } from "data/domain/types/emissions/EmissionTypes"
 import {
   BusinessEntity,
@@ -38,12 +33,9 @@ import {
   selectAllVisibleCategoryEras as categoriesSelector,
   selectEmissionFilter as filterStateSelector,
   selectAlignedIndexes as indexesSelector,
-  selectRequestTimeRange,
 } from "data/store/api/EmissionSelectors"
-import { useGetEmissionRangesQuery } from "data/store/features/emissions/ranges/EmissionRangesClient"
 import {
   clearFilterSelection as clearFilterAction,
-  selectTimeRange,
   updateFilterSelection as updateFilterAction,
 } from "data/store/features/emissions/ranges/EmissionRangesSlice"
 import { useGenerateReportMutation } from "data/store/features/reports/ReportGenerationClient"
@@ -242,91 +234,6 @@ const CategoriesControlForm = memo(
   },
 )
 
-const DateRangeControlForm = memo(() => {
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
-  const timeRange = useSelector(selectRequestTimeRange)
-  const dispatch = useAppDispatch()
-
-  const handleClick = useCallback(
-    (event: React.MouseEvent<HTMLButtonElement>) => {
-      setAnchorEl(event.currentTarget)
-    },
-    [setAnchorEl],
-  )
-
-  const handleClose = useCallback(() => {
-    setAnchorEl(null)
-  }, [setAnchorEl])
-
-  const changeTimeRange = useCallback(
-    (scale: number) => {
-      const newTimeRange = getTimeRangeFor(scale)
-      dispatch(selectTimeRange(newTimeRange))
-    },
-    [dispatch, selectTimeRange],
-  )
-
-  const open = Boolean(anchorEl)
-  const id = open ? "simple-popover" : undefined
-  const monthRanges = [6, 12, 24]
-
-  return (
-    <>
-      <Button
-        sx={{
-          color: "primary.contrastText",
-        }}
-        aria-describedby={id}
-        variant="contained"
-        onClick={handleClick}
-      >
-        Date filter
-      </Button>
-      <Popover
-        id={id}
-        open={open}
-        anchorEl={anchorEl}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "center",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "center",
-        }}
-      >
-        <Paper elevation={3} sx={{ p: ".5rem" }}>
-          <Stack gap=".5rem">
-            <Stack
-              direction="row"
-              gap=".5rem"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <ButtonGroup>
-                {monthRanges.map((monthsAmount) => (
-                  <Button
-                    key={monthsAmount}
-                    variant="outlined"
-                    onClick={() => changeTimeRange(monthsAmount)}
-                  >
-                    {monthsAmount} months
-                  </Button>
-                ))}
-              </ButtonGroup>
-            </Stack>
-            <Stack gap="1rem" direction="row">
-              <DatePicker label="From" value={timeRange.start} />
-              <DatePicker label="To" value={timeRange.end} />
-            </Stack>
-          </Stack>
-        </Paper>
-      </Popover>
-    </>
-  )
-})
-
 const ReportGeneratorControl = memo(
   ({
     filter,
@@ -385,17 +292,6 @@ const ReportGeneratorControl = memo(
 
 const GlobalFilterMenu = ({ ...sxProps }: SxProps) => {
   const dispatch = useAppDispatch()
-  useGetEmissionRangesQuery({
-    protocol: "ghgprotocol",
-    scale: "m",
-    timeRanges: [
-      {
-        start: "2023-01-01T00:00:00Z",
-        end: "2023-01-02T00:00:00Z",
-        scale: "m",
-      },
-    ],
-  })
 
   const alignedIndexes = useSelector(indexesSelector)
   const allCategories = useSelector(categoriesSelector)
@@ -529,7 +425,6 @@ const GlobalFilterMenu = ({ ...sxProps }: SxProps) => {
         selectedCategories={selectedCategories}
         onSelectionChange={onCategoriesSelectionChange}
       />
-      <DateRangeControlForm />
 
       <ButtonGroup disableElevation variant="contained">
         <Button
