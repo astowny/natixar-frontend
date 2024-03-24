@@ -162,23 +162,6 @@ const EntityControlForm = memo(
   },
 )
 
-const ProtocolControlForm = memo(() => {
-  const protocols = Object.values(EmissionProtocol)
-  const protocolItems = protocols.map((protocol) => (
-    <MenuItem value={protocol}>{protocol}</MenuItem>
-  ))
-  const selectedProtocols = [protocols[0]]
-
-  return (
-    <FormControl sx={{ width: 220 }}>
-      <InputLabel>Protocol</InputLabel>
-      <Select value={selectedProtocols} renderValue={multiSelectJoiner}>
-        {protocolItems}
-      </Select>
-    </FormControl>
-  )
-})
-
 const AreaControlForm = memo(
   ({
     selectedAreaLabels,
@@ -328,12 +311,10 @@ const ReportGeneratorControl = memo(
   ({
     filter,
     indexes,
-    onClick,
     ...sxProps
   }: {
     filter: EmissionFilterState
     indexes: AlignedIndexes
-    onClick: VoidFunction
   } & SxProps) => {
     const [open, setOpen] = useState(false)
     const handleOpen = () => setOpen(true)
@@ -528,9 +509,6 @@ const GlobalFilterMenu = ({ ...sxProps }: SxProps) => {
         selectedCategories={selectedCategories}
         onSelectionChange={onCategoriesSelectionChange}
       />
-
-      <ProtocolControlForm />
-
       <DateRangeControlForm />
 
       <ButtonGroup disableElevation variant="contained">
