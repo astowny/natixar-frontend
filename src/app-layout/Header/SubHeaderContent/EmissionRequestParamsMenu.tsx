@@ -142,10 +142,11 @@ const DateRangeControlForm = memo(({ timeRange }: { timeRange: TimeRange }) => {
     <>
       <Button
         sx={{
-          color: "primary.contrastText",
+          color: "primary",
         }}
         aria-describedby={id}
-        variant="contained"
+        variant="outlined"
+        color="primary"
         onClick={handleClick}
         endIcon={<DateRangeIcon />}
       >
@@ -165,11 +166,11 @@ const DateRangeControlForm = memo(({ timeRange }: { timeRange: TimeRange }) => {
           horizontal: "center",
         }}
       >
-        <Paper elevation={3} sx={{ p: ".5rem" }}>
-          <Stack gap=".5rem">
+        <Paper elevation={3} sx={{ p: "1rem" }}>
+          <Stack gap="1rem">
             <Stack
               direction="row"
-              gap=".5rem"
+              gap="1.5rem"
               alignItems="center"
               justifyContent="center"
             >
@@ -185,9 +186,17 @@ const DateRangeControlForm = memo(({ timeRange }: { timeRange: TimeRange }) => {
                 ))}
               </ButtonGroup>
             </Stack>
-            <Stack gap="1rem" direction="row">
-              <DatePicker label="From" value={timeRange.start} />
-              <DatePicker label="To" value={timeRange.end} />
+            <Stack gap="1.5rem" direction="row">
+              <DatePicker
+                sx={{ width: "10rem" }}
+                label="From"
+                value={timeRange.start}
+              />
+              <DatePicker
+                sx={{ width: "10rem" }}
+                label="To"
+                value={timeRange.end}
+              />
             </Stack>
           </Stack>
         </Paper>
