@@ -14,6 +14,11 @@ export interface TimeWindow {
   timeStepInSecondsPattern: number[]
 }
 
+export interface TimeRange {
+  start: number
+  end: number
+}
+
 export const MONTH_LAYOUT: Record<number, string> = {
   1: "Jan",
   2: "Feb",

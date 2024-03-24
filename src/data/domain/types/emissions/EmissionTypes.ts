@@ -4,7 +4,7 @@ import {
   GeographicalArea,
 } from "../participants/ContributorsTypes"
 import { IdTreeNode, IndexOf } from "../structures/StructuralTypes"
-import { TimeWindow } from "../time/TimeRelatedTypes"
+import { TimeRange, TimeWindow } from "../time/TimeRelatedTypes"
 
 export enum EmissionProtocol {
   GHG = "GHG Protocol",
@@ -82,10 +82,16 @@ export interface EmissionFilterState {
   selectedCategories: string[]
 }
 
+export interface EmissionRetrievalParametersState {
+  timeRangeOfInterest: TimeRange
+  protocol: EmissionProtocol
+}
+
 export interface EmissionRangeState {
   alignedIndexes: AlignedIndexes
   allPoints: EmissionDataPoint[]
   visibleData: VisibleData
   overallTimeWindow: TimeWindow
   emissionFilterState: EmissionFilterState
+  dataRetrievalParameters: EmissionRetrievalParametersState
 }

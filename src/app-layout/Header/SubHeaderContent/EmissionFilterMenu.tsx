@@ -19,6 +19,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import { CategoryLabel } from "components/categories/CategoriesLegend"
 import { CheckboxItem } from "components/natixarComponents/AreaCheckbox/CheckboxItem"
 import { extractIdsOfIndex } from "data/domain/transformers/StructuralTransformers"
+import { getTimeRangeFor } from "data/domain/transformers/TimeTransformers"
 import {
   AlignedIndexes,
   EmissionFilterState,
@@ -37,10 +38,12 @@ import {
   selectAllVisibleCategoryEras as categoriesSelector,
   selectEmissionFilter as filterStateSelector,
   selectAlignedIndexes as indexesSelector,
+  selectRequestTimeRange,
 } from "data/store/api/EmissionSelectors"
 import { useGetEmissionRangesQuery } from "data/store/features/emissions/ranges/EmissionRangesClient"
 import {
   clearFilterSelection as clearFilterAction,
+  selectTimeRange,
   updateFilterSelection as updateFilterAction,
 } from "data/store/features/emissions/ranges/EmissionRangesSlice"
 import { useGenerateReportMutation } from "data/store/features/reports/ReportGenerationClient"
@@ -241,6 +244,8 @@ const CategoriesControlForm = memo(
 
 const DateRangeControlForm = memo(() => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
+  const timeRange = useSelector(selectRequestTimeRange)
+  const dispatch = useAppDispatch()
 
   const handleClick = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -253,8 +258,17 @@ const DateRangeControlForm = memo(() => {
     setAnchorEl(null)
   }, [setAnchorEl])
 
+  const changeTimeRange = useCallback(
+    (scale: number) => {
+      const newTimeRange = getTimeRangeFor(scale)
+      dispatch(selectTimeRange(newTimeRange))
+    },
+    [dispatch, selectTimeRange],
+  )
+
   const open = Boolean(anchorEl)
   const id = open ? "simple-popover" : undefined
+  const monthRanges = [6, 12, 24]
 
   return (
     <>
@@ -291,14 +305,20 @@ const DateRangeControlForm = memo(() => {
               justifyContent="center"
             >
               <ButtonGroup>
-                <Button variant="outlined">6 months</Button>
-                <Button variant="outlined">12 months</Button>
-                <Button variant="outlined">24 months</Button>
+                {monthRanges.map((monthsAmount) => (
+                  <Button
+                    key={monthsAmount}
+                    variant="outlined"
+                    onClick={() => changeTimeRange(monthsAmount)}
+                  >
+                    {monthsAmount} months
+                  </Button>
+                ))}
               </ButtonGroup>
             </Stack>
             <Stack gap="1rem" direction="row">
-              <DatePicker label="From" />
-              <DatePicker label="To" />
+              <DatePicker label="From" value={timeRange.start} />
+              <DatePicker label="To" value={timeRange.end} />
             </Stack>
           </Stack>
         </Paper>
