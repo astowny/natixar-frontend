@@ -21,27 +21,23 @@ const ContributorAnalysis = Loadable(
 const CategoryAnalysis = Loadable(
   lazy(() => import("pages/contributor/categoryanalysis")),
 )
-const ContributorUpload = Loadable(
-  lazy(() => import("pages/contributor/upload")),
-)
+const DocumentUpload = Loadable(lazy(() => import("pages/contributor/upload")))
 
 // render - widget
 const WidgetStatistics = Loadable(lazy(() => import("pages/widget/statistics")))
 const WidgetData = Loadable(lazy(() => import("pages/widget/data")))
 const WidgetChart = Loadable(lazy(() => import("pages/widget/chart")))
-const ClimateChangePage = Loadable(
+const ClimateChangeDashboard = Loadable(
   lazy(() => import("pages/natixar/ClimateChangePage")),
 )
 const ScopePage = Loadable(lazy(() => import("pages/natixar/ScopePage")))
 const ContributorsPage = Loadable(
   lazy(() => import("pages/natixar/ContributorsPage")),
 )
-const DataPage = Loadable(lazy(() => import("pages/natixar/DataPage")))
+const DataHealthPage = Loadable(lazy(() => import("pages/natixar/DataPage")))
 
 // render - charts & map
-const ChartApexchart = Loadable(lazy(() => import("pages/charts/apexchart")))
-const ChartOrganization = Loadable(lazy(() => import("pages/charts/org-chart")))
-const ClustersLeafletMap = Loadable(lazy(() => import("pages/maps-leaflet")))
+const ContributorsDashboard = Loadable(lazy(() => import("pages/maps-leaflet")))
 
 const MaintenanceError = Loadable(lazy(() => import("pages/maintenance/404")))
 const MaintenanceError500 = Loadable(
@@ -59,91 +55,65 @@ const AppContactUS = Loadable(lazy(() => import("pages/contact-us")))
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {
-  path: "/",
   children: [
     {
-      path: "/",
+      index: true,
+      element: <ClimateChangeDashboard />,
+      errorElement: <MaintenanceError />,
+    },
+    {
+      path: "contributors",
       children: [
         {
           path: "dashboard",
-          children: [
-            {
-              path: "default",
-              element: <DashboardDefault />,
-            },
-            {
-              path: "analytics",
-              element: <DashboardAnalytics />,
-            },
-          ],
+          element: <ContributorsDashboard />,
         },
         {
-          path: "contributor",
-          children: [
-            {
-              path: "dashboard",
-              element: <ClimateChangePage />,
-            },
-            {
-              path: "scope/:id",
-              element: <ScopePage />,
-            },
-            {
-              path: "scope-details/:id",
-              element: <ContributorsPage />,
-            },
-            {
-              path: "category-analysis/:id",
-              element: <CategoryAnalysis />,
-            },
-            {
-              path: "map",
-              element: <ClustersLeafletMap />,
-            },
-            {
-              path: "analysis",
-              element: <ContributorAnalysis />,
-            },
-            {
-              path: "upload",
-              element: <ContributorUpload />,
-            },
-            {
-              path: "statistics",
-              element: <WidgetStatistics />,
-            },
-            {
-              path: "data1",
-              element: <WidgetData />,
-            },
-            {
-              path: "data",
-              element: <DataPage />,
-            },
-            {
-              path: "chart",
-              element: <WidgetChart />,
-            },
-          ],
+          path: "scope/:id",
+          element: <ScopePage />,
         },
         {
-          path: "charts",
-          children: [
-            {
-              path: "apexchart",
-              element: <ChartApexchart />,
-            },
-            {
-              path: "org-chart",
-              element: <ChartOrganization />,
-            },
-          ],
+          path: "scope-details/:id",
+          element: <ContributorsPage />,
         },
         {
-          path: "map",
-          element: <ClustersLeafletMap />,
+          path: "category-analysis/:id",
+          element: <CategoryAnalysis />,
+        },
+        {
+          path: "analysis",
+          element: <ContributorAnalysis />,
+        },
+        {
+          path: "statistics",
+          element: <WidgetStatistics />,
+        },
+        {
+          path: "data1",
+          element: <WidgetData />,
+        },
+        {
+          path: "chart",
+          element: <WidgetChart />,
         },
       ],
+    },
+    {
+      path: "data",
+      children: [
+        {
+          path: "health",
+          element: <DataHealthPage />,
+        },
+      ],
+    },
+    {
+      path: "upload",
+      element: <DocumentUpload />,
+    },
+    {
+      path: "lca",
+      element: <MaintenanceComingSoon />,
     },
     {
       path: "/maintenance",
@@ -168,14 +138,8 @@ const MainRoutes = {
       ],
     },
     {
-      path: "/",
-      element: <SimpleLayout layout={SimpleLayoutType.SIMPLE} />,
-      children: [
-        {
-          path: "contact-us",
-          element: <AppContactUS />,
-        },
-      ],
+      path: "contact-us",
+      element: <AppContactUS />,
     },
   ],
 }

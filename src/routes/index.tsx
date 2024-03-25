@@ -3,7 +3,6 @@ import { createBrowserRouter } from "react-router-dom"
 
 // project import
 import Loadable from "components/Loadable"
-import { Box } from "@mui/material"
 import MainRoutes from "./MainRoutes"
 import LoginRoutes from "./LoginRoutes"
 
@@ -17,19 +16,7 @@ const PagesLanding = Loadable(lazy(() => import("pages/landing")))
 const router = createBrowserRouter([
   {
     element: <AppLayout />,
-    children: [
-      {
-        path: "/",
-        element: <Box />,
-        children: [
-          {
-            index: true,
-            element: <PagesLanding />,
-          },
-        ],
-      },
-      MainRoutes,
-    ],
+    children: [MainRoutes],
   },
   LoginRoutes,
 ])
