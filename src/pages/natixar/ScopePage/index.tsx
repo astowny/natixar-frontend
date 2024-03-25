@@ -25,6 +25,10 @@ import {
 import { getColorByCategory } from "utils/CategoryColors"
 import { useMemo } from "react"
 import {
+  frCategoryMessages,
+  generalCategoryText,
+} from "data/domain/types/emissions/CategoryDescriptions"
+import {
   ScopeTable,
   ScopeTableItemProps,
 } from "../../../components/natixarComponents/ScopeTable"
@@ -145,10 +149,13 @@ const ScopePage = () => {
           </Stack>
         </Grid>
         <Grid item xs={12} md={12} xl={12}>
-          <Typography variant="h3">{currentProtocol}</Typography>
-        </Grid>
-        <Grid item xs={12} md={12} xl={12}>
-          <Typography variant="h4">{`Detail by ${scope.name}`}</Typography>
+          <Stack gap=".5rem">
+            <Typography variant="h3">Protocol {currentProtocol}</Typography>
+            <Typography variant="h4">
+              {`${scope.name} - ${frCategoryMessages[scopeId] ?? ""}`}
+            </Typography>
+            <Typography variant="h6">{generalCategoryText}</Typography>
+          </Stack>
         </Grid>
         <Grid item xs={12} md={12} xl={12}>
           <ScopeTable data={rows} />
