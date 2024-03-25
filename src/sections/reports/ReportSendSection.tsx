@@ -2,9 +2,11 @@ import { Button, Chip, Grid, Stack } from "@mui/material"
 import Paper from "@mui/material/Paper"
 import Typography from "@mui/material/Typography"
 import CategoriesLegend from "components/categories/CategoriesLegend"
+import { getShortDescriptionForTimeRange } from "data/domain/transformers/TimeTransformers"
 import {
   AlignedIndexes,
   EmissionFilterState,
+  EmissionRetrievalParametersState,
 } from "data/domain/types/emissions/EmissionTypes"
 import { useGenerateReportMutation } from "data/store/features/reports/ReportGenerationClient"
 import { memo, useCallback } from "react"
@@ -44,10 +46,12 @@ const ScopesSection = memo(({ scopes }: { scopes: string[] }) =>
 const ReportSendSection = ({
   parameters,
   indexes,
+  requestParameters,
   onGenerateClick,
 }: {
   parameters: EmissionFilterState
   indexes: AlignedIndexes
+  requestParameters: EmissionRetrievalParametersState
   onGenerateClick: VoidFunction
 }) => {
   const entityNames = parameters.selectedBusinessEntities.map(
@@ -56,6 +60,7 @@ const ReportSendSection = ({
   const geoAreaNames = parameters.selectedGeographicalAreas.map(
     (areaId) => indexes.areas[areaId].name,
   )
+  const { protocol, timeRangeOfInterest } = requestParameters
 
   return (
     <Paper sx={modalStyle}>
@@ -95,7 +100,7 @@ const ReportSendSection = ({
             </Typography>
           </Grid>
           <Grid item xs={8}>
-            <Typography variant="h6">GHG Protocol</Typography>
+            <Typography variant="h6">{protocol}</Typography>
           </Grid>
 
           <Grid item xs={4}>
@@ -104,7 +109,9 @@ const ReportSendSection = ({
             </Typography>
           </Grid>
           <Grid item xs={8}>
-            <Typography variant="h6">Jan 12 - Dec 30</Typography>
+            <Typography variant="h6">
+              {getShortDescriptionForTimeRange(timeRangeOfInterest)}
+            </Typography>
           </Grid>
         </Grid>
 

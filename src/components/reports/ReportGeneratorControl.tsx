@@ -3,6 +3,7 @@ import { extractIdsOfIndex } from "data/domain/transformers/StructuralTransforme
 import {
   AlignedIndexes,
   EmissionFilterState,
+  EmissionRetrievalParametersState,
 } from "data/domain/types/emissions/EmissionTypes"
 import { useGenerateReportMutation } from "data/store/features/reports/ReportGenerationClient"
 import { memo, useCallback, useState } from "react"
@@ -12,11 +13,13 @@ import DownloadIcon from "@mui/icons-material/Download"
 interface ReportGeneratorControlProps {
   filter: EmissionFilterState
   indexes: AlignedIndexes
+  requestParameters: EmissionRetrievalParametersState
 }
 
 const ReportGeneratorControl = ({
   filter,
   indexes,
+  requestParameters,
   ...sxProps
 }: ReportGeneratorControlProps & SxProps) => {
   const [open, setOpen] = useState(false)
@@ -63,6 +66,7 @@ const ReportGeneratorControl = ({
           parameters={filter}
           indexes={indexes}
           onGenerateClick={onGenerateClick}
+          requestParameters={requestParameters}
         />
       </Modal>
     </Box>

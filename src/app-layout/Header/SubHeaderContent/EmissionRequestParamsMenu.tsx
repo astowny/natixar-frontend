@@ -97,14 +97,21 @@ const Protocol = memo(
 )
 
 const RequestParametersControl = ({ ...sxProps }: SxProps) => {
-  const { protocol } = useSelector(selectEmissionRangeRequestParameters)
+  const requestParameters = useSelector(selectEmissionRangeRequestParameters)
   const alignedIndexes = useSelector(indexesSelector)
   const globalFilter = useSelector(filterStateSelector)
 
   return (
     <Stack direction="row" gap=".5rem" sx={{ height: "100%", ...sxProps }}>
-      <ReportGeneratorControl indexes={alignedIndexes} filter={globalFilter} />
-      <Protocol selectedProtocol={protocol} sx={{ height: "100%" }} />
+      <ReportGeneratorControl
+        indexes={alignedIndexes}
+        filter={globalFilter}
+        requestParameters={requestParameters}
+      />
+      <Protocol
+        selectedProtocol={requestParameters.protocol}
+        sx={{ height: "100%" }}
+      />
     </Stack>
   )
 }
