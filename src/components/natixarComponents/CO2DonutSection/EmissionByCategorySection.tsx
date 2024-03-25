@@ -77,10 +77,6 @@ const configurableOptions = (
     chart: {
       events: {
         dataPointSelection: (event, chartContext, config) => {
-          console.log("We clicked on: ", event)
-          console.log("Context is: ", chartContext)
-          console.log("Config is: ", config)
-
           const scopeId = scopeIds[config.seriesIndex]
           onScopeClick(scopeId)
         },
@@ -224,16 +220,14 @@ const EmissionByCategorySection = ({
         anchor="right"
         open={openTopContributors}
         onClose={() => setOpenTopContributors(false)}
-        sx={{
-          width: "40dvw",
-          maxWidth: "80dvw",
+        PaperProps={{
+          sx: {
+            width: "40dvw",
+            maxWidth: "80dvw",
+          },
         }}
       >
         <TopContributorsSection
-          sx={{
-            width: "40dvw",
-            maxWidth: "80dvw",
-          }}
           categoryId={selectedCategory}
           indexes={alignedIndexes}
           dataPoints={allDataPoints}

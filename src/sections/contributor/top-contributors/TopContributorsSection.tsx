@@ -29,13 +29,12 @@ const columnDefinitions: GridColDef[] = [
   {
     field: "name",
     headerName: "Contributor",
-    width: 90,
     sortable: false,
+    width: -1,
   },
   {
     field: "amount",
     headerName: "Emission",
-    width: 150,
     sortable: false,
   },
 ]
@@ -83,12 +82,13 @@ const TopContributorsSection = ({
   )
 
   return (
-    <Stack sx={{ p: "1rem", ...sxProps }}>
+    <Stack sx={{ width: "100%", p: "2rem", ...sxProps }}>
       <Typography variant="h3" fontWeight="bold">
         Top contributors
       </Typography>
       <DataGrid
         sx={{
+          width: "100%",
           "& .MuiDataGrid-cell": {
             outline: "none !important",
           },
