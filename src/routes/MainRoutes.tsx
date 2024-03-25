@@ -109,7 +109,7 @@ const MainRoutes = {
     },
     {
       path: "lca",
-      element: <MaintenanceComingSoon />,
+      element: <MaintenanceUnderConstruction />,
     },
     {
       path: "/maintenance",
