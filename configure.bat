@@ -1,6 +1,6 @@
 IF NOT EXIST ".env" (
     echo Setting up configuration
-    copy .env.example .env
+    copy /y .env.example .env
     echo Done
 )
 
