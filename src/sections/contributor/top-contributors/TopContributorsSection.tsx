@@ -83,11 +83,10 @@ const TopContributorsSection = ({
   )
 
   return (
-    <Stack sx={{ height: "100%", p: "1rem", ...sxProps }}>
+    <Stack sx={{ p: "1rem", ...sxProps }}>
       <Typography variant="h3" fontWeight="bold">
         Top contributors
       </Typography>
-      <Typography>Selected category: {categoryId}</Typography>
       <DataGrid
         sx={{
           "& .MuiDataGrid-cell": {
