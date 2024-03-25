@@ -8,6 +8,8 @@ import {
   List,
   ListItemButton,
   ListItemText,
+  SxProps,
+  Grid,
 } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
 
@@ -17,43 +19,88 @@ import FactoryImage from "assets/images/contributor/analysis/factory.png"
 
 // types
 import { ThemeMode } from "types/config"
+import { BusinessEntity } from "data/domain/types/participants/ContributorsTypes"
+import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
+import { AlignedIndexes } from "data/domain/types/emissions/EmissionTypes"
 
-export const FactoryCard = () => {
+interface FactoryCardProps {
+  company?: BusinessEntity
+  totalEmissions: number
+  indexes: AlignedIndexes
+  categories: number[]
+  onCategoryClick?: (categoryId: number) => void
+}
+
+export const FactoryCard = ({
+  company,
+  totalEmissions,
+  indexes,
+  categories,
+  onCategoryClick,
+  ...sxProps
+}: FactoryCardProps & SxProps) => {
   const theme = useTheme()
   const [selectedIndex, setSelectedIndex] = useState(0)
 
-  const handleListItemClick = (index: number) => {
-    setSelectedIndex(index)
+  const handleListItemClick = (categoryId: number) => {
+    const newId = selectedIndex === categoryId ? 0 : categoryId
+    setSelectedIndex(newId)
+    if (onCategoryClick) {
+      onCategoryClick(newId)
+    }
   }
 
+  const categoryListItems = categories.map((categoryId) => {
+    const category = indexes.categories[categoryId]
+    return (
+      <ListItemButton
+        key={categoryId}
+        selected={selectedIndex === categoryId}
+        onClick={() => handleListItemClick(categoryId)}
+      >
+        <ListItemText primary={category.name} />
+      </ListItemButton>
+    )
+  })
+
   return (
-    <MainCard sx={{ padding: 0 }}>
+    <MainCard sx={{ ...sxProps }}>
       <Stack spacing={6}>
         <Box sx={{ width: "100%" }}>
           <img
-            src={FactoryImage}
+            src={company?.image ?? FactoryImage}
             alt="Factory"
             style={{ objectFit: "cover", width: "100%", height: 160 }}
           />
-          <Typography sx={{ marginTop: "20px", fontWeight: 400 }} variant="h3">
-            Milan Factory Ltd
+          <Typography
+            sx={{ marginTop: "20px", fontWeight: 400, maxLines: 2 }}
+            variant="h3"
+          >
+            {company?.name ?? ""}
           </Typography>
         </Box>
-        <Stack sx={{ width: "100%" }} spacing={1.5}>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-            }}
-          >
-            <Typography color="secondary">Address</Typography>
-            <Typography>Italy, 185000, Fabricio st. 12</Typography>
-          </Box>
-          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            <Typography color="secondary">Registration</Typography>
-            <Typography>Italy, 185000, Fabricio st. 12</Typography>
-          </Box>
-        </Stack>
+        <Grid container spacing={1.5}>
+          <Grid item xs={3}>
+            <Typography color="secondary" align="right">
+              Address
+            </Typography>
+          </Grid>
+          <Grid item xs={9}>
+            <Typography sx={{ maxLines: 2 }} noWrap={false}>
+              {company?.details?.address ?? "Unknown"}
+            </Typography>
+          </Grid>
+          <Grid item xs={3}>
+            <Typography color="secondary" align="right">
+              Registration
+            </Typography>
+          </Grid>
+          <Grid item xs={9}>
+            <Typography>
+              {company?.details?.registration ?? "Unknown"}
+            </Typography>
+          </Grid>
+        </Grid>
         <Box
           sx={{
             width: "100%",
@@ -70,7 +117,7 @@ export const FactoryCard = () => {
             Total Emissions
           </Typography>
           <Typography sx={{ padding: 0.5, fontWeight: 800 }} variant="h5">
-            2749 (t) CO2e
+            {formatEmissionAmount(totalEmissions)}
           </Typography>
         </Box>
         <Box>
@@ -90,30 +137,7 @@ export const FactoryCard = () => {
               },
             }}
           >
-            <ListItemButton
-              selected={selectedIndex === 0}
-              onClick={() => handleListItemClick(0)}
-            >
-              <ListItemText primary="Category 1: Gas" />
-            </ListItemButton>
-            <ListItemButton
-              selected={selectedIndex === 1}
-              onClick={() => handleListItemClick(1)}
-            >
-              <ListItemText primary="Category 2: Energy" />
-            </ListItemButton>
-            <ListItemButton
-              selected={selectedIndex === 2}
-              onClick={() => handleListItemClick(2)}
-            >
-              <ListItemText primary="Category 3: Gas" />
-            </ListItemButton>
-            <ListItemButton
-              selected={selectedIndex === 3}
-              onClick={() => handleListItemClick(3)}
-            >
-              <ListItemText primary="Category 4: Energy" />
-            </ListItemButton>
+            {categoryListItems}
           </List>
         </Box>
       </Stack>

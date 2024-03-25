@@ -60,7 +60,7 @@ const initialState: EmissionRangeState = {
   emissionFilterState: { ...initialFilterState },
   dataRetrievalParameters: {
     timeRangeOfInterest: getTimeRangeFor(12),
-    protocol: EmissionProtocol.GHG,
+    protocol: EmissionProtocol.BEGES,
   },
 }
 
@@ -170,13 +170,15 @@ const extractVisibleData = (
 ): VisibleData => {
   let filteredDataPoints = dataPoints
   if (filter.selectedCategories.length > 0) {
-    filteredDataPoints = filteredDataPoints.filter((dataPoint) => {
-      const era = dataPoint.categoryEraName
-      return filterRoutine(
-        era.toLowerCase(),
-        filter.selectedCategories.map((category) => category.toLowerCase()),
-      )
-    })
+    filteredDataPoints = filteredDataPoints
+      .filter((dataPoint) => dataPoint.categoryEraName !== "")
+      .filter((dataPoint) => {
+        const era = dataPoint.categoryEraName
+        return filterRoutine(
+          era.toLowerCase(),
+          filter.selectedCategories.map((category) => category.toLowerCase()),
+        )
+      })
   }
   if (filter.selectedBusinessEntities.length > 0) {
     const expandedEntityIds = expandId(

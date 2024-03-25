@@ -7,7 +7,9 @@ import { IdTreeNode, IndexOf } from "../structures/StructuralTypes"
 import { TimeRange, TimeWindow } from "../time/TimeRelatedTypes"
 
 export enum EmissionProtocol {
+  // https://ghgprotocol.org/
   GHG = "GHG Protocol",
+  // https://www.crowe.com/fr/sustainable-metrics/conseil-carbone/bilan-carbone---beges
   BEGES = "BEGES",
   BEGESV5 = "BEGES v5",
 }
@@ -55,6 +57,7 @@ export interface EmissionDataPoint {
   id: string
   totalEmissionAmount: number
   categoryId: number
+  categoryName: string
   categoryEraName: string
   entityId: number
   companyId: number

@@ -3,7 +3,7 @@ import {
   TimeSection,
   TimeWindow,
 } from "data/domain/types/time/TimeRelatedTypes"
-import { format, subMonths } from "date-fns"
+import { format, isSameYear, subMonths } from "date-fns"
 
 export const timestampToHour = (timestamp: number): string =>
   format(timestamp, "	p")
@@ -68,5 +68,9 @@ export const getTimeRangeFor = (scale: number): TimeRange => {
   return { start: subMonths(now, Math.abs(scale)).getTime(), end: now }
 }
 
-export const getShortDescriptionForTimeRange = (timeRange: TimeRange): string =>
-  `${format(timeRange.start, "P")} - ${format(timeRange.end, "P")}`
+export const getShortDescriptionForTimeRange = (
+  timeRange: TimeRange,
+): string => {
+  const sameYear = isSameYear(timeRange.start, timeRange.end)
+  return `${format(timeRange.start, sameYear ? "d MMM" : "d MMM y")} - ${format(timeRange.end, "d MMM y")}`
+}

@@ -15,6 +15,7 @@ import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons"
 
 // types
 import { MenuOrientation, ThemeMode } from "types/config"
+import { useLocation } from "react-router"
 import SubHeaderContent from "./SubHeaderContent"
 import HeaderContent from "./HeaderContent"
 import ExtraHeaderContent from "./ExtraHeaderContent"
@@ -22,8 +23,11 @@ import AppBarStyled from "./AppBarStyled"
 
 // ==============================|| MAIN LAYOUT - HEADER ||============================== //
 
+const pathnamesOfInterest = ["", "/", "/contributors/dashboard"]
+
 const Header = () => {
   const theme = useTheme()
+  const { pathname } = useLocation()
   const downLG = useMediaQuery(theme.breakpoints.down("lg"))
   const { menuOrientation, isShowExtraHeader } = useConfig()
 
@@ -99,7 +103,7 @@ const Header = () => {
       {!downLG ? (
         <AppBarStyled open={drawerOpen} {...appBar}>
           {mainHeader}
-          {subHeader}
+          {!pathnamesOfInterest.includes(pathname) ? null : subHeader}
           {isShowExtraHeader && extraHeader}
         </AppBarStyled>
       ) : (

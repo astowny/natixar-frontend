@@ -6,10 +6,13 @@ import {
   AlignedIndexes,
   CdpLayoutItem,
   CompressedDataPoint,
+  EmissionCategory,
   EmissionDataPoint,
+  EmissionProtocol,
 } from "../types/emissions/EmissionTypes"
 import { detectCompany, detectCountry } from "./DataDetectors"
 import { getTimeDeltaForSlot, getTimeOffsetForSlot } from "./TimeTransformers"
+import { IdTreeNode, IndexOf } from "../types/structures/StructuralTypes"
 
 const emptyDecimal = ".0"
 
@@ -106,7 +109,8 @@ export const cdpToEdp = (
   timeWindow: TimeWindow,
 ): EmissionDataPoint => {
   const categoryId = cdp[CdpLayoutItem.CDP_LAYOUT_CATEGORY]
-  const origEra = indexes.categories[categoryId]?.era
+  const category = indexes.categories[categoryId]
+  const origEra = category?.era
   const entityId = cdp[CdpLayoutItem.CDP_LAYOUT_ENTITY]
   const company = detectCompany(entityId, indexes)
 
@@ -125,6 +129,7 @@ export const cdpToEdp = (
     id: uuid(),
     totalEmissionAmount: totalAmount,
     categoryId,
+    categoryName: category?.name ?? "Other",
     categoryEraName: extractNameOfEra(origEra),
     entityId,
     companyId: company.id,
@@ -219,4 +224,20 @@ export const emissionsGroupByTime = (
   })
 
   return result
+}
+
+export const getScopesOfProtocol = (
+  protocol: EmissionProtocol,
+  categoriesIndex: IndexOf<EmissionCategory>,
+): EmissionCategory[] => {
+  // Find scopes of the current protocol
+  const categories = Object.values(categoriesIndex)
+  const protocolId = categories.find(
+    (category) => category.name.toLowerCase() === protocol.toLowerCase(),
+  )?.id
+  if (typeof protocolId === "undefined") {
+    return []
+  }
+  const scopes = categories.filter((category) => protocolId === category.parent)
+  return scopes
 }

@@ -43,7 +43,12 @@ function UnderConstruction() {
             Hey! Please check out this site later. We are doing some maintenance
             on it right now.
           </Typography>
-          <Button component={Link} to={APP_DEFAULT_PATH} variant="contained">
+          <Button
+            sx={{ color: "primary.contrastText" }}
+            component={Link}
+            to="/"
+            variant="contained"
+          >
             Back To Home
           </Button>
         </Stack>

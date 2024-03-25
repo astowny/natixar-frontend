@@ -3,13 +3,14 @@ import { Box, Card, Fade, SxProps } from "@mui/material"
 import ClusteredMap from "components/leaflet-maps/cluster-map"
 import CategoriesLegend from "components/categories/CategoriesLegend"
 import EmissionsByCluster from "components/emissions/clusters/EmissionsByCluster"
-
-import { useSelector } from "react-redux"
-import { clearSelectedCluster } from "data/store/features/coordinates/ClusterSlice"
 import {
+  selectVisiblePoints as pointsSelector,
   selectAllVisibleCategoryEras,
   selectSelectedCluster,
 } from "data/store/api/EmissionSelectors"
+
+import { useSelector } from "react-redux"
+import { clearSelectedCluster } from "data/store/features/coordinates/ClusterSlice"
 import { useAppDispatch } from "data/store"
 
 const ClusteredMapSection = ({ ...sxProps }: SxProps) => {
@@ -26,6 +27,7 @@ const ClusteredMapSection = ({ ...sxProps }: SxProps) => {
   )
   const selectedCluster = useSelector(selectSelectedCluster)
   let categories = useSelector(selectAllVisibleCategoryEras)
+  const dataPoints = useSelector(pointsSelector)
 
   if (categories.length > 0) {
     // We deconstruct here, because redux has immutable values
@@ -52,7 +54,7 @@ const ClusteredMapSection = ({ ...sxProps }: SxProps) => {
           height: "100%",
         }}
       >
-        <ClusteredMap />
+        <ClusteredMap dataPoints={dataPoints} />
         <Fade in={categories.length > 0} timeout={300}>
           <Card
             sx={{

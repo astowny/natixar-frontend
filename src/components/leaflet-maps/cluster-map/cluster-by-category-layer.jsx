@@ -12,7 +12,6 @@ import "./map-style.css"
 import { useAppDispatch } from "data/store"
 import { formatAmount } from "data/domain/transformers/EmissionTransformers"
 import { selectClusterPoints } from "data/store/features/coordinates/ClusterSlice"
-import { selectVisiblePoints as pointsSelector } from "data/store/api/EmissionSelectors"
 import { getColorByCategory } from "utils/CategoryColors"
 
 const customIcon = new L.Icon({
@@ -65,10 +64,11 @@ const createClusterCustomIcon = (cluster) => {
   })
 }
 
-const ClusterByCategoryLayer = () => {
+// eslint-disable-next-line react/prop-types
+const ClusterByCategoryLayer = ({ dataPoints }) => {
   const clusterGroupRef = useRef()
   const dispatch = useAppDispatch()
-  const dataPoints = useSelector(pointsSelector)
+
   const map = useMap()
 
   const onClusterClick = useCallback(
@@ -87,24 +87,30 @@ const ClusterByCategoryLayer = () => {
     let acceptTransformation = true
 
     const retrieveMarkers = async () => {
-      const markers = dataPoints.map((dataPoint) => {
-        const address = dataPoint.location
-        const marker = L.marker(new L.LatLng(address.lat, address.lon), {
-          key: dataPoint.id,
-          title: address.country,
-          icon: customIcon,
-          dataPoint,
+      const markers = dataPoints
+        // eslint-disable-next-line react/prop-types
+        .filter((dataPoint) => dataPoint.location)
+        .filter(
+          (dataPoint) =>
+            dataPoint.location.lat > 0 && dataPoint.location.lon > 0,
+        )
+        .map((dataPoint) => {
+          const address = dataPoint.location
+          const marker = L.marker(new L.LatLng(address.lat, address.lon), {
+            key: dataPoint.id,
+            title: address.country,
+            icon: customIcon,
+            dataPoint,
+          })
+          return marker
         })
-        return marker
-      })
 
       if (acceptTransformation) {
         const clusterGr = clusterGroupRef.current
         clusterGr.clearLayers()
         clusterGr.addLayers(markers)
-        map.fitBounds(clusterGr.getBounds(), {
+        map.fitBounds(clusterGr.getBounds().pad(0.75), {
           animate: true,
-          padding: [20, 20],
         })
       }
     }

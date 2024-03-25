@@ -1,4 +1,3 @@
-// material-ui
 import DateRangeIcon from "@mui/icons-material/DateRange"
 import {
   Box,
@@ -21,19 +20,13 @@ import {
   getTimeRangeFor,
 } from "data/domain/transformers/TimeTransformers"
 import { EmissionProtocol } from "data/domain/types/emissions/EmissionTypes"
-import {
-  TimeMeasurement,
-  TimeRange,
-} from "data/domain/types/time/TimeRelatedTypes"
+import { TimeRange } from "data/domain/types/time/TimeRelatedTypes"
 import { useAppDispatch } from "data/store"
 import { selectEmissionRangeRequestParameters } from "data/store/api/EmissionSelectors"
-import { useGetEmissionRangesQuery } from "data/store/features/emissions/ranges/EmissionRangesClient"
 import {
   selectProtocol,
   selectTimeRange,
 } from "data/store/features/emissions/ranges/EmissionRangesSlice"
-import { formatProtocolForRangesEndpoint } from "data/store/features/emissions/ranges/EndpointTypes"
-import formatISO from "date-fns/formatISO"
 import { memo, useCallback, useMemo, useState } from "react"
 import { useSelector } from "react-redux"
 
@@ -129,6 +122,29 @@ const DateRangeControlForm = memo(({ timeRange }: { timeRange: TimeRange }) => {
     },
     [dispatch, selectTimeRange],
   )
+
+  const startChangeCallback = useCallback(
+    (startTime: Date) => {
+      const newTimeRange: TimeRange = {
+        start: startTime.getTime(),
+        end: timeRange.end,
+      }
+      dispatch(selectTimeRange(newTimeRange))
+    },
+    [dispatch, selectTimeRange],
+  )
+
+  const endChangeCallback = useCallback(
+    (endTime: Date) => {
+      const newTimeRange: TimeRange = {
+        start: timeRange.start,
+        end: endTime.getTime(),
+      }
+      dispatch(selectTimeRange(newTimeRange))
+    },
+    [dispatch, selectTimeRange],
+  )
+
   const timeRangeStr = useMemo(
     () => getShortDescriptionForTimeRange(timeRange),
     [timeRange],
@@ -142,10 +158,11 @@ const DateRangeControlForm = memo(({ timeRange }: { timeRange: TimeRange }) => {
     <>
       <Button
         sx={{
-          color: "primary.contrastText",
+          color: "primary",
         }}
         aria-describedby={id}
-        variant="contained"
+        variant="outlined"
+        color="primary"
         onClick={handleClick}
         endIcon={<DateRangeIcon />}
       >
@@ -165,11 +182,11 @@ const DateRangeControlForm = memo(({ timeRange }: { timeRange: TimeRange }) => {
           horizontal: "center",
         }}
       >
-        <Paper elevation={3} sx={{ p: ".5rem" }}>
-          <Stack gap=".5rem">
+        <Paper elevation={3} sx={{ p: "1rem" }}>
+          <Stack gap="1rem">
             <Stack
               direction="row"
-              gap=".5rem"
+              gap="1.5rem"
               alignItems="center"
               justifyContent="center"
             >
@@ -185,9 +202,19 @@ const DateRangeControlForm = memo(({ timeRange }: { timeRange: TimeRange }) => {
                 ))}
               </ButtonGroup>
             </Stack>
-            <Stack gap="1rem" direction="row">
-              <DatePicker label="From" value={timeRange.start} />
-              <DatePicker label="To" value={timeRange.end} />
+            <Stack gap="1.5rem" direction="row">
+              <DatePicker
+                sx={{ width: "10rem" }}
+                label="From"
+                value={new Date(timeRange.start)}
+                onChange={startChangeCallback}
+              />
+              <DatePicker
+                sx={{ width: "10rem" }}
+                label="To"
+                value={new Date(timeRange.end)}
+                onChange={endChangeCallback}
+              />
             </Stack>
           </Stack>
         </Paper>
@@ -199,23 +226,6 @@ const DateRangeControlForm = memo(({ timeRange }: { timeRange: TimeRange }) => {
 const RequestParametersControl = ({ ...sxProps }: SxProps) => {
   const { timeRangeOfInterest, protocol } = useSelector(
     selectEmissionRangeRequestParameters,
-  )
-  const scale = TimeMeasurement.MINUTES
-  useGetEmissionRangesQuery(
-    {
-      protocol: formatProtocolForRangesEndpoint(protocol),
-      scale,
-      timeRanges: [
-        {
-          start: formatISO(timeRangeOfInterest.start),
-          end: formatISO(timeRangeOfInterest.end),
-          scale,
-        },
-      ],
-    },
-    {
-      pollingInterval: 5000,
-    },
   )
 
   return (

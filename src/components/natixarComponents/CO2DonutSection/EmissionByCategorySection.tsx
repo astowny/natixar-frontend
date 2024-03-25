@@ -1,25 +1,35 @@
-import { Box } from "@mui/material"
+import { Box, Drawer } from "@mui/material"
 
-import { memo, useEffect, useState } from "react"
-import { getColorByCategory } from "utils/CategoryColors"
-import { ApexPieChartProps } from "sections/charts/apexchart/ApexDonutChart/interface"
-import ReactApexChart from "react-apexcharts"
-import { defaultOptions } from "sections/charts/apexchart/ApexDonutChart/constants"
+import { filter, sum, summarize, tidy } from "@tidyjs/tidy"
 import { ApexOptions } from "apexcharts"
 import {
+  extractNameOfEra,
+  formatEmissionAmount,
+  getScopesOfProtocol,
+} from "data/domain/transformers/EmissionTransformers"
+import { expandId } from "data/domain/transformers/StructuralTransformers"
+import {
   AlignedIndexes,
+  EmissionCategory,
   EmissionDataPoint,
 } from "data/domain/types/emissions/EmissionTypes"
-import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
+import { selectRequestEmissionProtocol } from "data/store/api/EmissionSelectors"
+import { memo, useCallback, useEffect, useMemo, useState } from "react"
+import ReactApexChart from "react-apexcharts"
+import { useSelector } from "react-redux"
+import { defaultOptions } from "sections/charts/apexchart/ApexDonutChart/constants"
+import { ApexPieChartProps } from "sections/charts/apexchart/ApexDonutChart/interface"
+import TopContributorsSection from "sections/contributor/top-contributors/TopContributorsSection"
+import { getColorByCategory } from "utils/CategoryColors"
+import LabelBox from "./LabelBox"
 import {
   ChartContainerStyles,
   ContainerStyles,
   LegendsContainerStyles,
 } from "./styled"
-import LabelBox from "./LabelBox"
 
 interface ByCategoryItem {
-  categoryId: string
+  categoryId: number
   count: number
   categoryName: string
   categoryColor: string
@@ -55,10 +65,23 @@ const totalTextOptions = {
   fontWeight: "bold",
 }
 
-const totalOptions = (totalEmission: number): ApexOptions => {
+const configurableOptions = (
+  totalEmission: number,
+  scopes: EmissionCategory[],
+  onScopeClick: (scope: number) => void,
+): ApexOptions => {
   const formattedEmission = formatEmissionAmount(totalEmission).split(" ")
+  const scopeIds = scopes.map((scope) => scope.id)
 
   return {
+    chart: {
+      events: {
+        dataPointSelection: (event, chartContext, config) => {
+          const scopeId = scopeIds[config.seriesIndex]
+          onScopeClick(scopeId)
+        },
+      },
+    },
     plotOptions: {
       pie: {
         donut: {
@@ -86,53 +109,47 @@ const totalOptions = (totalEmission: number): ApexOptions => {
   }
 }
 
-const EmissionByCategorySection = (props: EmissionByCategorySectionProps) => {
-  const { allDataPoints, alignedIndexes } = props
-  const [pieChartData, setPieChartData] = useState<ApexPieChartProps>({
-    data: [],
-    totalLabel: "",
-  })
+const EmissionByCategorySection = ({
+  allDataPoints,
+  alignedIndexes,
+}: EmissionByCategorySectionProps) => {
+  const protocol = useSelector(selectRequestEmissionProtocol)
+  const [pieChartData, setPieChartData] = useState<ByCategoryItem[]>([])
+  const [openTopContributors, setOpenTopContributors] = useState(false)
+  const [selectedCategory, setSelectedCategory] = useState(0)
+
+  const scopes = useMemo(
+    () => getScopesOfProtocol(protocol, alignedIndexes.categories),
+    [protocol, alignedIndexes.categories],
+  )
 
   useEffect(() => {
     let acceptResult = true
     const aggregateData = async () => {
       const categoryAggregators: Record<string, ByCategoryItem> = {}
-      Object.entries(alignedIndexes.categories).forEach((entry) => {
-        const [categoryId, category] = entry
-        const { era } = category
-        if (!era) {
-          return
-        }
-        if (!categoryAggregators[era]) {
-          categoryAggregators[era] = {
-            categoryId,
-            count: 0,
-            categoryName: era,
-            categoryColor: getColorByCategory(era ?? ""),
-          }
-        }
-      })
 
-      allDataPoints.forEach((dataPoint) => {
-        let era = dataPoint.categoryEraName
-        if (era === "") {
-          era = "Other"
+      scopes.forEach((scope) => {
+        const allIdsOfInterest = expandId(
+          [scope.id],
+          alignedIndexes.categoryHierarchy,
+        )
+        const total = tidy(
+          allDataPoints,
+          filter((edp) => allIdsOfInterest.includes(edp.categoryId)),
+          summarize({ totalEmission: sum("totalEmissionAmount") }),
+        )[0].totalEmission
+
+        const era = extractNameOfEra(scope.era)
+        categoryAggregators[era] = {
+          categoryId: scope.id,
+          count: total,
+          categoryName: scope.name,
+          categoryColor: getColorByCategory(era),
         }
-        categoryAggregators[era].count += dataPoint.totalEmissionAmount
       })
 
       if (acceptResult) {
-        const byCategoryItems = Object.values(categoryAggregators)
-
-        const newData: ApexPieChartProps = {
-          data: byCategoryItems.map((item) => ({
-            value: item.count,
-            color: item.categoryColor,
-            title: item.categoryName,
-          })),
-          totalLabel: "",
-        }
-        setPieChartData(newData)
+        setPieChartData(Object.values(categoryAggregators))
       }
     }
 
@@ -142,11 +159,19 @@ const EmissionByCategorySection = (props: EmissionByCategorySectionProps) => {
     }
   }, [allDataPoints, alignedIndexes, setPieChartData])
 
-  const series = pieChartData.data.map((a) => a.value)
-  const labels = pieChartData.data.map((a) => a.title)
-  const colors = pieChartData.data.map((a) => a.color)
+  const series = pieChartData.map((a) => a.count)
+  const labels = pieChartData.map((a) => a.categoryName)
+  const colors = pieChartData.map((a) => a.categoryColor)
 
   const totalEmission = series.reduce((a, b) => a + b, 0)
+
+  const onScopeClick = useCallback(
+    (category: number) => {
+      setSelectedCategory(category)
+      setOpenTopContributors(true)
+    },
+    [setSelectedCategory, setOpenTopContributors],
+  )
 
   return (
     <Box sx={ContainerStyles}>
@@ -155,7 +180,7 @@ const EmissionByCategorySection = (props: EmissionByCategorySectionProps) => {
           options={{
             ...defaultOptions,
             ...optionsOverrides,
-            ...totalOptions(totalEmission),
+            ...configurableOptions(totalEmission, scopes, onScopeClick),
             labels,
             colors,
           }}
@@ -166,18 +191,35 @@ const EmissionByCategorySection = (props: EmissionByCategorySectionProps) => {
       </Box>
 
       <Box sx={LegendsContainerStyles}>
-        {pieChartData.data.map((dataItem) => (
+        {pieChartData.map((dataItem) => (
           <LabelBox
+            key={dataItem.categoryId}
             legend={{
-              title: dataItem.title,
-              color: dataItem.color,
-              value: formatEmissionAmount(dataItem.value),
-              navLink: dataItem.title.toLowerCase(),
+              title: dataItem.categoryName,
+              color: dataItem.categoryColor,
+              value: formatEmissionAmount(dataItem.count),
+              navLink: `/contributors/scope/${dataItem.categoryId}`,
             }}
-            key={dataItem.title}
           />
         ))}
       </Box>
+      <Drawer
+        anchor="right"
+        open={openTopContributors}
+        onClose={() => setOpenTopContributors(false)}
+        PaperProps={{
+          sx: {
+            width: "40dvw",
+            maxWidth: "80dvw",
+          },
+        }}
+      >
+        <TopContributorsSection
+          categoryId={selectedCategory}
+          indexes={alignedIndexes}
+          dataPoints={allDataPoints}
+        />
+      </Drawer>
     </Box>
   )
 }
