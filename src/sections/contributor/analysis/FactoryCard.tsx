@@ -43,9 +43,10 @@ export const FactoryCard = ({
   const [selectedIndex, setSelectedIndex] = useState(0)
 
   const handleListItemClick = (categoryId: number) => {
-    setSelectedIndex(categoryId)
+    const newId = selectedIndex === categoryId ? 0 : categoryId
+    setSelectedIndex(newId)
     if (onCategoryClick) {
-      onCategoryClick(categoryId)
+      onCategoryClick(newId)
     }
   }
 

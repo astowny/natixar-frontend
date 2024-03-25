@@ -68,7 +68,7 @@ const byYearChartOptions: ApexOptions = {
 }
 
 interface ByCategoryProps {
-  category: EmissionCategory
+  category?: EmissionCategory
   dataPoints: EmissionDataPoint[]
   timeWindow: TimeWindow
 }
@@ -89,7 +89,7 @@ const EmissionsByScope = memo(
     const labels = Object.keys(groupedByTime)
     const series = [
       {
-        name: category.name,
+        name: category?.name ?? "Total",
         type: "bar",
         data: Object.values(groupedByTime),
       },
@@ -137,9 +137,11 @@ const ContributorAnalysis = () => {
       return []
     }
     const allSubEntities = expandId([company.id], indexes.entityHierarchy)
-    return tidy(
-      allDataPoints,
-      filter((edp) => allSubEntities.includes(edp.entityId)),
+    return (
+      tidy(
+        allDataPoints,
+        filter((edp) => allSubEntities.includes(edp.entityId)),
+      ) ?? []
     )
   }, [company, allDataPoints, indexes])
   const totalRelevantEmissions = useMemo(
@@ -150,6 +152,7 @@ const ContributorAnalysis = () => {
       )[0].total,
     [relevantDataPoints],
   )
+
   const relevantEmissionCategories = useMemo(
     () =>
       tidy(
@@ -158,9 +161,30 @@ const ContributorAnalysis = () => {
           category: edp.categoryId,
         })),
         distinct(["category"]),
+        filter(
+          (categoryId) =>
+            typeof indexes.categories[categoryId.category]?.parent !==
+            "undefined",
+        ),
       ).map((item) => item.category),
     [relevantDataPoints],
   )
+
+  const pointsForScope = useMemo(() => {
+    if (selectedScope === 0) {
+      return relevantDataPoints
+    }
+    const relevantCategories = expandId(
+      [selectedScope],
+      indexes.categoryHierarchy,
+    )
+    return tidy(
+      relevantDataPoints,
+      filter((edp) => relevantCategories.includes(edp.categoryId)),
+    )
+  }, [relevantDataPoints, relevantEmissionCategories, selectedScope])
+
+  // alert("I don't fail yet")
 
   return (
     <>
@@ -180,8 +204,8 @@ const ContributorAnalysis = () => {
         <Grid item xs={12} md={8}>
           {selectedScope > 0 && (
             <EmissionsByScope
-              category={indexes.categories[selectedScope]!!}
-              dataPoints={relevantDataPoints}
+              category={indexes.categories[selectedScope]}
+              dataPoints={pointsForScope}
               timeWindow={timeWindow}
             />
           )}
