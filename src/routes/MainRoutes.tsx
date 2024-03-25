@@ -3,10 +3,6 @@ import { lazy } from "react"
 // project import
 import Loadable from "components/Loadable"
 import PagesLayout from "layout/Pages"
-import SimpleLayout from "layout/Simple"
-
-// types
-import { SimpleLayoutType } from "types/config"
 
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import("pages/dashboard/default")))
@@ -81,7 +77,7 @@ const MainRoutes = {
           element: <CategoryAnalysis />,
         },
         {
-          path: "analysis",
+          path: "analysis/:id",
           element: <ContributorAnalysis />,
         },
         {

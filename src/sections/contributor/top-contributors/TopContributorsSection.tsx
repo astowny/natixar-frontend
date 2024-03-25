@@ -42,9 +42,10 @@ const columnDefinitions: GridColDef[] = [
   },
   {
     field: "id",
+    headerName: "",
     sortable: false,
     renderCell: (params) => (
-      <NavLink to={`/contributors/analysis?${params.row.id}`}>
+      <NavLink to={`/contributors/analysis/${params.row.id}`}>
         <Button sx={{ color: "primary.contrastText" }} variant="contained">
           Details
         </Button>
