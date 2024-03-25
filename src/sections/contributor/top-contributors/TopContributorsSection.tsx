@@ -15,6 +15,7 @@ import {
   arrange,
   desc,
   sliceHead,
+  map,
 } from "@tidyjs/tidy"
 import { DataGrid, GridColDef } from "@mui/x-data-grid"
 
@@ -26,13 +27,13 @@ interface TopContributorsSectionParams {
 
 const columnDefinitions: GridColDef[] = [
   {
-    field: "companyName",
+    field: "name",
     headerName: "Contributor",
     width: 90,
     sortable: false,
   },
   {
-    field: "total",
+    field: "amount",
     headerName: "Emission",
     width: 150,
     sortable: false,
@@ -64,10 +65,18 @@ const TopContributorsSection = ({
     () =>
       tidy(
         relevantDataPoints,
-        groupBy("companyName", [
+        groupBy("companyId", [
           summarize({ total: sum("totalEmissionAmount") }),
         ]),
-        arrange([desc("total"), "companyName"]),
+        map((groupedByCompany) => {
+          const companyName = indexes.entities[groupedByCompany.companyId].name
+          return {
+            id: groupedByCompany.companyId,
+            name: companyName,
+            amount: groupedByCompany.total,
+          }
+        }),
+        arrange([desc("amount"), "name"]),
         sliceHead(maxItemsInTable),
       ),
     [relevantDataPoints],
@@ -78,6 +87,7 @@ const TopContributorsSection = ({
       <Typography variant="h3" fontWeight="bold">
         Top contributors
       </Typography>
+      <Typography>Selected category: {categoryId}</Typography>
       <DataGrid
         sx={{
           "& .MuiDataGrid-cell": {

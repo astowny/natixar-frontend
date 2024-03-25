@@ -10,6 +10,7 @@ import {
 import { expandId } from "data/domain/transformers/StructuralTransformers"
 import {
   AlignedIndexes,
+  EmissionCategory,
   EmissionDataPoint,
 } from "data/domain/types/emissions/EmissionTypes"
 import { selectRequestEmissionProtocol } from "data/store/api/EmissionSelectors"
@@ -66,18 +67,22 @@ const totalTextOptions = {
 
 const configurableOptions = (
   totalEmission: number,
+  scopes: EmissionCategory[],
   onScopeClick: (scope: number) => void,
 ): ApexOptions => {
   const formattedEmission = formatEmissionAmount(totalEmission).split(" ")
+  const scopeIds = scopes.map((scope) => scope.id)
 
   return {
     chart: {
       events: {
-        click(event, chartContext, config) {
+        dataPointSelection: (event, chartContext, config) => {
           console.log("We clicked on: ", event)
           console.log("Context is: ", chartContext)
           console.log("Config is: ", config)
-          onScopeClick(1234)
+
+          const scopeId = scopeIds[config.seriesIndex]
+          onScopeClick(scopeId)
         },
       },
     },
@@ -192,7 +197,7 @@ const EmissionByCategorySection = ({
           options={{
             ...defaultOptions,
             ...optionsOverrides,
-            ...configurableOptions(totalEmission, onScopeClick),
+            ...configurableOptions(totalEmission, scopes, onScopeClick),
             labels,
             colors,
           }}

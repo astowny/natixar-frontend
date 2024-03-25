@@ -60,7 +60,7 @@ const initialState: EmissionRangeState = {
   emissionFilterState: { ...initialFilterState },
   dataRetrievalParameters: {
     timeRangeOfInterest: getTimeRangeFor(12),
-    protocol: EmissionProtocol.GHG,
+    protocol: EmissionProtocol.BEGES,
   },
 }
 
