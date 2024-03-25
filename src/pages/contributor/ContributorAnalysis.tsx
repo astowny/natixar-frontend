@@ -1,9 +1,8 @@
 // material-ui
-import { Box, Fade, Grid, SxProps, Typography } from "@mui/material"
+import { Box, Grid, Stack, SxProps, Typography } from "@mui/material"
 import { useParams } from "react-router-dom"
 import { FactoryCard } from "sections/contributor/analysis/FactoryCard"
 import MainCard from "components/MainCard"
-import { Stack } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
 import EmissionsChart from "sections/contributor/analysis/EmissionsChart"
 import {
@@ -14,13 +13,12 @@ import {
 import { useSelector } from "react-redux"
 import { detectCompany } from "data/domain/transformers/DataDetectors"
 import { distinct, filter, map, sum, summarize, tidy } from "@tidyjs/tidy"
-import { memo, useCallback, useMemo, useState } from "react"
+import { memo, useMemo, useState } from "react"
 import { expandId } from "data/domain/transformers/StructuralTransformers"
 import {
   EmissionCategory,
   EmissionDataPoint,
 } from "data/domain/types/emissions/EmissionTypes"
-import EmissionByKeyStacked from "components/charts/emissions/EmissionByKeyStacked"
 import ReactApexChart from "react-apexcharts"
 import { ApexOptions } from "apexcharts"
 import {
