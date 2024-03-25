@@ -109,7 +109,8 @@ export const cdpToEdp = (
   timeWindow: TimeWindow,
 ): EmissionDataPoint => {
   const categoryId = cdp[CdpLayoutItem.CDP_LAYOUT_CATEGORY]
-  const origEra = indexes.categories[categoryId]?.era
+  const category = indexes.categories[categoryId]
+  const origEra = category?.era
   const entityId = cdp[CdpLayoutItem.CDP_LAYOUT_ENTITY]
   const company = detectCompany(entityId, indexes)
 
@@ -128,6 +129,7 @@ export const cdpToEdp = (
     id: uuid(),
     totalEmissionAmount: totalAmount,
     categoryId,
+    categoryName: category?.name ?? "Other",
     categoryEraName: extractNameOfEra(origEra),
     entityId,
     companyId: company.id,
