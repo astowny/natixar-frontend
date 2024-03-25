@@ -114,10 +114,7 @@ const EmissionByCategorySection = ({
   alignedIndexes,
 }: EmissionByCategorySectionProps) => {
   const protocol = useSelector(selectRequestEmissionProtocol)
-  const [pieChartData, setPieChartData] = useState<ApexPieChartProps>({
-    data: [],
-    totalLabel: "",
-  })
+  const [pieChartData, setPieChartData] = useState<ByCategoryItem[]>([])
   const [openTopContributors, setOpenTopContributors] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState(0)
 
@@ -152,17 +149,7 @@ const EmissionByCategorySection = ({
       })
 
       if (acceptResult) {
-        const byCategoryItems = Object.values(categoryAggregators)
-
-        const newData: ApexPieChartProps = {
-          data: byCategoryItems.map((item) => ({
-            value: item.count,
-            color: item.categoryColor,
-            title: item.categoryName,
-          })),
-          totalLabel: "",
-        }
-        setPieChartData(newData)
+        setPieChartData(Object.values(categoryAggregators))
       }
     }
 
@@ -172,9 +159,9 @@ const EmissionByCategorySection = ({
     }
   }, [allDataPoints, alignedIndexes, setPieChartData])
 
-  const series = pieChartData.data.map((a) => a.value)
-  const labels = pieChartData.data.map((a) => a.title)
-  const colors = pieChartData.data.map((a) => a.color)
+  const series = pieChartData.map((a) => a.count)
+  const labels = pieChartData.map((a) => a.categoryName)
+  const colors = pieChartData.map((a) => a.categoryColor)
 
   const totalEmission = series.reduce((a, b) => a + b, 0)
 
@@ -204,15 +191,15 @@ const EmissionByCategorySection = ({
       </Box>
 
       <Box sx={LegendsContainerStyles}>
-        {pieChartData.data.map((dataItem) => (
+        {pieChartData.map((dataItem) => (
           <LabelBox
+            key={dataItem.categoryId}
             legend={{
-              title: dataItem.title,
-              color: dataItem.color,
-              value: formatEmissionAmount(dataItem.value),
-              navLink: dataItem.title.toLowerCase(),
+              title: dataItem.categoryName,
+              color: dataItem.categoryColor,
+              value: formatEmissionAmount(dataItem.count),
+              navLink: `/contributors/scope/${dataItem.categoryId}`,
             }}
-            key={dataItem.title}
           />
         ))}
       </Box>

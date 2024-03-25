@@ -1,11 +1,12 @@
-import { Box, Button, Grid, Typography } from "@mui/material"
+import { Box, Button, Grid, Stack, Typography } from "@mui/material"
 import MainCard from "components/MainCard"
 import { ArrowLeftOutlined, RightOutlined } from "@ant-design/icons"
 
-import { useLocation, useNavigate } from "react-router-dom"
+import { NavLink, useParams } from "react-router-dom"
 import { useSelector } from "react-redux"
 import {
   selectAlignedIndexes,
+  selectRequestEmissionProtocol,
   selectVisiblePoints,
 } from "data/store/api/EmissionSelectors"
 import {
@@ -22,6 +23,7 @@ import {
   findNodeBy,
 } from "data/domain/transformers/StructuralTransformers"
 import { getColorByCategory } from "utils/CategoryColors"
+import { useMemo } from "react"
 import {
   ScopeTable,
   ScopeTableItemProps,
@@ -30,33 +32,38 @@ import Breadcrumb from "../../../components/@extended/Breadcrumbs"
 import { AreaCheckbox } from "../../../components/natixarComponents/AreaCheckbox"
 
 const ScopePage = () => {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const params = new URLSearchParams(location.search)
-  const scopeID = params.get("scopeID")?.toLowerCase() ?? ""
+  const { id: idStr } = useParams()
+  const scopeId = parseInt(idStr!, 10)
 
   const { categories, categoryHierarchy } = useSelector(selectAlignedIndexes)
   const allPoints = useSelector(selectVisiblePoints)
-  const currentProtocol = EmissionProtocol.BEGES.toLowerCase()
-  const protocolNode = findNodeBy(
-    (category: EmissionCategory) =>
-      category.name.toLowerCase() === currentProtocol,
-    categories,
-    categoryHierarchy,
-  )
-  const eraNode = findNodeBy(
-    (category) => scopeID === category.era.toLowerCase(),
-    categories,
-    protocolNode?.children ?? [],
-  )
+
+  const currentProtocol = useSelector(selectRequestEmissionProtocol)
+  const scopeNode = useMemo(() => {
+    // We first select subtree of hierarchy for the protocol we use.
+    // Just so we don't have to look over whole category tree
+    const protocolNode = findNodeBy(
+      (category: EmissionCategory) =>
+        category.name.toLowerCase() === currentProtocol,
+      categories,
+      categoryHierarchy,
+    )
+
+    return findNodeBy(
+      (category) => scopeId === category.id,
+      categories,
+      protocolNode?.children ?? [],
+    )
+  }, [scopeId, currentProtocol, categories, categoryHierarchy])
+  const scope = categories[scopeId]
 
   const links = [
     {
-      title: "Scopes",
-      to: "/contributor/dashboard",
+      title: "Home",
+      to: "/",
     },
     {
-      title: `Scope ${scopeID} emissions`,
+      title: `${scope?.name ?? "Total "} emissions`,
       to: "",
     },
   ]
@@ -64,7 +71,7 @@ const ScopePage = () => {
   // Walk over subcategories.
   const idsToFilterWith: Record<number, number[]> = Object.fromEntries(
     // Collect all their included ids
-    (eraNode?.children ?? []).map((subcategoryNode) => [
+    (scopeNode?.children ?? []).map((subcategoryNode) => [
       subcategoryNode.value,
       expandId([subcategoryNode.value], categoryHierarchy),
     ]),
@@ -109,22 +116,23 @@ const ScopePage = () => {
     <MainCard>
       <Grid container rowSpacing={4.5} columnSpacing={3}>
         <Grid item xs={12} md={12} xl={12}>
-          <Box
-            display="flex"
+          <Stack
+            direction="row"
             alignItems="center"
-            justifyContent="center"
-            position="relative"
+            justifyContent="space-between"
             width="100%"
             padding="10px 0px"
           >
-            <Button
-              variant="contained"
-              sx={{ color: "#FFF", position: "absolute", left: 0, top: 0 }}
-              startIcon={<ArrowLeftOutlined color="#FFF" />}
-              onClick={() => navigate("/contributor/dashboard")}
-            >
-              Back to scopes
-            </Button>
+            <NavLink to="/">
+              <Button
+                sx={{ color: "primary.contrastText" }}
+                variant="contained"
+                startIcon={<ArrowLeftOutlined color="primary.contrastText" />}
+              >
+                Details
+              </Button>
+            </NavLink>
+            {/*             
             <Breadcrumb
               custom
               title={false}
@@ -133,11 +141,14 @@ const ScopePage = () => {
               sx={{
                 mb: "0px !important",
               }}
-            />
-          </Box>
+            /> */}
+          </Stack>
         </Grid>
         <Grid item xs={12} md={12} xl={12}>
-          <Typography variant="h5">Detail by Category</Typography>
+          <Typography variant="h3">{currentProtocol}</Typography>
+        </Grid>
+        <Grid item xs={12} md={12} xl={12}>
+          <Typography variant="h4">{`Detail by ${scope.name}`}</Typography>
         </Grid>
         <Grid item xs={12} md={12} xl={12}>
           <ScopeTable data={rows} />
