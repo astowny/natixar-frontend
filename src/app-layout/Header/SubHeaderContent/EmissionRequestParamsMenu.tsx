@@ -26,7 +26,10 @@ import { useSelector } from "react-redux"
 // ==============================|| HEADER CONTENT - SEARCH ||============================== //
 
 const Protocol = memo(
-  ({ selectedProtocol }: { selectedProtocol: EmissionProtocol }) => {
+  ({
+    selectedProtocol,
+    ...sxProps
+  }: { selectedProtocol: EmissionProtocol } & SxProps) => {
     const theme = useTheme()
     const dispatch = useAppDispatch()
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
@@ -54,10 +57,10 @@ const Protocol = memo(
     const id = open ? "simple-popover" : undefined
 
     return (
-      <Box sx={{ flexShrink: 0, ml: 0.75 }}>
+      <Box sx={{ ...sxProps }}>
         <Button
           variant="outlined"
-          sx={{ color: `${theme.palette.grey[900]}` }}
+          sx={{ height: "100%", color: `${theme.palette.grey[900]}` }}
           onClick={handleClick}
         >
           <Typography noWrap>{selectedProtocol}</Typography>
@@ -99,9 +102,9 @@ const RequestParametersControl = ({ ...sxProps }: SxProps) => {
   const globalFilter = useSelector(filterStateSelector)
 
   return (
-    <Stack direction="row" gap=".5rem" sx={{ ...sxProps }}>
+    <Stack direction="row" gap=".5rem" sx={{ height: "100%", ...sxProps }}>
       <ReportGeneratorControl indexes={alignedIndexes} filter={globalFilter} />
-      <Protocol selectedProtocol={protocol} />
+      <Protocol selectedProtocol={protocol} sx={{ height: "100%" }} />
     </Stack>
   )
 }

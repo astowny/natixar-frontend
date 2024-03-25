@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   ButtonGroup,
   Paper,
@@ -81,11 +82,12 @@ const DateRangeControlForm = ({
   const monthRanges = [6, 12, 24]
 
   return (
-    <>
+    <Box
+      sx={{
+        ...sxProps,
+      }}
+    >
       <Button
-        sx={{
-          ...sxProps,
-        }}
         aria-describedby={id}
         variant="outlined"
         color="primary"
@@ -145,7 +147,7 @@ const DateRangeControlForm = ({
           </Stack>
         </Paper>
       </Popover>
-    </>
+    </Box>
   )
 }
 
