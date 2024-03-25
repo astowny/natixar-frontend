@@ -12,12 +12,8 @@ import {
 import {
   EmissionCategory,
   EmissionDataPoint,
-  EmissionProtocol,
 } from "data/domain/types/emissions/EmissionTypes"
-import {
-  IdTreeNode,
-  IndexOf,
-} from "data/domain/types/structures/StructuralTypes"
+import { IdTreeNode } from "data/domain/types/structures/StructuralTypes"
 import {
   expandId,
   findNodeBy,
@@ -33,7 +29,6 @@ import {
   ScopeTableItemProps,
 } from "../../../components/natixarComponents/ScopeTable"
 import Breadcrumb from "../../../components/@extended/Breadcrumbs"
-import { AreaCheckbox } from "../../../components/natixarComponents/AreaCheckbox"
 
 const ScopePage = () => {
   const { id: idStr } = useParams()
@@ -84,13 +79,11 @@ const ScopePage = () => {
   )
 
   // Then just aggregate data points to different subcategories
-  console.log("Ids to filter with: ", idsToFilterWith)
   const dataPointsByCategory: Record<number, EmissionDataPoint[]> = {}
   categoryIds.forEach((categoryId) => {
     dataPointsByCategory[categoryId] = []
   })
 
-  console.log("All points: ", allPoints)
   allPoints.forEach((emissionPoint) => {
     const matchingCategoryId = categoryIds.find((categoryId) =>
       idsToFilterWith[categoryId].includes(emissionPoint.categoryId),
@@ -101,7 +94,6 @@ const ScopePage = () => {
   })
   // Then just sum them and send to the scope table
 
-  console.log("So, we aggregated these data points: ", dataPointsByCategory)
   const rows: ScopeTableItemProps[] = Object.entries(dataPointsByCategory)
     .map((entry) => [
       parseInt(entry[0], 10),
