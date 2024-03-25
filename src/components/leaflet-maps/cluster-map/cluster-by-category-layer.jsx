@@ -87,25 +87,30 @@ const ClusterByCategoryLayer = ({ dataPoints }) => {
     let acceptTransformation = true
 
     const retrieveMarkers = async () => {
-      // eslint-disable-next-line react/prop-types
-      const markers = dataPoints.map((dataPoint) => {
-        const address = dataPoint.location
-        const marker = L.marker(new L.LatLng(address.lat, address.lon), {
-          key: dataPoint.id,
-          title: address.country,
-          icon: customIcon,
-          dataPoint,
+      const markers = dataPoints
+        // eslint-disable-next-line react/prop-types
+        .filter((dataPoint) => dataPoint.location)
+        .filter(
+          (dataPoint) =>
+            dataPoint.location.lat > 0 && dataPoint.location.lon > 0,
+        )
+        .map((dataPoint) => {
+          const address = dataPoint.location
+          const marker = L.marker(new L.LatLng(address.lat, address.lon), {
+            key: dataPoint.id,
+            title: address.country,
+            icon: customIcon,
+            dataPoint,
+          })
+          return marker
         })
-        return marker
-      })
 
       if (acceptTransformation) {
         const clusterGr = clusterGroupRef.current
         clusterGr.clearLayers()
         clusterGr.addLayers(markers)
-        map.fitBounds(clusterGr.getBounds(), {
+        map.fitBounds(clusterGr.getBounds().pad(0.75), {
           animate: true,
-          padding: [20, 20],
         })
       }
     }
