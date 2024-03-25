@@ -5,6 +5,7 @@ import {
   Grid,
   LinearProgress,
   Link,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -17,12 +18,14 @@ import { LinkOutlined } from "@ant-design/icons"
 import { useLocation, useNavigate } from "react-router-dom"
 import useConfig from "hooks/useConfig"
 import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
+import { EmissionCategory } from "data/domain/types/emissions/EmissionTypes"
 
 // ===========================|| DATA WIDGET - PROJECT TABLE CARD ||=========================== //
 export type ScopeTableItemProps = {
-  name: string
+  category: EmissionCategory
+  description: string
+  categoryColor: string
   amount: number
-  categoryID: number
 }
 
 export type ScopeTableProps = {
@@ -30,18 +33,16 @@ export type ScopeTableProps = {
 }
 
 export const ScopeTable = ({ data }: ScopeTableProps) => {
-  const navigate = useNavigate()
-  const location = useLocation()
   const { setIsShowExtraHeader } = useConfig()
-  const params = new URLSearchParams(location.search)
-  const scopeID = params.get("scopeID")
-
+  /*
   const handleOnCategoryClick = (id: string) => {
     setIsShowExtraHeader(true)
     navigate(`/contributor/category-analysis/${id}?scopeID=${scopeID}`)
   }
+  */
 
   const totalAmount = data.reduce((acc, cur) => acc + cur.amount, 0.0)
+  const thereAreDataPoints = data.find((row) => row.amount > 0)
 
   return (
     <TableContainer
@@ -57,77 +58,43 @@ export const ScopeTable = ({ data }: ScopeTableProps) => {
         >
           <TableRow sx={{ height: "70px" }}>
             <TableCell sx={{ width: "500px" }}>
-              <Typography variant="subtitle2">Title</Typography>
+              <Typography variant="subtitle2">Category</Typography>
             </TableCell>
             <TableCell>
-              <Typography variant="subtitle2">Value</Typography>
+              <Typography variant="subtitle2">Description</Typography>
             </TableCell>
-            <TableCell>
-              <Typography variant="subtitle2">Amount</Typography>
-            </TableCell>
-            <TableCell>
-              <Typography variant="subtitle2">Actions</Typography>
-            </TableCell>
+            {thereAreDataPoints && (
+              <TableCell>
+                <Typography variant="subtitle2">Value</Typography>
+              </TableCell>
+            )}
           </TableRow>
         </TableHead>
         <TableBody>
           {data.map((row) => (
-            <TableRow hover key={row.categoryID} sx={{ height: "70px" }}>
+            <TableRow hover key={row.category.id} sx={{ height: "70px" }}>
               <TableCell>
-                <Grid container alignItems="center">
-                  <Grid item>
-                    <Typography align="left">
-                      <Link
-                        onClick={() => handleOnCategoryClick(row.categoryID)}
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          columnGap: "5px",
-                          textDecoration: "underline",
-                          cursor: "pointer",
-                        }}
-                      >
-                        {row.name}
-                        <LinkOutlined />
-                      </Link>
-                    </Typography>
-                  </Grid>
-                </Grid>
+                <Typography align="left">{row.category.name}</Typography>
               </TableCell>
               <TableCell>
-                <LinearProgress
-                  sx={{ width: "100%", backgroundColor: "#F5F5F5" }}
-                  variant="determinate"
-                  value={(100.0 * row.amount) / totalAmount}
-                  color="primary"
-                />
+                <Typography align="left">{row.description}</Typography>
               </TableCell>
-              <TableCell>
-                <Typography>{formatEmissionAmount(row.amount)}</Typography>
-              </TableCell>
-              <TableCell>
-                <Button
-                  onClick={() =>
-                    navigate(
-                      `/contributor/scope-details/${row.categoryID}?scopeID=${scopeID}`,
-                    )
-                  }
-                  variant="contained"
-                  size="small"
-                  sx={{
-                    maxWidth: "25px",
-                    height: "25px",
-                    color: "#FFF",
-                    backgroundColor: "#1890FF",
-                    padding: "0px 0px 0px 0px",
-                    marginRight: "40px",
-                    fontSize: "12px",
-                    boxSizing: "border-box",
-                  }}
-                >
-                  Detail
-                </Button>
-              </TableCell>
+              {thereAreDataPoints && (
+                <TableCell>
+                  {row.amount <= 0 ? null : (
+                    <Stack direction="row">
+                      <LinearProgress
+                        sx={{ width: "100%", color: row.categoryColor }}
+                        variant="determinate"
+                        value={(100.0 * row.amount) / totalAmount}
+                      />
+                      <Typography>
+                        {formatEmissionAmount(row.amount)}
+                      </Typography>
+                    </Stack>
+                  )}
+                </TableCell>
+              )}
             </TableRow>
           ))}
         </TableBody>

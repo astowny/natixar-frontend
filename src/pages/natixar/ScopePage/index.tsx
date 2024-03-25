@@ -48,7 +48,7 @@ const ScopePage = () => {
     // Just so we don't have to look over whole category tree
     const protocolNode = findNodeBy(
       (category: EmissionCategory) =>
-        category.name.toLowerCase() === currentProtocol,
+        category.name.toLowerCase() === currentProtocol.toLowerCase(),
       categories,
       categoryHierarchy,
     )
@@ -73,34 +73,35 @@ const ScopePage = () => {
   ]
 
   // Walk over subcategories.
+  const subcategories: IdTreeNode[] = scopeNode?.children ?? []
+  const categoryIds = subcategories.map((subcategory) => subcategory.value)
   const idsToFilterWith: Record<number, number[]> = Object.fromEntries(
     // Collect all their included ids
-    (scopeNode?.children ?? []).map((subcategoryNode) => [
-      subcategoryNode.value,
-      expandId([subcategoryNode.value], categoryHierarchy),
+    categoryIds.map((categoryId) => [
+      categoryId,
+      expandId([categoryId], subcategories),
     ]),
-  )
-  const categoryIds: number[] = Object.keys(idsToFilterWith).map((id) =>
-    parseInt(id, 10),
   )
 
   // Then just aggregate data points to different subcategories
+  console.log("Ids to filter with: ", idsToFilterWith)
   const dataPointsByCategory: Record<number, EmissionDataPoint[]> = {}
   categoryIds.forEach((categoryId) => {
     dataPointsByCategory[categoryId] = []
   })
 
+  console.log("All points: ", allPoints)
   allPoints.forEach((emissionPoint) => {
     const matchingCategoryId = categoryIds.find((categoryId) =>
       idsToFilterWith[categoryId].includes(emissionPoint.categoryId),
     )
     if (typeof matchingCategoryId !== "undefined") {
-      const pointsForThisCategory = dataPointsByCategory[matchingCategoryId]
-      pointsForThisCategory.push(emissionPoint)
+      dataPointsByCategory[matchingCategoryId].push(emissionPoint)
     }
   })
   // Then just sum them and send to the scope table
 
+  console.log("So, we aggregated these data points: ", dataPointsByCategory)
   const rows: ScopeTableItemProps[] = Object.entries(dataPointsByCategory)
     .map((entry) => [
       parseInt(entry[0], 10),
@@ -110,9 +111,10 @@ const ScopePage = () => {
       const [categoryId, emissionAmount] = idToEmissionPair
       const categoryData = categories[categoryId]
       return {
-        name: categoryData.name,
+        category: categoryData,
+        description: frCategoryMessages[categoryId] ?? "",
+        categoryColor: getColorByCategory(categoryData.era),
         amount: emissionAmount,
-        categoryID: categoryId,
       }
     })
 
@@ -133,7 +135,7 @@ const ScopePage = () => {
                 variant="contained"
                 startIcon={<ArrowLeftOutlined color="primary.contrastText" />}
               >
-                Details
+                Back
               </Button>
             </NavLink>
             {/*             
@@ -152,7 +154,7 @@ const ScopePage = () => {
           <Stack gap=".5rem">
             <Typography variant="h3">Protocol {currentProtocol}</Typography>
             <Typography variant="h4">
-              {`${scope.name} - ${frCategoryMessages[scopeId] ?? ""}`}
+              {`${scope?.name} - ${frCategoryMessages[scopeId] ?? ""}`}
             </Typography>
             <Typography variant="h6">{generalCategoryText}</Typography>
           </Stack>
