@@ -39,7 +39,7 @@ const SettingTab = () => {
         </ListItemIcon>
         <ListItemText primary="Support" />
       </ListItemButton>
-      <ListItemButton
+      {/* <ListItemButton
         selected={selectedIndex === 1}
         onClick={(event: React.MouseEvent<HTMLDivElement>) =>
           handleListItemClick(event, 1)
@@ -49,7 +49,7 @@ const SettingTab = () => {
           <UserOutlined />
         </ListItemIcon>
         <ListItemText primary="Account Settings" />
-      </ListItemButton>
+      </ListItemButton> */}
       <ListItemButton
         selected={selectedIndex === 2}
         onClick={(event: React.MouseEvent<HTMLDivElement>) =>
@@ -72,7 +72,7 @@ const SettingTab = () => {
         </ListItemIcon>
         <ListItemText primary="Feedback" />
       </ListItemButton>
-      <ListItemButton
+      {/* <ListItemButton
         selected={selectedIndex === 4}
         onClick={(event: React.MouseEvent<HTMLDivElement>) =>
           handleListItemClick(event, 4)
@@ -82,7 +82,7 @@ const SettingTab = () => {
           <UnorderedListOutlined />
         </ListItemIcon>
         <ListItemText primary="History" />
-      </ListItemButton>
+      </ListItemButton> */}
     </List>
   )
 }

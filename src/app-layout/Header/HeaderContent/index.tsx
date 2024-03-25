@@ -18,7 +18,7 @@ const HeaderContent = () => {
       {downLG && <Box sx={{ width: "100%", ml: 1 }} />}
 
       <Stack direction="row" alignItems="center" gap={1}>
-        <Notification />
+        {/* <Notification /> */}
         <Customization />
         <NetworkIndicator />
         {!downLG && <Profile />}
