@@ -68,4 +68,4 @@ const EmissionByTimeCompareToPreviousSection = ({
   )
 }
 
-export default memo(EmissionByTimeCompareToPreviousSection)
+export default EmissionByTimeCompareToPreviousSection
