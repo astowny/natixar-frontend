@@ -2,13 +2,16 @@ import { Box, Popover, SxProps, Typography } from "@mui/material"
 import SensorsIcon from "@mui/icons-material/Sensors"
 import SensorsOffIcon from "@mui/icons-material/SensorsOff"
 import { useGetNetworkInformationQuery } from "data/store/features/networkIndication/NetworkCheckClient"
-import { memo, useCallback, useState } from "react"
+import { memo, useCallback, useEffect, useMemo, useState } from "react"
 import { useSelector } from "react-redux"
 import { TimeMeasurement } from "data/domain/types/time/TimeRelatedTypes"
 import { selectEmissionRangeRequestParameters } from "data/store/api/EmissionSelectors"
 import formatISO from "date-fns/formatISO"
 import { formatProtocolForRangesEndpoint } from "data/store/features/emissions/ranges/EndpointTypes"
-import { useGetEmissionRangesQuery } from "data/store/features/emissions/ranges/EmissionRangesClient"
+import {
+  useGetEmissionRangesQuery,
+  useLazyGetEmissionRangesQuery,
+} from "data/store/features/emissions/ranges/EmissionRangesClient"
 
 const NetworkIndicator = (props: SxProps) => {
   const { ...sxProps } = props
@@ -19,9 +22,10 @@ const NetworkIndicator = (props: SxProps) => {
   const { timeRangeOfInterest, protocol } = useSelector(
     selectEmissionRangeRequestParameters,
   )
+  const [getEmissionData, { isLoading }] = useLazyGetEmissionRangesQuery()
   const scale = TimeMeasurement.MINUTES
-  useGetEmissionRangesQuery(
-    {
+  const requestParams = useMemo(
+    () => ({
       protocol: formatProtocolForRangesEndpoint(protocol),
       scale,
       timeRanges: [
@@ -31,11 +35,15 @@ const NetworkIndicator = (props: SxProps) => {
           scale,
         },
       ],
-    },
-    {
-      pollingInterval: 10000,
-    },
+    }),
+    [protocol, timeRangeOfInterest],
   )
+  useGetEmissionRangesQuery(requestParams, {
+    pollingInterval: 10000,
+  })
+  useEffect(() => {
+    getEmissionData(requestParams)
+  }, [requestParams])
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
