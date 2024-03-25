@@ -1,10 +1,10 @@
 // material-ui
-import { Box, Grid, Stack, SxProps, Typography } from "@mui/material"
+import { Box, Card, Grid, Stack, SxProps, Typography } from "@mui/material"
 import { useParams } from "react-router-dom"
 import { FactoryCard } from "sections/contributor/analysis/FactoryCard"
 import MainCard from "components/MainCard"
 import { useTheme } from "@mui/material/styles"
-import EmissionsChart from "sections/contributor/analysis/EmissionsChart"
+import ClusteredMap from "components/leaflet-maps/cluster-map"
 import {
   selectAlignedIndexes,
   selectTimeWindow,
@@ -100,7 +100,7 @@ const EmissionsByScope = memo(
         <MainCard content={false}>
           <Box sx={{ p: 3, pb: 0 }}>
             <Stack spacing={2}>
-              <Typography variant="h5">Years of data emissions</Typography>
+              <Typography variant="h5">Emissions by year</Typography>
             </Stack>
           </Box>
           <ReactApexChart
@@ -110,14 +110,9 @@ const EmissionsByScope = memo(
             height={365}
           />
         </MainCard>
-        <MainCard content={false}>
-          <Box sx={{ p: 3, pb: 0 }}>
-            <Stack spacing={2}>
-              <Typography variant="h5">Emissions by product</Typography>
-            </Stack>
-          </Box>
-          <EmissionsChart color="#ffa940" xLabels={productEmission} />
-        </MainCard>
+        <Card sx={{ height: 365, p: "1rem" }}>
+          <ClusteredMap dataPoints={dataPoints} />
+        </Card>
       </Stack>
     )
   },
@@ -183,8 +178,6 @@ const ContributorAnalysis = () => {
       filter((edp) => relevantCategories.includes(edp.categoryId)),
     )
   }, [relevantDataPoints, relevantEmissionCategories, selectedScope])
-
-  // alert("I don't fail yet")
 
   return (
     <>
