@@ -50,7 +50,7 @@ const DateRangeControlForm = ({
         return
       }
       const newTimeRange: TimeRange = {
-        start: startTime.getTime(),
+        start: Math.min(startTime.getTime(), timeRange.end),
         end: timeRange.end,
       }
       dispatch(selectTimeRange(newTimeRange))
@@ -65,7 +65,7 @@ const DateRangeControlForm = ({
       }
       const newTimeRange: TimeRange = {
         start: timeRange.start,
-        end: endTime.getTime(),
+        end: Math.max(endTime.getTime(), timeRange.start),
       }
       dispatch(selectTimeRange(newTimeRange))
     },

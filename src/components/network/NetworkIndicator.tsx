@@ -15,6 +15,7 @@ import {
 
 const NetworkIndicator = (props: SxProps) => {
   const { ...sxProps } = props
+  const [getEmissionData, { isLoading }] = useLazyGetEmissionRangesQuery()
   const { data, error } = useGetNetworkInformationQuery(undefined, {
     pollingInterval: 2000,
   })
@@ -22,7 +23,6 @@ const NetworkIndicator = (props: SxProps) => {
   const { timeRangeOfInterest, protocol } = useSelector(
     selectEmissionRangeRequestParameters,
   )
-  const [getEmissionData, { isLoading }] = useLazyGetEmissionRangesQuery()
   const scale = TimeMeasurement.MINUTES
   const requestParams = useMemo(
     () => ({
@@ -30,8 +30,10 @@ const NetworkIndicator = (props: SxProps) => {
       scale,
       timeRanges: [
         {
-          start: formatISO(timeRangeOfInterest.start),
-          end: formatISO(timeRangeOfInterest.end),
+          start: formatISO(timeRangeOfInterest.start, {
+            representation: "date",
+          }),
+          end: formatISO(timeRangeOfInterest.end, { representation: "date" }),
           scale,
         },
       ],
