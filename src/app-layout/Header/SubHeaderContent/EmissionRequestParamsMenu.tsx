@@ -1,4 +1,3 @@
-// material-ui
 import DateRangeIcon from "@mui/icons-material/DateRange"
 import {
   Box,
@@ -21,19 +20,13 @@ import {
   getTimeRangeFor,
 } from "data/domain/transformers/TimeTransformers"
 import { EmissionProtocol } from "data/domain/types/emissions/EmissionTypes"
-import {
-  TimeMeasurement,
-  TimeRange,
-} from "data/domain/types/time/TimeRelatedTypes"
+import { TimeRange } from "data/domain/types/time/TimeRelatedTypes"
 import { useAppDispatch } from "data/store"
 import { selectEmissionRangeRequestParameters } from "data/store/api/EmissionSelectors"
-import { useGetEmissionRangesQuery } from "data/store/features/emissions/ranges/EmissionRangesClient"
 import {
   selectProtocol,
   selectTimeRange,
 } from "data/store/features/emissions/ranges/EmissionRangesSlice"
-import { formatProtocolForRangesEndpoint } from "data/store/features/emissions/ranges/EndpointTypes"
-import formatISO from "date-fns/formatISO"
 import { memo, useCallback, useMemo, useState } from "react"
 import { useSelector } from "react-redux"
 
@@ -213,13 +206,13 @@ const DateRangeControlForm = memo(({ timeRange }: { timeRange: TimeRange }) => {
               <DatePicker
                 sx={{ width: "10rem" }}
                 label="From"
-                value={timeRange.start}
+                value={new Date(timeRange.start)}
                 onChange={startChangeCallback}
               />
               <DatePicker
                 sx={{ width: "10rem" }}
                 label="To"
-                value={timeRange.end}
+                value={new Date(timeRange.end)}
                 onChange={endChangeCallback}
               />
             </Stack>
@@ -234,23 +227,6 @@ const RequestParametersControl = ({ ...sxProps }: SxProps) => {
   const { timeRangeOfInterest, protocol } = useSelector(
     selectEmissionRangeRequestParameters,
   )
-  // const scale = TimeMeasurement.MINUTES
-  // useGetEmissionRangesQuery(
-  //   {
-  //     protocol: formatProtocolForRangesEndpoint(protocol),
-  //     scale,
-  //     timeRanges: [
-  //       {
-  //         start: formatISO(timeRangeOfInterest.start),
-  //         end: formatISO(timeRangeOfInterest.end),
-  //         scale,
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     pollingInterval: 5000,
-  //   },
-  // )
 
   return (
     <Stack direction="row" gap=".5rem" sx={{ ...sxProps }}>

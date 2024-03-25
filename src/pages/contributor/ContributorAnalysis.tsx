@@ -12,7 +12,7 @@ import {
 } from "data/store/api/EmissionSelectors"
 import { useSelector } from "react-redux"
 import { detectCompany } from "data/domain/transformers/DataDetectors"
-import { filter, sum, summarize, tidy } from "@tidyjs/tidy"
+import { distinct, filter, map, sum, summarize, tidy } from "@tidyjs/tidy"
 import { useMemo } from "react"
 import { expandId } from "data/domain/transformers/StructuralTransformers"
 
@@ -63,6 +63,17 @@ const ContributorAnalysis = () => {
       )[0].total,
     [relevantDataPoints],
   )
+  const relevantEmissionCategories = useMemo(
+    () =>
+      tidy(
+        relevantDataPoints,
+        map((edp) => ({
+          category: edp.categoryId,
+        })),
+        distinct(["category"]),
+      ).map((item) => item.category),
+    [relevantDataPoints],
+  )
 
   return (
     <>
@@ -72,8 +83,10 @@ const ContributorAnalysis = () => {
       <Grid container rowSpacing={4.5} columnSpacing={3}>
         <Grid item xs={12} md={4}>
           <FactoryCard
+            indexes={indexes}
             company={company}
             totalEmissions={totalRelevantEmissions}
+            categories={relevantEmissionCategories}
           />
         </Grid>
         <Grid item xs={12} md={8}>

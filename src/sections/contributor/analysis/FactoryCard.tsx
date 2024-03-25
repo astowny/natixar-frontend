@@ -21,23 +21,46 @@ import FactoryImage from "assets/images/contributor/analysis/factory.png"
 import { ThemeMode } from "types/config"
 import { BusinessEntity } from "data/domain/types/participants/ContributorsTypes"
 import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
+import { AlignedIndexes } from "data/domain/types/emissions/EmissionTypes"
 
 interface FactoryCardProps {
   company?: BusinessEntity
   totalEmissions: number
+  indexes: AlignedIndexes
+  categories: number[]
+  onCategoryClick?: (categoryId: number) => void
 }
 
 export const FactoryCard = ({
   company,
   totalEmissions,
+  indexes,
+  categories,
+  onCategoryClick,
   ...sxProps
 }: FactoryCardProps & SxProps) => {
   const theme = useTheme()
   const [selectedIndex, setSelectedIndex] = useState(0)
 
-  const handleListItemClick = (index: number) => {
-    setSelectedIndex(index)
+  const handleListItemClick = (categoryId: number) => {
+    setSelectedIndex(categoryId)
+    if (onCategoryClick) {
+      onCategoryClick(categoryId)
+    }
   }
+
+  const categoryListItems = categories.map((categoryId) => {
+    const category = indexes.categories[categoryId]
+    return (
+      <ListItemButton
+        key={categoryId}
+        selected={selectedIndex === categoryId}
+        onClick={() => handleListItemClick(categoryId)}
+      >
+        <ListItemText primary={category.name} />
+      </ListItemButton>
+    )
+  })
 
   return (
     <MainCard sx={{ ...sxProps }}>
@@ -113,30 +136,7 @@ export const FactoryCard = ({
               },
             }}
           >
-            <ListItemButton
-              selected={selectedIndex === 0}
-              onClick={() => handleListItemClick(0)}
-            >
-              <ListItemText primary="Category 1: Gas" />
-            </ListItemButton>
-            <ListItemButton
-              selected={selectedIndex === 1}
-              onClick={() => handleListItemClick(1)}
-            >
-              <ListItemText primary="Category 2: Energy" />
-            </ListItemButton>
-            <ListItemButton
-              selected={selectedIndex === 2}
-              onClick={() => handleListItemClick(2)}
-            >
-              <ListItemText primary="Category 3: Gas" />
-            </ListItemButton>
-            <ListItemButton
-              selected={selectedIndex === 3}
-              onClick={() => handleListItemClick(3)}
-            >
-              <ListItemText primary="Category 4: Energy" />
-            </ListItemButton>
+            {categoryListItems}
           </List>
         </Box>
       </Stack>
