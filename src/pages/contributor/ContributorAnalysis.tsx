@@ -30,16 +30,6 @@ import { timestampToYear } from "data/domain/transformers/TimeTransformers"
 
 // ==============================|| WIDGET - CHARTS ||============================== //
 
-const productEmission = [
-  "Prod 1",
-  "Prod 2",
-  "Prod 3",
-  "Prod 4",
-  "Prod 5",
-  "Prod 6",
-  "Prod 7",
-]
-
 const byYearChartOptions: ApexOptions = {
   yaxis: {
     title: {

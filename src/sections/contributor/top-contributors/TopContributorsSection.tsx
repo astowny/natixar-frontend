@@ -19,7 +19,8 @@ import {
 } from "@tidyjs/tidy"
 import { DataGrid, GridColDef } from "@mui/x-data-grid"
 import { NavLink } from "react-router-dom"
-import { Button } from "@mui/material"
+import { Button, LinearProgress } from "@mui/material"
+import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
 
 interface TopContributorsSectionParams {
   categoryId: number
@@ -32,13 +33,23 @@ const columnDefinitions: GridColDef[] = [
     field: "name",
     headerName: "Contributor",
     sortable: false,
-    flex: 3,
+    flex: 2,
   },
   {
     field: "amount",
     headerName: "Emission",
     sortable: false,
-    flex: 2,
+    flex: 3,
+    renderCell: (params) => (
+      <Stack alignItems="start" sx={{ width: "100%" }}>
+        <Typography>{formatEmissionAmount(params.value[0])}</Typography>
+        <LinearProgress
+          sx={{ width: "100%" }}
+          variant="determinate"
+          value={(100.0 * params.value[0]) / params.value[1]}
+        />
+      </Stack>
+    ),
   },
   {
     field: "id",
@@ -75,6 +86,12 @@ const TopContributorsSection = ({
     [dataPoints],
   )
 
+  const totalEmission = useMemo(
+    () =>
+      relevantDataPoints.reduce((acc, cur) => acc + cur.totalEmissionAmount, 0),
+    [relevantDataPoints],
+  )
+
   const dataToDisplay = useMemo(
     () =>
       tidy(
@@ -82,15 +99,16 @@ const TopContributorsSection = ({
         groupBy("companyId", [
           summarize({ total: sum("totalEmissionAmount") }),
         ]),
+        arrange([desc("total")]),
         map((groupedByCompany) => {
-          const companyName = indexes.entities[groupedByCompany.companyId].name
+          const { companyId, total: groupTotal } = groupedByCompany
+          const companyName = indexes.entities[companyId].name
           return {
-            id: groupedByCompany.companyId,
+            id: companyId,
             name: companyName,
-            amount: groupedByCompany.total,
+            amount: [groupTotal, totalEmission],
           }
         }),
-        arrange([desc("amount"), "name"]),
         sliceHead(maxItemsInTable),
       ),
     [relevantDataPoints],
