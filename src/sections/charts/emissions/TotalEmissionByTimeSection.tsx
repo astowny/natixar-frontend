@@ -37,10 +37,14 @@ const TotalEmissionByTimeSection = ({
     return formatEmissionAmount(sumEmission)
   }, [emissionPoints])
 
-  const groupedByTime = emissionsGroupByTime(
-    emissionPoints,
-    timeWindow,
-    unitLayout[timeDetailUnit],
+  const groupedByTime = useMemo(
+    () =>
+      emissionsGroupByTime(
+        emissionPoints,
+        timeWindow,
+        unitLayout[timeDetailUnit],
+      ),
+    [emissionPoints, timeWindow],
   )
 
   const allKeys = Array.from(
@@ -64,4 +68,4 @@ const TotalEmissionByTimeSection = ({
   )
 }
 
-export default memo(TotalEmissionByTimeSection)
+export default TotalEmissionByTimeSection

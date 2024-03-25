@@ -1,7 +1,7 @@
 import { SxProps } from "@mui/system"
 import { ApexOptions } from "apexcharts"
 import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
-import { memo } from "react"
+import { memo, useMemo } from "react"
 import ReactApexChart from "react-apexcharts"
 import { getOpaqueColorByCategory } from "utils/CategoryColors"
 
@@ -64,32 +64,35 @@ const EmissionByKeyStacked = ({
   groupedData: Record<string, Record<string, number>>
   keys: string[]
 } & SxProps) => {
-  const categories = Object.keys(groupedData)
-  const byKeyData = Array(categories.length).fill(Array(keys.length).fill(0))
+  const series = useMemo(() => {
+    const categories = Object.keys(groupedData)
+    const byKeyData = Array(categories.length).fill(Array(keys.length).fill(0))
 
-  Object.entries(groupedData).forEach((entry) => {
-    const category = entry[0]
-    const categoryIndex = categories.indexOf(category)
-
-    Object.entries(entry[1]).forEach((seriesEntry) => {
-      const keyIndex = keys.indexOf(seriesEntry[0])
-      const data: number[] = byKeyData[categoryIndex]
-      const amount = seriesEntry[1]
-      data[keyIndex] = amount
-    })
-  })
-
-  const series: ApexAxisChartSeries = Object.entries(groupedData).map(
-    (entry) => {
+    Object.entries(groupedData).forEach((entry) => {
       const category = entry[0]
       const categoryIndex = categories.indexOf(category)
-      return {
-        name: category,
-        color: getOpaqueColorByCategory(category),
-        data: byKeyData[categoryIndex],
-      }
-    },
-  )
+
+      Object.entries(entry[1]).forEach((seriesEntry) => {
+        const keyIndex = keys.indexOf(seriesEntry[0])
+        const data: number[] = byKeyData[categoryIndex]
+        const amount = seriesEntry[1]
+        data[keyIndex] = amount
+      })
+    })
+
+    const chartData: ApexAxisChartSeries = Object.entries(groupedData).map(
+      (entry) => {
+        const category = entry[0]
+        const categoryIndex = categories.indexOf(category)
+        return {
+          name: category,
+          color: getOpaqueColorByCategory(category),
+          data: byKeyData[categoryIndex],
+        }
+      },
+    )
+    return chartData
+  }, [groupedData, keys])
 
   const options = { ...defaultOptions, ...optionOverrides(keys) }
   return (

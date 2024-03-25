@@ -109,7 +109,7 @@ const ClusterByCategoryLayer = ({ dataPoints }) => {
         const clusterGr = clusterGroupRef.current
         clusterGr.clearLayers()
         clusterGr.addLayers(markers)
-        map.fitBounds(clusterGr.getBounds().pad(0.75), {
+        map.fitBounds(clusterGr.getBounds().pad(0.5), {
           animate: true,
         })
       }
