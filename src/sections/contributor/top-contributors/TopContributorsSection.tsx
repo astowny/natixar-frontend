@@ -18,6 +18,8 @@ import {
   map,
 } from "@tidyjs/tidy"
 import { DataGrid, GridColDef } from "@mui/x-data-grid"
+import { NavLink } from "react-router-dom"
+import { Button } from "@mui/material"
 
 interface TopContributorsSectionParams {
   categoryId: number
@@ -30,12 +32,24 @@ const columnDefinitions: GridColDef[] = [
     field: "name",
     headerName: "Contributor",
     sortable: false,
-    width: -1,
+    flex: 3,
   },
   {
     field: "amount",
     headerName: "Emission",
     sortable: false,
+    flex: 2,
+  },
+  {
+    field: "id",
+    sortable: false,
+    renderCell: (params) => (
+      <NavLink to={`/contributors/analysis?${params.row.id}`}>
+        <Button sx={{ color: "primary.contrastText" }} variant="contained">
+          Details
+        </Button>
+      </NavLink>
+    ),
   },
 ]
 
