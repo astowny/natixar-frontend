@@ -7,8 +7,8 @@ import { useTheme } from "@mui/material/styles"
 import ClusteredMap from "components/leaflet-maps/cluster-map"
 import {
   selectAlignedIndexes,
+  selectAllPoints,
   selectTimeWindow,
-  selectVisiblePoints,
 } from "data/store/api/EmissionSelectors"
 import { useSelector } from "react-redux"
 import { detectCompany } from "data/domain/transformers/DataDetectors"
@@ -112,7 +112,7 @@ const ContributorAnalysis = () => {
   const { id: idStr } = useParams()
   const id = parseInt(idStr!, 10)
   const indexes = useSelector(selectAlignedIndexes)
-  const allDataPoints = useSelector(selectVisiblePoints)
+  const allDataPoints = useSelector(selectAllPoints)
   const timeWindow = useSelector(selectTimeWindow)
   const [selectedScope, setSelectedScope] = useState(0)
   const company = detectCompany(id, indexes)
@@ -185,13 +185,11 @@ const ContributorAnalysis = () => {
           />
         </Grid>
         <Grid item xs={12} md={8}>
-          {selectedScope > 0 && (
-            <EmissionsByScope
-              category={indexes.categories[selectedScope]}
-              dataPoints={pointsForScope}
-              timeWindow={timeWindow}
-            />
-          )}
+          <EmissionsByScope
+            category={indexes.categories[selectedScope]}
+            dataPoints={pointsForScope}
+            timeWindow={timeWindow}
+          />
         </Grid>
       </Grid>
     </>

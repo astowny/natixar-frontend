@@ -1,12 +1,10 @@
 // material-ui
 import {
-  Box,
   Button,
   ButtonGroup,
   FormControl,
   InputLabel,
   MenuItem,
-  Modal,
   Select,
   SelectChangeEvent,
   Stack,
@@ -14,13 +12,9 @@ import {
   Typography,
 } from "@mui/material"
 import { CategoryLabel } from "components/categories/CategoriesLegend"
+import DateRangePicker from "components/inputs/date/DateRangePicker"
 import { CheckboxItem } from "components/natixarComponents/AreaCheckbox/CheckboxItem"
-import { extractIdsOfIndex } from "data/domain/transformers/StructuralTransformers"
-import {
-  AlignedIndexes,
-  EmissionFilterState,
-} from "data/domain/types/emissions/EmissionTypes"
-import DownloadIcon from "@mui/icons-material/Download"
+import { EmissionFilterState } from "data/domain/types/emissions/EmissionTypes"
 import {
   BusinessEntity,
   GeographicalArea,
@@ -34,16 +28,15 @@ import {
   selectAllVisibleCategoryEras as categoriesSelector,
   selectEmissionFilter as filterStateSelector,
   selectAlignedIndexes as indexesSelector,
+  selectEmissionRangeRequestParameters,
 } from "data/store/api/EmissionSelectors"
 import {
   clearFilterSelection as clearFilterAction,
   updateFilterSelection as updateFilterAction,
 } from "data/store/features/emissions/ranges/EmissionRangesSlice"
-import { useGenerateReportMutation } from "data/store/features/reports/ReportGenerationClient"
 import _ from "lodash"
 import { ChangeEvent, memo, useCallback, useMemo, useState } from "react"
 import { useSelector } from "react-redux"
-import ReportSendSection from "sections/reports/ReportSendSection"
 
 // import { DateRangePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro';
 
@@ -235,73 +228,15 @@ const CategoriesControlForm = memo(
   },
 )
 
-const ReportGeneratorControl = memo(
-  ({
-    filter,
-    indexes,
-    ...sxProps
-  }: {
-    filter: EmissionFilterState
-    indexes: AlignedIndexes
-  } & SxProps) => {
-    const [open, setOpen] = useState(false)
-    const handleOpen = () => setOpen(true)
-    const handleClose = () => setOpen(false)
-    const [generateReport, { isLoading: isUpdating }] =
-      useGenerateReportMutation()
-    const onGenerateClick = useCallback(() => {
-      const reportParams: EmissionFilterState = {
-        selectedBusinessEntities:
-          filter.selectedBusinessEntities.length > 0
-            ? filter.selectedBusinessEntities
-            : extractIdsOfIndex(indexes.entities),
-        selectedGeographicalAreas:
-          filter.selectedGeographicalAreas.length > 0
-            ? filter.selectedGeographicalAreas
-            : extractIdsOfIndex(indexes.areas),
-        selectedCategories:
-          filter.selectedCategories.length > 0
-            ? filter.selectedCategories
-            : extractIdsOfIndex(indexes.categories),
-      }
-
-      generateReport(reportParams)
-      setOpen(false)
-    }, [filter, generateReport, setOpen])
-
-    return (
-      <Box>
-        <Button
-          variant="outlined"
-          endIcon={<DownloadIcon />}
-          onClick={handleOpen}
-          sx={{ ...sxProps }}
-        >
-          Report
-        </Button>
-        <Modal
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <ReportSendSection
-            parameters={filter}
-            indexes={indexes}
-            onGenerateClick={onGenerateClick}
-          />
-        </Modal>
-      </Box>
-    )
-  },
-)
-
 const GlobalFilterMenu = ({ ...sxProps }: SxProps) => {
   const dispatch = useAppDispatch()
 
   const alignedIndexes = useSelector(indexesSelector)
   const allCategories = useSelector(categoriesSelector)
   const globalFilter = useSelector(filterStateSelector)
+  const { timeRangeOfInterest } = useSelector(
+    selectEmissionRangeRequestParameters,
+  )
 
   const [selectedBusinessEntities, setSelectedBusinessEntities] = useState<
     number[]
@@ -432,6 +367,8 @@ const GlobalFilterMenu = ({ ...sxProps }: SxProps) => {
         onSelectionChange={onCategoriesSelectionChange}
       />
 
+      <DateRangePicker timeRange={timeRangeOfInterest} />
+
       <ButtonGroup disableElevation variant="contained">
         <Button
           sx={{
@@ -445,8 +382,6 @@ const GlobalFilterMenu = ({ ...sxProps }: SxProps) => {
           Clear
         </Button>
       </ButtonGroup>
-
-      <ReportGeneratorControl filter={globalFilter} indexes={alignedIndexes} />
     </Stack>
   )
 }

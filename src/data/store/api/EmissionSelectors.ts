@@ -35,6 +35,9 @@ export const selectAllVisibleCategoryEras = (state: RootState) => {
 export const selectVisiblePoints = (state: RootState) =>
   state.emissionRanges.visibleData.emissionPoints
 
+export const selectAllPoints = (state: RootState) =>
+  state.emissionRanges.allPoints
+
 export const selectVisibleEmissionsByCompany = (state: RootState) =>
   state.emissionRanges.visibleData.emissionsByCompany
 
