@@ -1,5 +1,5 @@
 // material-ui
-import { Box, Grid, Typography } from "@mui/material"
+import { Box, Fade, Grid, SxProps, Typography } from "@mui/material"
 import { useParams } from "react-router-dom"
 import { FactoryCard } from "sections/contributor/analysis/FactoryCard"
 import MainCard from "components/MainCard"
@@ -8,25 +8,30 @@ import { useTheme } from "@mui/material/styles"
 import EmissionsChart from "sections/contributor/analysis/EmissionsChart"
 import {
   selectAlignedIndexes,
+  selectTimeWindow,
   selectVisiblePoints,
 } from "data/store/api/EmissionSelectors"
 import { useSelector } from "react-redux"
 import { detectCompany } from "data/domain/transformers/DataDetectors"
 import { distinct, filter, map, sum, summarize, tidy } from "@tidyjs/tidy"
-import { useMemo } from "react"
+import { memo, useCallback, useMemo, useState } from "react"
 import { expandId } from "data/domain/transformers/StructuralTransformers"
+import {
+  EmissionCategory,
+  EmissionDataPoint,
+} from "data/domain/types/emissions/EmissionTypes"
+import EmissionByKeyStacked from "components/charts/emissions/EmissionByKeyStacked"
+import ReactApexChart from "react-apexcharts"
+import { ApexOptions } from "apexcharts"
+import {
+  emissionsGroupByTime,
+  formatEmissionAmount,
+} from "data/domain/transformers/EmissionTransformers"
+import { TimeWindow } from "data/domain/types/time/TimeRelatedTypes"
+import { timestampToYear } from "data/domain/transformers/TimeTransformers"
 
 // ==============================|| WIDGET - CHARTS ||============================== //
 
-const yearEmission = [
-  "01.2020",
-  "01.2021",
-  "01.2022",
-  "01.2023",
-  "01.2024",
-  "01.2025",
-  "01.2026",
-]
 const productEmission = [
   "Prod 1",
   "Prod 2",
@@ -37,12 +42,96 @@ const productEmission = [
   "Prod 7",
 ]
 
+const byYearChartOptions: ApexOptions = {
+  yaxis: {
+    title: {
+      text: "Emissions",
+    },
+    labels: {
+      formatter(val) {
+        return formatEmissionAmount(val)
+      },
+    },
+  },
+  plotOptions: {
+    bar: {
+      columnWidth: "25%",
+      barHeight: "70%",
+    },
+  },
+  dataLabels: {
+    enabled: false,
+  },
+  stroke: {
+    show: true,
+    width: 8,
+    colors: ["transparent"],
+  },
+}
+
+interface ByCategoryProps {
+  category: EmissionCategory
+  dataPoints: EmissionDataPoint[]
+  timeWindow: TimeWindow
+}
+
+const EmissionsByScope = memo(
+  ({
+    category,
+    dataPoints,
+    timeWindow,
+    ...sxProps
+  }: ByCategoryProps & SxProps) => {
+    const theme = useTheme()
+
+    const groupedByTime = Object.values(
+      emissionsGroupByTime(dataPoints, timeWindow, timestampToYear),
+    )[0] // We have only one category anyway
+
+    const labels = Object.keys(groupedByTime)
+    const series = [
+      {
+        name: category.name,
+        type: "bar",
+        data: Object.values(groupedByTime),
+      },
+    ]
+
+    return (
+      <Stack spacing={3} sx={{ ...sxProps }}>
+        <MainCard content={false}>
+          <Box sx={{ p: 3, pb: 0 }}>
+            <Stack spacing={2}>
+              <Typography variant="h5">Years of data emissions</Typography>
+            </Stack>
+          </Box>
+          <ReactApexChart
+            options={{ ...byYearChartOptions, labels }}
+            color={theme.palette.primary.main}
+            series={series}
+            height={365}
+          />
+        </MainCard>
+        <MainCard content={false}>
+          <Box sx={{ p: 3, pb: 0 }}>
+            <Stack spacing={2}>
+              <Typography variant="h5">Emissions by product</Typography>
+            </Stack>
+          </Box>
+          <EmissionsChart color="#ffa940" xLabels={productEmission} />
+        </MainCard>
+      </Stack>
+    )
+  },
+)
+
 const ContributorAnalysis = () => {
-  const theme = useTheme()
   const { id: idStr } = useParams()
   const id = parseInt(idStr!, 10)
   const indexes = useSelector(selectAlignedIndexes)
   const allDataPoints = useSelector(selectVisiblePoints)
+  const timeWindow = useSelector(selectTimeWindow)
+  const [selectedScope, setSelectedScope] = useState(0)
   const company = detectCompany(id, indexes)
 
   const relevantDataPoints = useMemo(() => {
@@ -87,30 +176,17 @@ const ContributorAnalysis = () => {
             company={company}
             totalEmissions={totalRelevantEmissions}
             categories={relevantEmissionCategories}
+            onCategoryClick={setSelectedScope}
           />
         </Grid>
         <Grid item xs={12} md={8}>
-          <Stack spacing={3}>
-            <MainCard content={false}>
-              <Box sx={{ p: 3, pb: 0 }}>
-                <Stack spacing={2}>
-                  <Typography variant="h5">Years of data emissions</Typography>
-                </Stack>
-              </Box>
-              <EmissionsChart
-                color={theme.palette.primary.main}
-                xLabels={yearEmission}
-              />
-            </MainCard>
-            <MainCard content={false}>
-              <Box sx={{ p: 3, pb: 0 }}>
-                <Stack spacing={2}>
-                  <Typography variant="h5">Emissions by product</Typography>
-                </Stack>
-              </Box>
-              <EmissionsChart color="#ffa940" xLabels={productEmission} />
-            </MainCard>
-          </Stack>
+          {selectedScope > 0 && (
+            <EmissionsByScope
+              category={indexes.categories[selectedScope]!!}
+              dataPoints={relevantDataPoints}
+              timeWindow={timeWindow}
+            />
+          )}
         </Grid>
       </Grid>
     </>
