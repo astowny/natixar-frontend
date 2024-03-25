@@ -1,10 +1,20 @@
 // material-ui
 import { Box, Grid, Typography } from "@mui/material"
+import { useParams } from "react-router-dom"
 import { FactoryCard } from "sections/contributor/analysis/FactoryCard"
 import MainCard from "components/MainCard"
 import { Stack } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
 import EmissionsChart from "sections/contributor/analysis/EmissionsChart"
+import {
+  selectAlignedIndexes,
+  selectVisiblePoints,
+} from "data/store/api/EmissionSelectors"
+import { useSelector } from "react-redux"
+import { detectCompany } from "data/domain/transformers/DataDetectors"
+import { filter, sum, summarize, tidy } from "@tidyjs/tidy"
+import { useMemo } from "react"
+import { expandId } from "data/domain/transformers/StructuralTransformers"
 
 // ==============================|| WIDGET - CHARTS ||============================== //
 
@@ -29,6 +39,30 @@ const productEmission = [
 
 const ContributorAnalysis = () => {
   const theme = useTheme()
+  const { id: idStr } = useParams()
+  const id = parseInt(idStr!, 10)
+  const indexes = useSelector(selectAlignedIndexes)
+  const allDataPoints = useSelector(selectVisiblePoints)
+  const company = detectCompany(id, indexes)
+
+  const relevantDataPoints = useMemo(() => {
+    if (typeof company === "undefined") {
+      return []
+    }
+    const allSubEntities = expandId([company.id], indexes.entityHierarchy)
+    return tidy(
+      allDataPoints,
+      filter((edp) => allSubEntities.includes(edp.entityId)),
+    )
+  }, [company, allDataPoints, indexes])
+  const totalRelevantEmissions = useMemo(
+    () =>
+      tidy(
+        relevantDataPoints,
+        summarize({ total: sum("totalEmissionAmount") }),
+      )[0].total,
+    [relevantDataPoints],
+  )
 
   return (
     <>
@@ -37,7 +71,10 @@ const ContributorAnalysis = () => {
       </Typography>
       <Grid container rowSpacing={4.5} columnSpacing={3}>
         <Grid item xs={12} md={4}>
-          <FactoryCard />
+          <FactoryCard
+            company={company}
+            totalEmissions={totalRelevantEmissions}
+          />
         </Grid>
         <Grid item xs={12} md={8}>
           <Stack spacing={3}>

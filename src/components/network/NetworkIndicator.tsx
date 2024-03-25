@@ -3,12 +3,39 @@ import SensorsIcon from "@mui/icons-material/Sensors"
 import SensorsOffIcon from "@mui/icons-material/SensorsOff"
 import { useGetNetworkInformationQuery } from "data/store/features/networkIndication/NetworkCheckClient"
 import { memo, useCallback, useState } from "react"
+import { useSelector } from "react-redux"
+import { TimeMeasurement } from "data/domain/types/time/TimeRelatedTypes"
+import { selectEmissionRangeRequestParameters } from "data/store/api/EmissionSelectors"
+import formatISO from "date-fns/formatISO"
+import { formatProtocolForRangesEndpoint } from "data/store/features/emissions/ranges/EndpointTypes"
+import { useGetEmissionRangesQuery } from "data/store/features/emissions/ranges/EmissionRangesClient"
 
 const NetworkIndicator = (props: SxProps) => {
   const { ...sxProps } = props
   const { data, error } = useGetNetworkInformationQuery(undefined, {
     pollingInterval: 2000,
   })
+
+  const { timeRangeOfInterest, protocol } = useSelector(
+    selectEmissionRangeRequestParameters,
+  )
+  const scale = TimeMeasurement.MINUTES
+  useGetEmissionRangesQuery(
+    {
+      protocol: formatProtocolForRangesEndpoint(protocol),
+      scale,
+      timeRanges: [
+        {
+          start: formatISO(timeRangeOfInterest.start),
+          end: formatISO(timeRangeOfInterest.end),
+          scale,
+        },
+      ],
+    },
+    {
+      pollingInterval: 10000,
+    },
+  )
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 

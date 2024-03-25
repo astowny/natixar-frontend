@@ -8,6 +8,8 @@ import {
   List,
   ListItemButton,
   ListItemText,
+  SxProps,
+  Grid,
 } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
 
@@ -17,8 +19,19 @@ import FactoryImage from "assets/images/contributor/analysis/factory.png"
 
 // types
 import { ThemeMode } from "types/config"
+import { BusinessEntity } from "data/domain/types/participants/ContributorsTypes"
+import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
 
-export const FactoryCard = () => {
+interface FactoryCardProps {
+  company?: BusinessEntity
+  totalEmissions: number
+}
+
+export const FactoryCard = ({
+  company,
+  totalEmissions,
+  ...sxProps
+}: FactoryCardProps & SxProps) => {
   const theme = useTheme()
   const [selectedIndex, setSelectedIndex] = useState(0)
 
@@ -27,33 +40,43 @@ export const FactoryCard = () => {
   }
 
   return (
-    <MainCard sx={{ padding: 0 }}>
+    <MainCard sx={{ ...sxProps }}>
       <Stack spacing={6}>
         <Box sx={{ width: "100%" }}>
           <img
-            src={FactoryImage}
+            src={company?.image ?? FactoryImage}
             alt="Factory"
             style={{ objectFit: "cover", width: "100%", height: 160 }}
           />
-          <Typography sx={{ marginTop: "20px", fontWeight: 400 }} variant="h3">
-            Milan Factory Ltd
+          <Typography
+            sx={{ marginTop: "20px", fontWeight: 400, maxLines: 2 }}
+            variant="h3"
+          >
+            {company?.name ?? ""}
           </Typography>
         </Box>
-        <Stack sx={{ width: "100%" }} spacing={1.5}>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-            }}
-          >
-            <Typography color="secondary">Address</Typography>
-            <Typography>Italy, 185000, Fabricio st. 12</Typography>
-          </Box>
-          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            <Typography color="secondary">Registration</Typography>
-            <Typography>Italy, 185000, Fabricio st. 12</Typography>
-          </Box>
-        </Stack>
+        <Grid container spacing={1.5}>
+          <Grid item xs={3}>
+            <Typography color="secondary" align="right">
+              Address
+            </Typography>
+          </Grid>
+          <Grid item xs={9}>
+            <Typography sx={{ maxLines: 2 }} noWrap={false}>
+              {company?.details?.address ?? "Unknown"}
+            </Typography>
+          </Grid>
+          <Grid item xs={3}>
+            <Typography color="secondary" align="right">
+              Registration
+            </Typography>
+          </Grid>
+          <Grid item xs={9}>
+            <Typography>
+              {company?.details?.registration ?? "Unknown"}
+            </Typography>
+          </Grid>
+        </Grid>
         <Box
           sx={{
             width: "100%",
@@ -70,7 +93,7 @@ export const FactoryCard = () => {
             Total Emissions
           </Typography>
           <Typography sx={{ padding: 0.5, fontWeight: 800 }} variant="h5">
-            2749 (t) CO2e
+            {formatEmissionAmount(totalEmissions)}
           </Typography>
         </Box>
         <Box>

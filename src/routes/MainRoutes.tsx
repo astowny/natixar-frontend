@@ -12,7 +12,7 @@ const DashboardAnalytics = Loadable(
 
 // render - contributor
 const ContributorAnalysis = Loadable(
-  lazy(() => import("pages/contributor/analysis")),
+  lazy(() => import("pages/contributor/ContributorAnalysis")),
 )
 const CategoryAnalysis = Loadable(
   lazy(() => import("pages/contributor/categoryanalysis")),

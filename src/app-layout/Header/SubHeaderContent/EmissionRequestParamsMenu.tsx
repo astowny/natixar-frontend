@@ -234,23 +234,23 @@ const RequestParametersControl = ({ ...sxProps }: SxProps) => {
   const { timeRangeOfInterest, protocol } = useSelector(
     selectEmissionRangeRequestParameters,
   )
-  const scale = TimeMeasurement.MINUTES
-  useGetEmissionRangesQuery(
-    {
-      protocol: formatProtocolForRangesEndpoint(protocol),
-      scale,
-      timeRanges: [
-        {
-          start: formatISO(timeRangeOfInterest.start),
-          end: formatISO(timeRangeOfInterest.end),
-          scale,
-        },
-      ],
-    },
-    {
-      pollingInterval: 5000,
-    },
-  )
+  // const scale = TimeMeasurement.MINUTES
+  // useGetEmissionRangesQuery(
+  //   {
+  //     protocol: formatProtocolForRangesEndpoint(protocol),
+  //     scale,
+  //     timeRanges: [
+  //       {
+  //         start: formatISO(timeRangeOfInterest.start),
+  //         end: formatISO(timeRangeOfInterest.end),
+  //         scale,
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     pollingInterval: 5000,
+  //   },
+  // )
 
   return (
     <Stack direction="row" gap=".5rem" sx={{ ...sxProps }}>

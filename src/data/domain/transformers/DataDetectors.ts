@@ -10,9 +10,10 @@ export const detectCompany = (
 ): BusinessEntity => {
   let entity = indexes.entities[entityId]
   while (
+    entity &&
+    entity.type !== "Company" &&
     entity.parent &&
-    indexes.entities[entity.parent] &&
-    entity.type !== "Company"
+    indexes.entities[entity.parent]
   ) {
     entity = indexes.entities[entity.parent]
   }
