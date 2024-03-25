@@ -82,7 +82,7 @@ const natixarNav: NavItemType[] = [
         id: "settings",
         title: <FormattedMessage id="Settings" />,
         type: "item",
-        url: "/contributor/settings",
+        url: "/settings",
         icon: icons.SettingOutlined,
       },
     ],

@@ -112,6 +112,10 @@ const MainRoutes = {
       element: <MaintenanceUnderConstruction />,
     },
     {
+      path: "settings",
+      element: <MaintenanceUnderConstruction />,
+    },
+    {
       path: "/maintenance",
       element: <PagesLayout />,
       children: [
