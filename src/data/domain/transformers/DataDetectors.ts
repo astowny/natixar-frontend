@@ -2,7 +2,11 @@ import {
   BusinessEntity,
   GeographicalArea,
 } from "data/domain/types/participants/ContributorsTypes"
-import { AlignedIndexes } from "../types/emissions/EmissionTypes"
+import {
+  AlignedIndexes,
+  EmissionCategory,
+  EmissionProtocol,
+} from "../types/emissions/EmissionTypes"
 
 export const detectCompany = (
   entityId: number,
@@ -34,4 +38,23 @@ export const detectCountry = (
     area = indexes.areas[area.parent]
   }
   return area
+}
+
+const PROTOCOLS: string[] = Object.entries(EmissionProtocol).map(
+  (entry) => entry[1],
+)
+export const detectScope = (
+  category: EmissionCategory,
+  indexes: AlignedIndexes,
+): EmissionCategory => {
+  if (category.parent === undefined || PROTOCOLS.includes(category.name)) {
+    return category
+  }
+
+  const parent = indexes.categories[category.parent]
+  if (PROTOCOLS.includes(parent.name)) {
+    return category
+  }
+
+  return detectScope(parent, indexes)
 }

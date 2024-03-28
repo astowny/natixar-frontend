@@ -11,13 +11,13 @@ import {
   EmissionDataPoint,
   EmissionProtocol,
 } from "../types/emissions/EmissionTypes"
-import { detectCompany, detectCountry } from "./DataDetectors"
+import { detectCompany, detectCountry, detectScope } from "./DataDetectors"
 import {
   getTimeDeltaForSlot,
   getTimeOffsetForSlot,
   slotsAreInSameYear,
 } from "./TimeTransformers"
-import { IdTreeNode, IndexOf } from "../types/structures/StructuralTypes"
+import { IndexOf } from "../types/structures/StructuralTypes"
 
 const emptyDecimal = ".0"
 
@@ -115,7 +115,8 @@ export const cdpToEdp = (
 ): EmissionDataPoint => {
   const categoryId = cdp[CdpLayoutItem.CDP_LAYOUT_CATEGORY]
   const category = indexes.categories[categoryId]
-  const origEra = category?.era
+  const scope = detectScope(category, indexes)
+  const origEra = category?.era ?? scope?.era ?? ""
   const entityId = cdp[CdpLayoutItem.CDP_LAYOUT_ENTITY]
   const company = detectCompany(entityId, indexes)
 
@@ -136,6 +137,7 @@ export const cdpToEdp = (
     categoryId,
     categoryName: category?.name ?? "Other",
     categoryEraName: extractNameOfEra(origEra),
+    scopeName: scope.name,
     entityId,
     companyId: company.id,
     companyName: company.name,
@@ -157,7 +159,7 @@ export const dataPointsGroupBySomeIdAndCategory = (
 ): Record<string, Record<number, number>> => {
   const result: Record<string, Record<number, number>> = {}
   points.forEach((emissionPoint) => {
-    const categoryEra = emissionPoint.categoryEraName
+    const categoryEra = emissionPoint.scopeName
     if (typeof result[categoryEra] === "undefined") {
       result[categoryEra] = {}
     }
