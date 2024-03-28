@@ -1,4 +1,4 @@
-import { memo, useMemo } from "react"
+import { useMemo } from "react"
 
 import { selectTimeWindow as timeWindowSelector } from "data/store/api/EmissionSelectors"
 import { useSelector } from "react-redux"
@@ -28,14 +28,10 @@ const EmissionByTimeCompareToPreviousSection = ({
     return formatEmissionAmount(sumEmission)
   }, [emissionPoints])
 
+  const [timeFormatter, timeSorter] = unitLayout[timeDetailUnit]
   const datasetA = useMemo(
-    () =>
-      emissionsGroupByTime(
-        emissionPoints,
-        timeWindow,
-        unitLayout[timeDetailUnit],
-      ),
-    [emissionPoints, timeWindow, unitLayout, timeDetailUnit],
+    () => emissionsGroupByTime(emissionPoints, timeWindow, timeFormatter),
+    [emissionPoints, timeWindow, timeFormatter],
   )
 
   const datasetB: typeof datasetA = {}
@@ -51,7 +47,7 @@ const EmissionByTimeCompareToPreviousSection = ({
 
   const allKeys = Array.from(
     new Set(Object.values(datasetA).flatMap((byKey) => Object.keys(byKey))),
-  )
+  ).toSorted(timeSorter)
 
   return (
     <ChartCard

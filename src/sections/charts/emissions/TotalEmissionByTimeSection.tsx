@@ -11,7 +11,13 @@ import { useSelector } from "react-redux"
 
 export interface TotalEmissionByTimeProps {
   emissionPoints: EmissionDataPoint[]
-  unitLayout: Record<string, (time: number) => string>
+  unitLayout: Record<
+    string,
+    [
+      (time: number, showYear?: boolean) => string,
+      (timeStrA: string, timeStrB: string) => number,
+    ]
+  >
   startDate: Date
   endDate: Date
   timeDetailUnit: string
@@ -37,21 +43,18 @@ const TotalEmissionByTimeSection = ({
     return formatEmissionAmount(sumEmission)
   }, [emissionPoints])
 
+  const [timeFormatter, timeSorter] = unitLayout[timeDetailUnit]
+
   const groupedByTime = useMemo(
-    () =>
-      emissionsGroupByTime(
-        emissionPoints,
-        timeWindow,
-        unitLayout[timeDetailUnit],
-      ),
-    [emissionPoints, timeWindow, unitLayout, timeDetailUnit],
+    () => emissionsGroupByTime(emissionPoints, timeWindow, timeFormatter),
+    [emissionPoints, timeWindow, timeFormatter],
   )
 
   const allKeys = Array.from(
     new Set(
       Object.values(groupedByTime).flatMap((byKey) => Object.keys(byKey)),
     ),
-  )
+  ).toSorted(timeSorter)
 
   return (
     <ChartCard
