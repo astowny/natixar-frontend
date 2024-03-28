@@ -11,11 +11,15 @@ export const timestampToHour = (timestamp: number): string =>
 export const timestampToDay = (timestamp: number): string =>
   format(timestamp, "PP")
 
-export const timestampToMonth = (timestamp: number): string =>
-  format(timestamp, "MMM")
+export const timestampToMonth = (
+  timestamp: number,
+  showYear: boolean,
+): string => format(timestamp, `MMM ${showYear ? "yyyy" : ""}`)
 
-export const timestampToQuarter = (timestamp: number): string =>
-  format(timestamp, "QQQ")
+export const timestampToQuarter = (
+  timestamp: number,
+  showYear: boolean,
+): string => format(timestamp, `QQQ ${showYear ? "yyyy" : ""}`)
 
 export const timestampToYear = (timestamp: number): string =>
   format(timestamp, "yyyy")
@@ -74,3 +78,13 @@ export const getShortDescriptionForTimeRange = (
   const sameYear = isSameYear(timeRange.start, timeRange.end)
   return `${format(timeRange.start, sameYear ? "d MMM" : "d MMM y")} - ${format(timeRange.end, "d MMM y")}`
 }
+
+export const slotsAreInSameYear = (
+  slotA: number,
+  slotB: number,
+  timeWindow: TimeWindow,
+): boolean =>
+  isSameYear(
+    getTimeOffsetForSlot(slotA, timeWindow),
+    getTimeOffsetForSlot(slotB, timeWindow),
+  )

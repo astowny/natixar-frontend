@@ -1,6 +1,7 @@
 import { v4 as uuid } from "uuid"
 import { TimeWindow } from "data/domain/types/time/TimeRelatedTypes"
 import { CountryLocation } from "data/domain/types/participants/ContributorsTypes"
+import _ from "lodash"
 import {
   AirEmissionMeasureUnits,
   AlignedIndexes,
@@ -11,7 +12,11 @@ import {
   EmissionProtocol,
 } from "../types/emissions/EmissionTypes"
 import { detectCompany, detectCountry } from "./DataDetectors"
-import { getTimeDeltaForSlot, getTimeOffsetForSlot } from "./TimeTransformers"
+import {
+  getTimeDeltaForSlot,
+  getTimeOffsetForSlot,
+  slotsAreInSameYear,
+} from "./TimeTransformers"
 import { IdTreeNode, IndexOf } from "../types/structures/StructuralTypes"
 
 const emptyDecimal = ".0"
@@ -179,9 +184,16 @@ export const dataPointsGroupByCountryAndCategory = (
 export const emissionsGroupByTime = (
   points: EmissionDataPoint[],
   timeWindow: TimeWindow,
-  timeMeasureKeyFn: (timestamp: number) => string,
+  timeMeasureKeyFn: (timestamp: number, showYear: boolean) => string,
 ): Record<string, Record<string, number>> => {
   const result: Record<string, Record<string, number>> = {}
+
+  const minTime =
+    _.minBy(points, (point) => point.startTimeSlot)?.startTimeSlot ?? 0
+  const maxTime =
+    _.maxBy(points, (point) => point.endTimeSlot)?.endTimeSlot ?? 0
+
+  const showYear = !slotsAreInSameYear(minTime, maxTime, timeWindow)
 
   points.forEach((emissionPoint) => {
     const categoryEra = emissionPoint.categoryEraName
@@ -198,6 +210,7 @@ export const emissionsGroupByTime = (
     do {
       const timeKey = timeMeasureKeyFn(
         timeWindow.startTimestamp + totalTimeOffset,
+        showYear,
       )
       const currentSlotDelta = getTimeDeltaForSlot(currentTimeSlot, timeWindow)
 

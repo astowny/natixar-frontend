@@ -6,7 +6,7 @@ import {
   formatEmissionAmount,
 } from "data/domain/transformers/EmissionTransformers"
 import { EmissionDataPoint } from "data/domain/types/emissions/EmissionTypes"
-import { memo, useMemo } from "react"
+import { useMemo } from "react"
 import { useSelector } from "react-redux"
 
 export interface TotalEmissionByTimeProps {
@@ -44,7 +44,7 @@ const TotalEmissionByTimeSection = ({
         timeWindow,
         unitLayout[timeDetailUnit],
       ),
-    [emissionPoints, timeWindow],
+    [emissionPoints, timeWindow, unitLayout, timeDetailUnit],
   )
 
   const allKeys = Array.from(

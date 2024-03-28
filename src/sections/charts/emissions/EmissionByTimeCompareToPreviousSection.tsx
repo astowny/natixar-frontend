@@ -28,10 +28,14 @@ const EmissionByTimeCompareToPreviousSection = ({
     return formatEmissionAmount(sumEmission)
   }, [emissionPoints])
 
-  const datasetA = emissionsGroupByTime(
-    emissionPoints,
-    timeWindow,
-    unitLayout[timeDetailUnit],
+  const datasetA = useMemo(
+    () =>
+      emissionsGroupByTime(
+        emissionPoints,
+        timeWindow,
+        unitLayout[timeDetailUnit],
+      ),
+    [emissionPoints, timeWindow, unitLayout, timeDetailUnit],
   )
 
   const datasetB: typeof datasetA = {}
