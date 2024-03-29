@@ -49,6 +49,8 @@ const EmissionByTimeCompareToPreviousSection = ({
     new Set(Object.values(datasetA).flatMap((byKey) => Object.keys(byKey))),
   ).toSorted(timeSorter)
 
+  const percentage = Math.round(Math.random() * 200 - 100)
+
   return (
     <ChartCard
       title="Trend stacked bars CO2"
@@ -58,6 +60,7 @@ const EmissionByTimeCompareToPreviousSection = ({
       slots={timeDetailSlots}
       selectedSlot={timeDetailUnit}
       setSelectedSlot={setTimeDetailUnit}
+      percentage={percentage}
     >
       <EmissionByKeyComparison
         dataSetA={datasetA}
