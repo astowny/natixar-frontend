@@ -45,9 +45,6 @@ const detailUnitLayout: Record<
 }
 
 const NatixarChart = () => {
-  // const [areaSlot, setAreaSlot] = useState("month")
-  // const [acquisitionSlot, setAcquisitionSlot] = useState("month")
-  // const [compare, setCompare] = useState(false)
   const [totalUnit, setTotalUnit] = useState("Month")
   const [comparisonUnit, setComparisonUnit] = useState("Month")
 

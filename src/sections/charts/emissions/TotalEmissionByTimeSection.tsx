@@ -6,8 +6,9 @@ import {
   formatEmissionAmount,
 } from "data/domain/transformers/EmissionTransformers"
 import { EmissionDataPoint } from "data/domain/types/emissions/EmissionTypes"
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import { useSelector } from "react-redux"
+import useAsyncWork from "hooks/useAsyncWork"
 
 export interface TotalEmissionByTimeProps {
   emissionPoints: EmissionDataPoint[]
@@ -35,18 +36,26 @@ const TotalEmissionByTimeSection = ({
   const timeDetailSlots = useMemo(() => Object.keys(unitLayout), [unitLayout])
   const timeWindow = useSelector(timeWindowSelector)
 
-  const totalEmissions = useMemo(() => {
-    const sumEmission = emissionPoints.reduce(
-      (acc, cur) => acc + cur.totalEmissionAmount,
-      0,
-    )
-    return formatEmissionAmount(sumEmission)
-  }, [emissionPoints])
+  const [totalEmissions, setTotalEmissions] = useState("")
+  useAsyncWork(
+    () => {
+      const sumEmission = emissionPoints.reduce(
+        (acc, cur) => acc + cur.totalEmissionAmount,
+        0,
+      )
+      return formatEmissionAmount(sumEmission)
+    },
+    setTotalEmissions,
+    [emissionPoints],
+  )
 
   const [timeFormatter, timeSorter] = unitLayout[timeDetailUnit]
-
-  const groupedByTime = useMemo(
+  const [groupedByTime, setChardData] = useState<
+    Record<string, Record<string, number>>
+  >({})
+  useAsyncWork(
     () => emissionsGroupByTime(emissionPoints, timeWindow, timeFormatter),
+    setChardData,
     [emissionPoints, timeWindow, timeFormatter],
   )
 
