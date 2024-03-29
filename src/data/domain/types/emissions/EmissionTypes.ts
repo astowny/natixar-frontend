@@ -59,6 +59,7 @@ export interface EmissionDataPoint {
   categoryId: number
   categoryName: string
   categoryEraName: string
+  scopeName: string
   entityId: number
   companyId: number
   companyName: string

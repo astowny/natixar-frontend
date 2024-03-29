@@ -14,6 +14,10 @@ import TotalEmissionByTimeSection from "sections/charts/emissions/TotalEmissionB
 import EmissionByTimeCompareToPreviousSection from "sections/charts/emissions/EmissionByTimeCompareToPreviousSection"
 import {
   getTimeOffsetForSlot,
+  sortDays,
+  sortHours,
+  sortMonths,
+  sortQuarters,
   timestampToDay,
   timestampToHour,
   timestampToMonth,
@@ -26,18 +30,21 @@ import EmissionByCategorySection from "../../components/natixarComponents/CO2Don
 
 // ==============================|| WIDGET - CHARTS ||============================== //
 
-const detailUnitLayout: Record<string, (time: number) => string> = {
-  Hour: timestampToHour,
-  Day: timestampToDay,
-  Month: timestampToMonth,
-  Quarter: timestampToQuarter,
-  Year: timestampToYear,
+const detailUnitLayout: Record<
+  string,
+  [
+    (time: number, showYear?: boolean) => string,
+    (timeStrA: string, timeStrB: string) => number,
+  ]
+> = {
+  Hour: [timestampToHour, sortHours],
+  Day: [timestampToDay, sortDays],
+  Month: [timestampToMonth, sortMonths],
+  Quarter: [timestampToQuarter, sortQuarters],
+  Year: [timestampToYear, (a, b) => a.localeCompare(b)],
 }
 
 const NatixarChart = () => {
-  // const [areaSlot, setAreaSlot] = useState("month")
-  // const [acquisitionSlot, setAcquisitionSlot] = useState("month")
-  // const [compare, setCompare] = useState(false)
   const [totalUnit, setTotalUnit] = useState("Month")
   const [comparisonUnit, setComparisonUnit] = useState("Month")
 

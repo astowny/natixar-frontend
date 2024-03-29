@@ -3,19 +3,42 @@ import {
   TimeSection,
   TimeWindow,
 } from "data/domain/types/time/TimeRelatedTypes"
-import { format, isSameYear, subMonths } from "date-fns"
+import { format, isSameYear, parse, subMonths } from "date-fns"
+
+const HOUR_TIME_FORMAT = " p"
+const DAY_TIME_FORMAT = "PP"
 
 export const timestampToHour = (timestamp: number): string =>
-  format(timestamp, "	p")
+  format(timestamp, HOUR_TIME_FORMAT)
+
+export const sortHours = (timeA: string, timeB: string): number =>
+  parse(timeA, HOUR_TIME_FORMAT, new Date()).getTime() -
+  parse(timeB, HOUR_TIME_FORMAT, new Date()).getTime()
 
 export const timestampToDay = (timestamp: number): string =>
-  format(timestamp, "PP")
+  format(timestamp, DAY_TIME_FORMAT)
 
-export const timestampToMonth = (timestamp: number): string =>
-  format(timestamp, "MMM")
+export const sortDays = (timeA: string, timeB: string): number =>
+  parse(timeA, DAY_TIME_FORMAT, new Date()).getTime() -
+  parse(timeB, DAY_TIME_FORMAT, new Date()).getTime()
 
-export const timestampToQuarter = (timestamp: number): string =>
-  format(timestamp, "QQQ")
+export const timestampToMonth = (
+  timestamp: number,
+  showYear?: boolean,
+): string => format(timestamp, `MMM ${showYear ? "yyyy" : ""}`)
+
+export const sortMonths = (timeA: string, timeB: string): number =>
+  parse(timeA, "MMM yyyy", new Date()).getTime() -
+  parse(timeB, "MMM yyyy", new Date()).getTime()
+
+export const timestampToQuarter = (
+  timestamp: number,
+  showYear?: boolean,
+): string => format(timestamp, `QQQ ${showYear ? "yyyy" : ""}`)
+
+export const sortQuarters = (timeA: string, timeB: string): number =>
+  parse(timeA, "QQQ yyyy", new Date()).getTime() -
+  parse(timeB, "QQQ yyyy", new Date()).getTime()
 
 export const timestampToYear = (timestamp: number): string =>
   format(timestamp, "yyyy")
@@ -74,3 +97,13 @@ export const getShortDescriptionForTimeRange = (
   const sameYear = isSameYear(timeRange.start, timeRange.end)
   return `${format(timeRange.start, sameYear ? "d MMM" : "d MMM y")} - ${format(timeRange.end, "d MMM y")}`
 }
+
+export const slotsAreInSameYear = (
+  slotA: number,
+  slotB: number,
+  timeWindow: TimeWindow,
+): boolean =>
+  isSameYear(
+    getTimeOffsetForSlot(slotA, timeWindow),
+    getTimeOffsetForSlot(slotB, timeWindow),
+  )

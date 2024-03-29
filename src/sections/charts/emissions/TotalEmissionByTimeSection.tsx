@@ -6,12 +6,19 @@ import {
   formatEmissionAmount,
 } from "data/domain/transformers/EmissionTransformers"
 import { EmissionDataPoint } from "data/domain/types/emissions/EmissionTypes"
-import { memo, useMemo } from "react"
+import { useMemo, useState } from "react"
 import { useSelector } from "react-redux"
+import useAsyncWork from "hooks/useAsyncWork"
 
 export interface TotalEmissionByTimeProps {
   emissionPoints: EmissionDataPoint[]
-  unitLayout: Record<string, (time: number) => string>
+  unitLayout: Record<
+    string,
+    [
+      (time: number, showYear?: boolean) => string,
+      (timeStrA: string, timeStrB: string) => number,
+    ]
+  >
   startDate: Date
   endDate: Date
   timeDetailUnit: string
@@ -29,29 +36,34 @@ const TotalEmissionByTimeSection = ({
   const timeDetailSlots = useMemo(() => Object.keys(unitLayout), [unitLayout])
   const timeWindow = useSelector(timeWindowSelector)
 
-  const totalEmissions = useMemo(() => {
-    const sumEmission = emissionPoints.reduce(
-      (acc, cur) => acc + cur.totalEmissionAmount,
-      0,
-    )
-    return formatEmissionAmount(sumEmission)
-  }, [emissionPoints])
+  const [totalEmissions, setTotalEmissions] = useState("")
+  useAsyncWork(
+    () => {
+      const sumEmission = emissionPoints.reduce(
+        (acc, cur) => acc + cur.totalEmissionAmount,
+        0,
+      )
+      return formatEmissionAmount(sumEmission)
+    },
+    setTotalEmissions,
+    [emissionPoints],
+  )
 
-  const groupedByTime = useMemo(
-    () =>
-      emissionsGroupByTime(
-        emissionPoints,
-        timeWindow,
-        unitLayout[timeDetailUnit],
-      ),
-    [emissionPoints, timeWindow],
+  const [timeFormatter, timeSorter] = unitLayout[timeDetailUnit]
+  const [groupedByTime, setChartData] = useState<
+    Record<string, Record<string, number>>
+  >({})
+  useAsyncWork(
+    () => emissionsGroupByTime(emissionPoints, timeWindow, timeFormatter),
+    setChartData,
+    [emissionPoints, timeWindow, timeFormatter],
   )
 
   const allKeys = Array.from(
     new Set(
       Object.values(groupedByTime).flatMap((byKey) => Object.keys(byKey)),
     ),
-  )
+  ).toSorted(timeSorter)
 
   return (
     <ChartCard

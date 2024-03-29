@@ -1,14 +1,17 @@
 import {
   Box,
+  Button,
   Grid,
   Stack,
   ToggleButton,
   ToggleButtonGroup,
   Typography,
 } from "@mui/material"
-import { ReactNode } from "react"
-import { CaretDownOutlined } from "@ant-design/icons"
+import { Dispatch, ReactNode, SetStateAction } from "react"
 import _ from "lodash"
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp"
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown"
+import { jsx } from "@emotion/react"
 
 type ChartCardProps = {
   children: ReactNode
@@ -19,9 +22,52 @@ type ChartCardProps = {
   slots?: string[]
   startDate: Date
   endDate: Date
-  // compareButton?: boolean
-  // compare?: boolean
-  // setCompare?: Dispatch<SetStateAction<boolean>>
+  percentage?: number
+  showCompareButton?: boolean
+  compare?: boolean
+  setCompare?: Dispatch<SetStateAction<boolean>>
+}
+
+const AmountLabel = ({
+  value,
+  percentage,
+}: {
+  value?: string | number
+  percentage?: number
+}) => {
+  let color: string
+  let arrowNode: JSX.Element | null
+
+  if (typeof percentage === "undefined") {
+    color = "primary"
+    arrowNode = null
+  } else {
+    color = percentage > 0 ? "red" : "green"
+    arrowNode = percentage > 0 ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />
+  }
+
+  return (
+    <Stack
+      width="fit-content"
+      direction="row"
+      justifyContent="center"
+      alignItems="center"
+      color={color}
+      gap=".1rem"
+      sx={{
+        color,
+      }}
+    >
+      {arrowNode}
+      <Typography variant="h5">{value}</Typography>
+      {arrowNode && (
+        <Typography sx={{ ml: ".3rem", fontWeight: "bold" }}>
+          ({percentage?.toFixed(2)}%)
+        </Typography>
+      )}
+      <Typography variant="subtitle2" />
+    </Stack>
+  )
 }
 
 export const ChartCard = ({
@@ -33,9 +79,10 @@ export const ChartCard = ({
   slots,
   selectedSlot,
   setSelectedSlot,
-  // compareButton,
-  // compare,
-  // setCompare,
+  percentage,
+  showCompareButton,
+  compare,
+  setCompare,
 }: ChartCardProps) => {
   const handleChange = (
     event: React.MouseEvent<HTMLElement>,
@@ -46,27 +93,27 @@ export const ChartCard = ({
 
   return (
     <Stack
-      direction="column"
-      gap="15px"
       sx={{
+        width: "100%",
         padding: "24px",
         backgroundColor: "white",
-        width: "100%",
         border: "1px solid",
         borderColor: "#e6ebf1",
         borderRadius: "4px",
       }}
     >
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
+      <Grid
+        container
+        rowSpacing={2}
+        justifyContent="space-between"
+        justifyItems="stretch"
+        alignItems="center"
       >
-        <Typography variant="h5">{title}</Typography>
-        {/* <Box sx={{ display: "flex", gap: "10px" }}>
-          {compareButton && setCompare && (
+        <Grid item xs={8}>
+          <Typography variant="h5">{title}</Typography>
+        </Grid>
+        <Grid item xs={4} justifySelf="end" textAlign="end">
+          {showCompareButton && setCompare && (
             <Button
               sx={{
                 color: compare ? "#1890FF" : "#000000",
@@ -79,89 +126,53 @@ export const ChartCard = ({
               Compare to previous year
             </Button>
           )}
-          <IconButton
-            variant="outlined"
-            color="secondary"
-            sx={{ borderColor: "#D9D9D9" }}
+        </Grid>
+        <Grid item xs={8}>
+          <AmountLabel value={value} percentage={percentage} />
+          {startDate && endDate && (
+            <Typography variant="subtitle2" sx={{ color: "#8C8C8C" }}>
+              {`${compare ? "Compare: " : ""} ${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`}
+            </Typography>
+          )}
+        </Grid>
+        <Grid item xs={4} justifySelf="end" textAlign="end">
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="end"
+            gap="7px"
           >
-            <DownloadOutlined style={{ color: "#000" }} />
-          </IconButton>
-        </Box> */}
-      </Box>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        {true ? (
-          <Box>
-            <Typography variant="h5">{value}</Typography>
-            {startDate && endDate && (
-              <Typography variant="subtitle2" sx={{ color: "#8C8C8C" }}>
-                {`${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`}
-              </Typography>
-            )}
-          </Box>
-        ) : (
-          <Box>
-            <Box
-              sx={{
-                color: "red",
-                display: "flex",
-                columnGap: "5px",
-                alignItems: "center",
-              }}
-            >
-              <CaretDownOutlined />
-              <Typography variant="h5">{value}</Typography>
-              <Typography>(45,67%)</Typography>
-            </Box>
-            {/* <Typography variant="subtitle2" sx={{ color: "#8C8C8C" }}> */}
-            {/* Compare: {date} to {date} */}
-            {/* </Typography> */}
-          </Box>
-        )}
-        <Box>
-          <Grid>
-            <Grid item>
-              <Box
-                sx={{ display: "flex", alignItems: "center", columnGap: "7px" }}
+            <Typography>Detail by</Typography>
+            {slots && (
+              <ToggleButtonGroup
+                exclusive
+                size="small"
+                value={selectedSlot}
+                onChange={handleChange}
               >
-                <Typography>Detail by</Typography>
-                {slots && (
-                  <ToggleButtonGroup
-                    exclusive
-                    size="small"
-                    value={selectedSlot}
-                    onChange={handleChange}
+                {slots.map((timeDetailSlot) => (
+                  <ToggleButton
+                    key={timeDetailSlot}
+                    value={timeDetailSlot}
+                    sx={{
+                      px: 2,
+                      py: 0.5,
+                      color: "#000000",
+                      "&.MuiToggleButton-root.Mui-selected": {
+                        color: "#FFFFFF",
+                        backgroundColor: "#1890FF",
+                        borderColor: "#1890FF",
+                      },
+                    }}
                   >
-                    {slots.map((timeDetailSlot) => (
-                      <ToggleButton
-                        key={timeDetailSlot}
-                        value={timeDetailSlot}
-                        sx={{
-                          px: 2,
-                          py: 0.5,
-                          color: "#000000",
-                          "&.MuiToggleButton-root.Mui-selected": {
-                            color: "#FFFFFF",
-                            backgroundColor: "#1890FF",
-                            borderColor: "#1890FF",
-                          },
-                        }}
-                      >
-                        {_.capitalize(timeDetailSlot)}
-                      </ToggleButton>
-                    ))}
-                  </ToggleButtonGroup>
-                )}
-              </Box>
-            </Grid>
-          </Grid>
-        </Box>
-      </Box>
+                    {_.capitalize(timeDetailSlot)}
+                  </ToggleButton>
+                ))}
+              </ToggleButtonGroup>
+            )}
+          </Stack>
+        </Grid>
+      </Grid>
       {children}
     </Stack>
   )

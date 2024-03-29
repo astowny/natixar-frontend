@@ -1,6 +1,7 @@
 import { v4 as uuid } from "uuid"
 import { TimeWindow } from "data/domain/types/time/TimeRelatedTypes"
 import { CountryLocation } from "data/domain/types/participants/ContributorsTypes"
+import _ from "lodash"
 import {
   AirEmissionMeasureUnits,
   AlignedIndexes,
@@ -10,9 +11,13 @@ import {
   EmissionDataPoint,
   EmissionProtocol,
 } from "../types/emissions/EmissionTypes"
-import { detectCompany, detectCountry } from "./DataDetectors"
-import { getTimeDeltaForSlot, getTimeOffsetForSlot } from "./TimeTransformers"
-import { IdTreeNode, IndexOf } from "../types/structures/StructuralTypes"
+import { detectCompany, detectCountry, detectScope } from "./DataDetectors"
+import {
+  getTimeDeltaForSlot,
+  getTimeOffsetForSlot,
+  slotsAreInSameYear,
+} from "./TimeTransformers"
+import { IndexOf } from "../types/structures/StructuralTypes"
 
 const emptyDecimal = ".0"
 
@@ -110,7 +115,8 @@ export const cdpToEdp = (
 ): EmissionDataPoint => {
   const categoryId = cdp[CdpLayoutItem.CDP_LAYOUT_CATEGORY]
   const category = indexes.categories[categoryId]
-  const origEra = category?.era
+  const scope = detectScope(category, indexes)
+  const origEra = category?.era ?? scope?.era ?? ""
   const entityId = cdp[CdpLayoutItem.CDP_LAYOUT_ENTITY]
   const company = detectCompany(entityId, indexes)
 
@@ -131,6 +137,7 @@ export const cdpToEdp = (
     categoryId,
     categoryName: category?.name ?? "Other",
     categoryEraName: extractNameOfEra(origEra),
+    scopeName: scope.name,
     entityId,
     companyId: company.id,
     companyName: company.name,
@@ -152,7 +159,7 @@ export const dataPointsGroupBySomeIdAndCategory = (
 ): Record<string, Record<number, number>> => {
   const result: Record<string, Record<number, number>> = {}
   points.forEach((emissionPoint) => {
-    const categoryEra = emissionPoint.categoryEraName
+    const categoryEra = emissionPoint.scopeName
     if (typeof result[categoryEra] === "undefined") {
       result[categoryEra] = {}
     }
@@ -179,9 +186,16 @@ export const dataPointsGroupByCountryAndCategory = (
 export const emissionsGroupByTime = (
   points: EmissionDataPoint[],
   timeWindow: TimeWindow,
-  timeMeasureKeyFn: (timestamp: number) => string,
+  timeMeasureKeyFn: (timestamp: number, showYear: boolean) => string,
 ): Record<string, Record<string, number>> => {
   const result: Record<string, Record<string, number>> = {}
+
+  const minTime =
+    _.minBy(points, (point) => point.startTimeSlot)?.startTimeSlot ?? 0
+  const maxTime =
+    _.maxBy(points, (point) => point.endTimeSlot)?.endTimeSlot ?? 0
+
+  const showYear = !slotsAreInSameYear(minTime, maxTime, timeWindow)
 
   points.forEach((emissionPoint) => {
     const categoryEra = emissionPoint.categoryEraName
@@ -198,6 +212,7 @@ export const emissionsGroupByTime = (
     do {
       const timeKey = timeMeasureKeyFn(
         timeWindow.startTimestamp + totalTimeOffset,
+        showYear,
       )
       const currentSlotDelta = getTimeDeltaForSlot(currentTimeSlot, timeWindow)
 

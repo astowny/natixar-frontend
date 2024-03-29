@@ -14,13 +14,13 @@ import {
   EmissionDataPoint,
 } from "data/domain/types/emissions/EmissionTypes"
 import { selectRequestEmissionProtocol } from "data/store/api/EmissionSelectors"
-import { memo, useCallback, useEffect, useMemo, useState } from "react"
+import { memo, useCallback, useMemo, useState } from "react"
 import ReactApexChart from "react-apexcharts"
 import { useSelector } from "react-redux"
 import { defaultOptions } from "sections/charts/apexchart/ApexDonutChart/constants"
-import { ApexPieChartProps } from "sections/charts/apexchart/ApexDonutChart/interface"
 import TopContributorsSection from "sections/contributor/top-contributors/TopContributorsSection"
 import { getColorByCategory } from "utils/CategoryColors"
+import useAsyncWork from "hooks/useAsyncWork"
 import LabelBox from "./LabelBox"
 import {
   ChartContainerStyles,
@@ -123,9 +123,8 @@ const EmissionByCategorySection = ({
     [protocol, alignedIndexes.categories],
   )
 
-  useEffect(() => {
-    let acceptResult = true
-    const aggregateData = async () => {
+  useAsyncWork(
+    () => {
       const categoryAggregators: Record<string, ByCategoryItem> = {}
 
       scopes.forEach((scope) => {
@@ -147,17 +146,11 @@ const EmissionByCategorySection = ({
           categoryColor: getColorByCategory(era),
         }
       })
-
-      if (acceptResult) {
-        setPieChartData(Object.values(categoryAggregators))
-      }
-    }
-
-    aggregateData()
-    return () => {
-      acceptResult = false
-    }
-  }, [allDataPoints, alignedIndexes, setPieChartData])
+      return Object.values(categoryAggregators)
+    },
+    setPieChartData,
+    [allDataPoints, alignedIndexes, setPieChartData],
+  )
 
   const series = pieChartData.map((a) => a.count)
   const labels = pieChartData.map((a) => a.categoryName)
