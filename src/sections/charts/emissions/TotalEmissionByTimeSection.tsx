@@ -50,12 +50,12 @@ const TotalEmissionByTimeSection = ({
   )
 
   const [timeFormatter, timeSorter] = unitLayout[timeDetailUnit]
-  const [groupedByTime, setChardData] = useState<
+  const [groupedByTime, setChartData] = useState<
     Record<string, Record<string, number>>
   >({})
   useAsyncWork(
     () => emissionsGroupByTime(emissionPoints, timeWindow, timeFormatter),
-    setChardData,
+    setChartData,
     [emissionPoints, timeWindow, timeFormatter],
   )
 

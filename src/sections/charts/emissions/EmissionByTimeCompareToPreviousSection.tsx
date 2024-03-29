@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 
 import { selectTimeWindow as timeWindowSelector } from "data/store/api/EmissionSelectors"
 import { useSelector } from "react-redux"
@@ -8,6 +8,7 @@ import {
   formatEmissionAmount,
 } from "data/domain/transformers/EmissionTransformers"
 import EmissionByKeyComparison from "components/charts/emissions/EmissionByKeyComparison"
+import useAsyncWork from "hooks/useAsyncWork"
 import { TotalEmissionByTimeProps } from "./TotalEmissionByTimeSection"
 
 const EmissionByTimeCompareToPreviousSection = ({
@@ -20,17 +21,26 @@ const EmissionByTimeCompareToPreviousSection = ({
 }: TotalEmissionByTimeProps) => {
   const timeDetailSlots = useMemo(() => Object.keys(unitLayout), [unitLayout])
   const timeWindow = useSelector(timeWindowSelector)
-  const totalEmissions = useMemo(() => {
-    const sumEmission = emissionPoints.reduce(
-      (acc, cur) => acc + cur.totalEmissionAmount,
-      0,
-    )
-    return formatEmissionAmount(sumEmission)
-  }, [emissionPoints])
+  const [totalEmissions, setTotalEmissions] = useState("")
+  useAsyncWork(
+    () => {
+      const sumEmission = emissionPoints.reduce(
+        (acc, cur) => acc + cur.totalEmissionAmount,
+        0,
+      )
+      return formatEmissionAmount(sumEmission)
+    },
+    setTotalEmissions,
+    [emissionPoints],
+  )
 
   const [timeFormatter, timeSorter] = unitLayout[timeDetailUnit]
-  const datasetA = useMemo(
+  const [datasetA, setDatasetA] = useState<
+    Record<string, Record<string, number>>
+  >({})
+  useAsyncWork(
     () => emissionsGroupByTime(emissionPoints, timeWindow, timeFormatter),
+    setDatasetA,
     [emissionPoints, timeWindow, timeFormatter],
   )
 
