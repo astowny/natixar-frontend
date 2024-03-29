@@ -97,17 +97,15 @@ const EmissionByKeyComparison = ({
   ...sxProps
 }: {
   dataSetA: Record<string, Record<string, number>>
-  dataSetB: Record<string, Record<string, number>>
+  dataSetB?: Record<string, Record<string, number>>
   keys: string[]
 } & SxProps) => {
   const categories = Object.keys(dataSetA)
 
-  const previousYearSeries = produceSeries(
-    dataSetB,
-    "Previous year",
-    categories,
-    keys,
-  )
+  const previousYearSeries = dataSetB
+    ? produceSeries(dataSetB, "Previous year", categories, keys)
+    : []
+
   const currentYearSeries = produceSeries(
     dataSetA,
     "Current year",

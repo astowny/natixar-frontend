@@ -9,6 +9,7 @@ import {
 } from "data/domain/transformers/EmissionTransformers"
 import EmissionByKeyComparison from "components/charts/emissions/EmissionByKeyComparison"
 import useAsyncWork from "hooks/useAsyncWork"
+import EmissionByKeyStacked from "components/charts/emissions/EmissionByKeyStacked"
 import { TotalEmissionByTimeProps } from "./TotalEmissionByTimeSection"
 
 const EmissionByTimeCompareToPreviousSection = ({
@@ -22,6 +23,7 @@ const EmissionByTimeCompareToPreviousSection = ({
   const timeDetailSlots = useMemo(() => Object.keys(unitLayout), [unitLayout])
   const timeWindow = useSelector(timeWindowSelector)
   const [totalEmissions, setTotalEmissions] = useState("")
+  const [showComparison, setShowComparison] = useState(true)
   useAsyncWork(
     () => {
       const sumEmission = emissionPoints.reduce(
@@ -71,10 +73,13 @@ const EmissionByTimeCompareToPreviousSection = ({
       selectedSlot={timeDetailUnit}
       setSelectedSlot={setTimeDetailUnit}
       percentage={percentage}
+      showCompareButton
+      compare={showComparison}
+      setCompare={setShowComparison}
     >
       <EmissionByKeyComparison
         dataSetA={datasetA}
-        dataSetB={datasetB}
+        dataSetB={showComparison ? datasetB : undefined}
         keys={allKeys}
       />
     </ChartCard>

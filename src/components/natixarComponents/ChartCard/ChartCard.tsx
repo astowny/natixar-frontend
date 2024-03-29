@@ -1,12 +1,13 @@
 import {
   Box,
+  Button,
   Grid,
   Stack,
   ToggleButton,
   ToggleButtonGroup,
   Typography,
 } from "@mui/material"
-import { ReactNode } from "react"
+import { Dispatch, ReactNode, SetStateAction } from "react"
 import _ from "lodash"
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp"
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown"
@@ -22,9 +23,9 @@ type ChartCardProps = {
   startDate: Date
   endDate: Date
   percentage?: number
-  // compareButton?: boolean
-  // compare?: boolean
-  // setCompare?: Dispatch<SetStateAction<boolean>>
+  showCompareButton?: boolean
+  compare?: boolean
+  setCompare?: Dispatch<SetStateAction<boolean>>
 }
 
 const AmountLabel = ({
@@ -79,9 +80,9 @@ export const ChartCard = ({
   selectedSlot,
   setSelectedSlot,
   percentage,
-  // compareButton,
-  // compare,
-  // setCompare,
+  showCompareButton,
+  compare,
+  setCompare,
 }: ChartCardProps) => {
   const handleChange = (
     event: React.MouseEvent<HTMLElement>,
@@ -110,28 +111,19 @@ export const ChartCard = ({
           alignItems: "center",
         }}
       >
-        {/* <Box sx={{ display: "flex", gap: "10px" }}>
-          {compareButton && setCompare && (
-            <Button
-              sx={{
-                color: compare ? "#1890FF" : "#000000",
-                borderColor: compare ? "#1890FF" : "#D9D9D9",
-              }}
-              variant="outlined"
-              color="secondary"
-              onClick={() => setCompare(!compare)}
-            >
-              Compare to previous year
-            </Button>
-          )}
-          <IconButton
+        {showCompareButton && setCompare && (
+          <Button
+            sx={{
+              color: compare ? "#1890FF" : "#000000",
+              borderColor: compare ? "#1890FF" : "#D9D9D9",
+            }}
             variant="outlined"
             color="secondary"
-            sx={{ borderColor: "#D9D9D9" }}
+            onClick={() => setCompare(!compare)}
           >
-            <DownloadOutlined style={{ color: "#000" }} />
-          </IconButton>
-        </Box> */}
+            Compare to previous year
+          </Button>
+        )}
       </Box>
       <Typography variant="h5">{title}</Typography>
       <AmountLabel value={value} percentage={percentage} />
