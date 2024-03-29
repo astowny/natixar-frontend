@@ -93,83 +93,86 @@ export const ChartCard = ({
 
   return (
     <Stack
-      direction="column"
-      gap="15px"
       sx={{
+        width: "100%",
         padding: "24px",
         backgroundColor: "white",
-        width: "100%",
         border: "1px solid",
         borderColor: "#e6ebf1",
         borderRadius: "4px",
       }}
     >
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
+      <Grid
+        container
+        rowSpacing={2}
+        justifyContent="space-between"
+        justifyItems="stretch"
+        alignItems="center"
       >
-        {showCompareButton && setCompare && (
-          <Button
-            sx={{
-              color: compare ? "#1890FF" : "#000000",
-              borderColor: compare ? "#1890FF" : "#D9D9D9",
-            }}
-            variant="outlined"
-            color="secondary"
-            onClick={() => setCompare(!compare)}
-          >
-            Compare to previous year
-          </Button>
-        )}
-      </Box>
-      <Typography variant="h5">{title}</Typography>
-      <AmountLabel value={value} percentage={percentage} />
-      {startDate && endDate && (
-        <Typography variant="subtitle2" sx={{ color: "#8C8C8C" }}>
-          {`${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`}
-        </Typography>
-      )}
-      <Box>
-        <Grid>
-          <Grid item>
-            <Box
-              sx={{ display: "flex", alignItems: "center", columnGap: "7px" }}
-            >
-              <Typography>Detail by</Typography>
-              {slots && (
-                <ToggleButtonGroup
-                  exclusive
-                  size="small"
-                  value={selectedSlot}
-                  onChange={handleChange}
-                >
-                  {slots.map((timeDetailSlot) => (
-                    <ToggleButton
-                      key={timeDetailSlot}
-                      value={timeDetailSlot}
-                      sx={{
-                        px: 2,
-                        py: 0.5,
-                        color: "#000000",
-                        "&.MuiToggleButton-root.Mui-selected": {
-                          color: "#FFFFFF",
-                          backgroundColor: "#1890FF",
-                          borderColor: "#1890FF",
-                        },
-                      }}
-                    >
-                      {_.capitalize(timeDetailSlot)}
-                    </ToggleButton>
-                  ))}
-                </ToggleButtonGroup>
-              )}
-            </Box>
-          </Grid>
+        <Grid item xs={8}>
+          <Typography variant="h5">{title}</Typography>
         </Grid>
-      </Box>
+        <Grid item xs={4} justifySelf="end" textAlign="end">
+          {showCompareButton && setCompare && (
+            <Button
+              sx={{
+                color: compare ? "#1890FF" : "#000000",
+                borderColor: compare ? "#1890FF" : "#D9D9D9",
+              }}
+              variant="outlined"
+              color="secondary"
+              onClick={() => setCompare(!compare)}
+            >
+              Compare to previous year
+            </Button>
+          )}
+        </Grid>
+        <Grid item xs={8}>
+          <AmountLabel value={value} percentage={percentage} />
+          {startDate && endDate && (
+            <Typography variant="subtitle2" sx={{ color: "#8C8C8C" }}>
+              {`${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`}
+            </Typography>
+          )}
+        </Grid>
+        <Grid item xs={4} justifySelf="end" textAlign="end">
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="end"
+            gap="7px"
+          >
+            <Typography>Detail by</Typography>
+            {slots && (
+              <ToggleButtonGroup
+                exclusive
+                size="small"
+                value={selectedSlot}
+                onChange={handleChange}
+              >
+                {slots.map((timeDetailSlot) => (
+                  <ToggleButton
+                    key={timeDetailSlot}
+                    value={timeDetailSlot}
+                    sx={{
+                      px: 2,
+                      py: 0.5,
+                      color: "#000000",
+                      "&.MuiToggleButton-root.Mui-selected": {
+                        color: "#FFFFFF",
+                        backgroundColor: "#1890FF",
+                        borderColor: "#1890FF",
+                      },
+                    }}
+                  >
+                    {_.capitalize(timeDetailSlot)}
+                  </ToggleButton>
+                ))}
+              </ToggleButtonGroup>
+            )}
+          </Stack>
+        </Grid>
+      </Grid>
       {children}
     </Stack>
   )
