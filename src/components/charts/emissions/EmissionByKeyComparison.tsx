@@ -3,7 +3,10 @@ import { ApexOptions } from "apexcharts"
 import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
 import { memo } from "react"
 import ReactApexChart from "react-apexcharts"
-import { getColorByCategory } from "utils/CategoryColors"
+import {
+  getColorByCategory,
+  getOpaqueColorByCategory,
+} from "utils/CategoryColors"
 
 const defaultOptions: ApexOptions = {
   chart: {
@@ -60,6 +63,7 @@ const produceSeries = (
   groupName: string,
   categories: string[],
   keys: string[],
+  useOpaqueColor: boolean = false,
 ) => {
   const byKeyData: number[][] = Array(categories.length).fill(
     Array(keys.length).fill(0),
@@ -83,7 +87,9 @@ const produceSeries = (
     return {
       name: `${category} (${groupName})`,
       group: groupName,
-      color: getColorByCategory(category),
+      color: useOpaqueColor
+        ? getOpaqueColorByCategory(category)
+        : getColorByCategory(category),
       data: byKeyData[categoryIndex],
     }
   })
@@ -103,7 +109,7 @@ const EmissionByKeyComparison = ({
   const categories = Object.keys(dataSetA)
 
   const previousYearSeries = dataSetB
-    ? produceSeries(dataSetB, "Previous year", categories, keys)
+    ? produceSeries(dataSetB, "Previous year", categories, keys, true)
     : []
 
   const currentYearSeries = produceSeries(
@@ -118,7 +124,7 @@ const EmissionByKeyComparison = ({
     <ReactApexChart
       sx={{ sxProps }}
       options={options}
-      series={[...previousYearSeries, ...currentYearSeries]}
+      series={[...currentYearSeries, ...previousYearSeries]}
       height="300px"
       type="bar"
     />

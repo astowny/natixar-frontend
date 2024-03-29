@@ -62,7 +62,7 @@ const AmountLabel = ({
       <Typography variant="h5">{value}</Typography>
       {arrowNode && (
         <Typography sx={{ ml: ".3rem", fontWeight: "bold" }}>
-          ({percentage}%)
+          ({percentage?.toFixed(2)}%)
         </Typography>
       )}
       <Typography variant="subtitle2" />
@@ -131,7 +131,7 @@ export const ChartCard = ({
           <AmountLabel value={value} percentage={percentage} />
           {startDate && endDate && (
             <Typography variant="subtitle2" sx={{ color: "#8C8C8C" }}>
-              {`${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`}
+              {`${compare ? "Compare: " : ""} ${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`}
             </Typography>
           )}
         </Grid>

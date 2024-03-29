@@ -9,6 +9,7 @@ import {
 } from "data/domain/transformers/EmissionTransformers"
 import EmissionByKeyComparison from "components/charts/emissions/EmissionByKeyComparison"
 import useAsyncWork from "hooks/useAsyncWork"
+import { execPath } from "process"
 import { TotalEmissionByTimeProps } from "./TotalEmissionByTimeSection"
 
 const EmissionByTimeCompareToPreviousSection = ({
@@ -21,46 +22,78 @@ const EmissionByTimeCompareToPreviousSection = ({
 }: TotalEmissionByTimeProps) => {
   const timeDetailSlots = useMemo(() => Object.keys(unitLayout), [unitLayout])
   const timeWindow = useSelector(timeWindowSelector)
-  const [totalEmissions, setTotalEmissions] = useState("")
+  const [emissionData, setEmissionData] = useState<[string, number?]>([
+    "",
+    undefined,
+  ])
   const [showComparison, setShowComparison] = useState(false)
+  const emissionPointsB = useMemo(
+    () =>
+      emissionPoints.map((ep) => {
+        const coef = Math.random()
+        return {
+          ...ep,
+          emissionIntensity: coef * ep.emissionIntensity,
+          totalEmissionAmount: coef * ep.totalEmissionAmount,
+        }
+      }),
+    [emissionPoints],
+  )
+
   useAsyncWork(
     () => {
       const sumEmission = emissionPoints.reduce(
         (acc, cur) => acc + cur.totalEmissionAmount,
         0,
       )
-      return formatEmissionAmount(sumEmission)
+
+      const sumEmissionB =
+        emissionPointsB?.reduce(
+          (acc, cur) => acc + cur.totalEmissionAmount,
+          0,
+        ) ?? 0
+
+      const percentage = emissionPointsB
+        ? (100.0 * (1.0 * sumEmission - sumEmissionB)) / sumEmissionB
+        : undefined
+      const result: [string, number?] = [
+        formatEmissionAmount(sumEmission),
+        percentage,
+      ]
+      return result
     },
-    setTotalEmissions,
-    [emissionPoints],
+    setEmissionData,
+    [emissionPoints, emissionPointsB],
   )
 
   const [timeFormatter, timeSorter] = unitLayout[timeDetailUnit]
   const [datasetA, setDatasetA] = useState<
     Record<string, Record<string, number>>
   >({})
+  const [datasetB, setDatasetB] = useState<
+    Record<string, Record<string, number>>
+  >({})
+
   useAsyncWork(
     () => emissionsGroupByTime(emissionPoints, timeWindow, timeFormatter),
     setDatasetA,
     [emissionPoints, timeWindow, timeFormatter],
   )
+  useAsyncWork(
+    () => emissionsGroupByTime(emissionPointsB, timeWindow, timeFormatter),
+    setDatasetB,
+    [emissionPointsB, timeWindow, timeFormatter],
+  )
 
-  const datasetB: typeof datasetA = {}
+  const allKeys = useMemo(
+    () =>
+      Array.from(
+        new Set(Object.values(datasetA).flatMap((byKey) => Object.keys(byKey))),
+      ).toSorted(timeSorter),
+    [datasetA, timeSorter],
+  )
 
-  Object.keys(datasetA).forEach((category) => {
-    datasetB[category] = Object.fromEntries(
-      Object.entries(datasetA[category]).map((entry) => [
-        entry[0],
-        entry[1] * Math.random(),
-      ]),
-    )
-  })
-
-  const allKeys = Array.from(
-    new Set(Object.values(datasetA).flatMap((byKey) => Object.keys(byKey))),
-  ).toSorted(timeSorter)
-
-  const percentage = Math.round(Math.random() * 200 - 100)
+  const [totalEmissions, differencePercentage] = emissionData
 
   return (
     <ChartCard
@@ -71,7 +104,7 @@ const EmissionByTimeCompareToPreviousSection = ({
       slots={timeDetailSlots}
       selectedSlot={timeDetailUnit}
       setSelectedSlot={setTimeDetailUnit}
-      percentage={percentage}
+      percentage={differencePercentage}
       showCompareButton
       compare={showComparison}
       setCompare={setShowComparison}
