@@ -26,7 +26,6 @@ export const store = configureStore({
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
-      coordinateApi.middleware,
       emissionRangesApi.middleware,
       unknownMappingsApi.middleware,
       networkCheckApi.middleware,

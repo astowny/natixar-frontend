@@ -10,7 +10,7 @@ import { memo, useCallback, useState } from "react"
 import ReportSendSection from "sections/reports/ReportSendSection"
 import DownloadIcon from "@mui/icons-material/Download"
 
-interface ReportGeneratorControlProps {
+export interface ReportGeneratorControlProps {
   filter: EmissionFilterState
   indexes: AlignedIndexes
   requestParameters: EmissionRetrievalParametersState
@@ -25,8 +25,7 @@ const ReportGeneratorControl = ({
   const [open, setOpen] = useState(false)
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
-  const [generateReport, { isLoading: isUpdating }] =
-    useGenerateReportMutation()
+  const [generateReport] = useGenerateReportMutation()
   const onGenerateClick = useCallback(() => {
     const reportParams: EmissionFilterState = {
       selectedBusinessEntities:
@@ -40,7 +39,9 @@ const ReportGeneratorControl = ({
       selectedCategories:
         filter.selectedCategories.length > 0
           ? filter.selectedCategories
-          : extractIdsOfIndex(indexes.categories),
+          : extractIdsOfIndex(indexes.categories).map(
+              (categoryId) => indexes.categories[categoryId].name,
+            ),
     }
 
     generateReport(reportParams)
@@ -48,7 +49,8 @@ const ReportGeneratorControl = ({
   }, [filter, generateReport, setOpen])
 
   return (
-    <Box sx={{ ...sxProps }}>
+    // @ts-nocheck
+    <Box sx={{ ...(sxProps as SxProps) }}>
       <Button
         variant="outlined"
         endIcon={<DownloadIcon />}

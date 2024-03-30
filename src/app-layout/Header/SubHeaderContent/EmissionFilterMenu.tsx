@@ -248,18 +248,19 @@ const GlobalFilterMenu = ({ ...sxProps }: SxProps) => {
     globalFilter.selectedCategories,
   )
 
-  const entityLabel = useMemo(
-    () =>
-      selectedBusinessEntities
-        .map((id) => alignedIndexes.entities[id].name)
-        .toSorted(),
-    [selectedBusinessEntities],
-  )
+  const entityLabel = useMemo(() => {
+    const entityNames = selectedBusinessEntities.map(
+      (id) => alignedIndexes.entities[id].name,
+    )
+    entityNames.sort()
+    return entityNames
+  }, [selectedBusinessEntities])
 
-  const areaLabel = useMemo(
-    () => selectedAreas.map((id) => alignedIndexes.areas[id].name).toSorted(),
-    [selectedAreas],
-  )
+  const areaLabel = useMemo(() => {
+    const areasNames = selectedAreas.map((id) => alignedIndexes.areas[id].name)
+    areasNames.sort()
+    return areasNames
+  }, [selectedAreas])
 
   const onClearClick = useCallback(() => {
     dispatch(clearFilterAction())
