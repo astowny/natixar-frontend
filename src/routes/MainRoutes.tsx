@@ -4,12 +4,6 @@ import { lazy } from "react"
 import Loadable from "components/Loadable"
 import PagesLayout from "layout/Pages"
 
-// render - dashboard
-const DashboardDefault = Loadable(lazy(() => import("pages/dashboard/default")))
-const DashboardAnalytics = Loadable(
-  lazy(() => import("pages/dashboard/analytics")),
-)
-
 // render - contributor
 const ContributorAnalysis = Loadable(
   lazy(() => import("pages/contributor/ContributorAnalysis")),
@@ -20,9 +14,6 @@ const CategoryAnalysis = Loadable(
 const DocumentUpload = Loadable(lazy(() => import("pages/contributor/upload")))
 
 // render - widget
-const WidgetStatistics = Loadable(lazy(() => import("pages/widget/statistics")))
-const WidgetData = Loadable(lazy(() => import("pages/widget/data")))
-const WidgetChart = Loadable(lazy(() => import("pages/widget/chart")))
 const ClimateChangeDashboard = Loadable(
   lazy(() => import("pages/natixar/ClimateChangePage")),
 )
@@ -79,18 +70,6 @@ const MainRoutes = {
         {
           path: "analysis/:id",
           element: <ContributorAnalysis />,
-        },
-        {
-          path: "statistics",
-          element: <WidgetStatistics />,
-        },
-        {
-          path: "data1",
-          element: <WidgetData />,
-        },
-        {
-          path: "chart",
-          element: <WidgetChart />,
         },
       ],
     },

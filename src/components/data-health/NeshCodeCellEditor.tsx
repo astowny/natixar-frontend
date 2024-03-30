@@ -9,7 +9,7 @@ const NeshCodeCellEditor = ({
   hasFocus,
 }: GridRenderEditCellParams) => {
   const apiRef = useGridApiContext()
-  const ref = useRef(null)
+  const ref = useRef<HTMLInputElement>(null)
 
   useLayoutEffect(() => {
     if (hasFocus) {
