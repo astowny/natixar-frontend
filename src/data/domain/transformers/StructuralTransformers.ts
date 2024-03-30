@@ -37,7 +37,7 @@ export function extractHierarchyOf<T>(
   )
 }
 
-export const extractIdsOfIndex = (index: IndexOf<any>) =>
+export const extractIdsOfIndex = (index: IndexOf<any>): number[] =>
   Object.keys(index).map((idStr) => parseInt(idStr, 10))
 
 export const findTreeNode = (

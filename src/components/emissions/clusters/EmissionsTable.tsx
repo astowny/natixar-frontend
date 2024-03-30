@@ -1,16 +1,13 @@
 import React, { memo } from "react"
 
 import { TableVirtuoso, TableComponents } from "react-virtuoso"
-import {
-  Box,
-  Link,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from "@mui/material"
+import { Box, Link } from "@mui/material"
+import Table from "@mui/material/Table"
+import TableBody from "@mui/material/TableBody"
+import TableCell from "@mui/material/TableCell"
+import TableContainer from "@mui/material/TableContainer"
+import TableHead from "@mui/material/TableHead"
+import TableRow from "@mui/material/TableRow"
 import { CategoryLabel } from "components/categories/CategoriesLegend"
 import _ from "lodash"
 import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
@@ -37,7 +34,7 @@ const VirtuosoTableComponents: TableComponents<EmissionDataPoint> = {
       sx={{ borderCollapse: "separate", tableLayout: "fixed" }}
     />
   ),
-  TableHead,
+  TableHead: () => <TableHead />,
   // eslint-disable-next-line react/prop-types
   TableRow: ({ item: _item, ...props }) => <TableRow {...props} />,
   TableBody: React.forwardRef<HTMLTableSectionElement>((props, ref) => (

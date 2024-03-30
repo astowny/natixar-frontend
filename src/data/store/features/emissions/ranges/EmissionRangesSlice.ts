@@ -120,42 +120,6 @@ const alignIndexes = (originalIndexes: IndexesContainer): AlignedIndexes => {
   }
 }
 
-/*
-const extractFilters = (indexes: AlignedIndexes): GlobalFilterState => {
-  const categories = new Set<string>()
-  const companies = new Set<string>()
-  const countries = new Set<string>()
-
-  Object.values(indexes.categories)
-    .filter((category) => category.era)
-    .forEach((category) => categories.add(category.era!!))
-  Object.values(indexes.entities)
-    .filter((entity) => entity.type === "Company")
-    .forEach((entity) => companies.add(entity.name))
-  Object.values(indexes.areas)
-    .filter((area) => area.type === "Country")
-    .forEach((area) => countries.add(area.name))
-
-  return {
-    availableValues: {
-      categories: Array.from(categories)
-        .map((era) => extractNameOfEra(era))
-        .filter((category) => category !== "")
-        .sort(),
-      companies: Array.from(companies).sort(),
-      countries: Array.from(countries).sort(),
-      timeRange: { from: 0, to: 0 },
-    },
-    selectedValues: {
-      categories: [],
-      companies: [],
-      countries: [],
-      timeRange: { from: 0, to: 0 },
-    },
-  }
-}
-*/
-
 function filterRoutine<T>(currentValue: T, filterSelectedValues: T[]): boolean {
   return (
     filterSelectedValues.length === 0 ||

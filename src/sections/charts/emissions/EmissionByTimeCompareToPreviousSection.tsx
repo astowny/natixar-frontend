@@ -85,13 +85,13 @@ const EmissionByTimeCompareToPreviousSection = ({
     [emissionPointsB, timeWindow, timeFormatter],
   )
 
-  const allKeys = useMemo(
-    () =>
-      Array.from(
-        new Set(Object.values(datasetA).flatMap((byKey) => Object.keys(byKey))),
-      ).toSorted(timeSorter),
-    [datasetA, timeSorter],
-  )
+  const allKeys = useMemo(() => {
+    const keys = Array.from(
+      new Set(Object.values(datasetA).flatMap((byKey) => Object.keys(byKey))),
+    )
+    keys.sort(timeSorter)
+    return keys
+  }, [datasetA, timeSorter])
 
   const [totalEmissions, differencePercentage] = emissionData
 

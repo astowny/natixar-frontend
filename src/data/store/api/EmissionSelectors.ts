@@ -1,23 +1,35 @@
-import { EmissionCategory } from "data/domain/types/emissions/EmissionTypes"
+import {
+  AlignedIndexes,
+  EmissionCategory,
+  EmissionDataPoint,
+  EmissionFilterState,
+  EmissionProtocol,
+  EmissionRetrievalParametersState,
+} from "data/domain/types/emissions/EmissionTypes"
 import { IndexOf } from "data/domain/types/structures/StructuralTypes"
+import { TimeWindow } from "data/domain/types/time/TimeRelatedTypes"
 import { RootState } from "data/store"
+import { SelectedCluster } from "../features/coordinates/Types"
 
-export const selectEmissionFilter = (state: RootState) =>
+export const selectEmissionFilter = (state: RootState): EmissionFilterState =>
   state.emissionRanges.emissionFilterState
 
-export const selectTimeWindow = (state: RootState) =>
+export const selectTimeWindow = (state: RootState): TimeWindow =>
   state.emissionRanges.overallTimeWindow
 
-export const selectEmissionRangeRequestParameters = (state: RootState) =>
+export const selectEmissionRangeRequestParameters = (
+  state: RootState,
+): EmissionRetrievalParametersState =>
   state.emissionRanges.dataRetrievalParameters
 
 export const selectRequestTimeRange = (state: RootState) =>
   selectEmissionRangeRequestParameters(state).timeRangeOfInterest
 
-export const selectRequestEmissionProtocol = (state: RootState) =>
-  selectEmissionRangeRequestParameters(state).protocol
+export const selectRequestEmissionProtocol = (
+  state: RootState,
+): EmissionProtocol => selectEmissionRangeRequestParameters(state).protocol
 
-export const selectAlignedIndexes = (state: RootState) =>
+export const selectAlignedIndexes = (state: RootState): AlignedIndexes =>
   state.emissionRanges.alignedIndexes
 
 export const selectAllVisibleCategories = (
@@ -32,10 +44,10 @@ export const selectAllVisibleCategoryEras = (state: RootState) => {
   return [...new Set<string>(allCategoryNames)]
 }
 
-export const selectVisiblePoints = (state: RootState) =>
+export const selectVisiblePoints = (state: RootState): EmissionDataPoint[] =>
   state.emissionRanges.visibleData.emissionPoints
 
-export const selectAllPoints = (state: RootState) =>
+export const selectAllPoints = (state: RootState): EmissionDataPoint[] =>
   state.emissionRanges.allPoints
 
 export const selectVisibleEmissionsByCompany = (state: RootState) =>
@@ -44,4 +56,5 @@ export const selectVisibleEmissionsByCompany = (state: RootState) =>
 export const selectCoordinatesByCountry = (state: RootState) =>
   state.emissionRanges.visibleData.emissionsByCountry
 
-export const selectSelectedCluster = (state: RootState) => state.selectedCluster
+export const selectSelectedCluster = (state: RootState): SelectedCluster =>
+  state.selectedCluster

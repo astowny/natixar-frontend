@@ -23,7 +23,7 @@ const NetworkIndicator = (props: SxProps) => {
   const { timeRangeOfInterest, protocol } = useSelector(
     selectEmissionRangeRequestParameters,
   )
-  const scale = TimeMeasurement.MINUTES
+  const scale = `1${TimeMeasurement.MINUTES}`
   const requestParams = useMemo(
     () => ({
       protocol: formatProtocolForRangesEndpoint(protocol),

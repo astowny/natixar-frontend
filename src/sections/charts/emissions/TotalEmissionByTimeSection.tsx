@@ -63,7 +63,8 @@ const TotalEmissionByTimeSection = ({
     new Set(
       Object.values(groupedByTime).flatMap((byKey) => Object.keys(byKey)),
     ),
-  ).toSorted(timeSorter)
+  )
+  allKeys.sort(timeSorter)
 
   return (
     <ChartCard
