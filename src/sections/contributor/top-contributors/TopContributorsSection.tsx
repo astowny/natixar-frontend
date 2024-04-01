@@ -19,8 +19,9 @@ import {
 } from "@tidyjs/tidy"
 import { DataGrid, GridColDef } from "@mui/x-data-grid"
 import { NavLink } from "react-router-dom"
-import { Button, LinearProgress } from "@mui/material"
+import { Button, LinearProgress, Link } from "@mui/material"
 import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
+import { LinkOutlined } from "@ant-design/icons"
 
 interface TopContributorsSectionParams {
   categoryId: number
@@ -40,6 +41,21 @@ const columnDefinitions: GridColDef[] = [
     headerName: "Contributor",
     sortable: false,
     flex: 1,
+    renderCell: (params) => (
+      <Link
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          columnGap: "5px",
+          textDecoration: "underline",
+          cursor: "pointer",
+        }}
+        href={`/contributors/analysis/${params.row.id}`}
+      >
+        {params.row.name}
+        <LinkOutlined />
+      </Link>
+    ),
   },
   {
     ...AWESOME_COLUMN,
