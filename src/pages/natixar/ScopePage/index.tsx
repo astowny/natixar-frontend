@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Stack, Typography } from "@mui/material"
+import { Button, Grid, Stack, Typography } from "@mui/material"
 import MainCard from "components/MainCard"
 import { ArrowLeftOutlined, RightOutlined } from "@ant-design/icons"
 
