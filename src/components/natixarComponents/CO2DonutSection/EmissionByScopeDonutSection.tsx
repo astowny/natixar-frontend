@@ -18,7 +18,7 @@ import { memo, useCallback, useMemo, useState } from "react"
 import ReactApexChart from "react-apexcharts"
 import { useSelector } from "react-redux"
 import { defaultOptions } from "sections/charts/apexchart/ApexDonutChart/constants"
-import TopContributorsSection from "sections/contributor/top-contributors/TopContributorsSection"
+import TopContributorsSection from "sections/contributor/emissions-by-scope/EmissionsByScopeSection"
 import { getColorByCategory } from "utils/CategoryColors"
 import useAsyncWork from "hooks/useAsyncWork"
 import LabelBox from "./LabelBox"
@@ -68,20 +68,11 @@ const totalTextOptions = {
 const configurableOptions = (
   totalEmission: number,
   scopes: EmissionCategory[],
-  onScopeClick: (scope: number) => void,
 ): ApexOptions => {
   const formattedEmission = formatEmissionAmount(totalEmission).split(" ")
   const scopeIds = scopes.map((scope) => scope.id)
 
   return {
-    chart: {
-      events: {
-        dataPointSelection: (event, chartContext, config) => {
-          const scopeId = scopeIds[config.seriesIndex]
-          onScopeClick(scopeId)
-        },
-      },
-    },
     plotOptions: {
       pie: {
         donut: {
@@ -115,8 +106,6 @@ const EmissionByCategorySection = ({
 }: EmissionByCategorySectionProps) => {
   const protocol = useSelector(selectRequestEmissionProtocol)
   const [pieChartData, setPieChartData] = useState<ByCategoryItem[]>([])
-  const [openTopContributors, setOpenTopContributors] = useState(false)
-  const [selectedCategory, setSelectedCategory] = useState(0)
 
   const scopes = useMemo(
     () => getScopesOfProtocol(protocol, alignedIndexes.categories),
@@ -158,14 +147,6 @@ const EmissionByCategorySection = ({
 
   const totalEmission = series.reduce((a, b) => a + b, 0)
 
-  const onScopeClick = useCallback(
-    (category: number) => {
-      setSelectedCategory(category)
-      setOpenTopContributors(true)
-    },
-    [setSelectedCategory, setOpenTopContributors],
-  )
-
   return (
     <Box sx={ContainerStyles}>
       <Box sx={ChartContainerStyles}>
@@ -173,7 +154,7 @@ const EmissionByCategorySection = ({
           options={{
             ...defaultOptions,
             ...optionsOverrides,
-            ...configurableOptions(totalEmission, scopes, onScopeClick),
+            ...configurableOptions(totalEmission, scopes),
             labels,
             colors,
           }}
@@ -191,28 +172,11 @@ const EmissionByCategorySection = ({
               title: dataItem.categoryName,
               color: dataItem.categoryColor,
               value: formatEmissionAmount(dataItem.count),
-              navLink: `/contributors/top/${dataItem.categoryId}`,
+              navLink: `/contributors/scope/${dataItem.categoryId}`,
             }}
           />
         ))}
       </Box>
-      <Drawer
-        anchor="right"
-        open={openTopContributors}
-        onClose={() => setOpenTopContributors(false)}
-        PaperProps={{
-          sx: {
-            width: "40dvw",
-            maxWidth: "80dvw",
-          },
-        }}
-      >
-        <TopContributorsSection
-          categoryId={selectedCategory}
-          indexes={alignedIndexes}
-          dataPoints={allDataPoints}
-        />
-      </Drawer>
     </Box>
   )
 }

@@ -7,7 +7,7 @@ import {
   selectAlignedIndexes,
   selectVisiblePoints,
 } from "data/store/api/EmissionSelectors"
-import TopContributorsSection from "sections/contributor/top-contributors/TopContributorsSection"
+import TopContributorsSection from "sections/contributor/emissions-by-scope/EmissionsByScopeSection"
 import Breadcrumb from "../../components/@extended/Breadcrumbs"
 
 const TopContributorsPage = () => {

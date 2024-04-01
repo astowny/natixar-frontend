@@ -26,7 +26,7 @@ import {
 } from "data/domain/transformers/TimeTransformers"
 import _ from "lodash"
 import { useState } from "react"
-import EmissionByCategorySection from "../../components/natixarComponents/CO2DonutSection/EmissionByCategorySection"
+import EmissionByCategorySection from "../../components/natixarComponents/CO2DonutSection/EmissionByScopeDonutSection"
 
 // ==============================|| WIDGET - CHARTS ||============================== //
 
