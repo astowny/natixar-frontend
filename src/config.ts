@@ -33,7 +33,7 @@ const configNatixar: DefaultConfigProps = {
 
 export const fusionConfig = {
   clientID: "5e9cba0b-4978-4a24-88c0-0a45b0ed067f",
-  serverUrl: "http://auth.natixar.pro:9011/",
+  serverUrl: "http://localhost:8011",
   redirectUri: "http://localhost:3000",
 }
 

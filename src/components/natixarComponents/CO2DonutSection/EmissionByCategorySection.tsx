@@ -191,7 +191,7 @@ const EmissionByCategorySection = ({
               title: dataItem.categoryName,
               color: dataItem.categoryColor,
               value: formatEmissionAmount(dataItem.count),
-              navLink: `/contributors/scope/${dataItem.categoryId}`,
+              navLink: `/contributors/top/${dataItem.categoryId}`,
             }}
           />
         ))}

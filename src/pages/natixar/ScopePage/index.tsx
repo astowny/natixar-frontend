@@ -130,7 +130,6 @@ const ScopePage = () => {
                 Back
               </Button>
             </NavLink>
-            {/*             
             <Breadcrumb
               custom
               title={false}
@@ -139,7 +138,7 @@ const ScopePage = () => {
               sx={{
                 mb: "0px !important",
               }}
-            /> */}
+            />
           </Stack>
         </Grid>
         <Grid item xs={12} md={12} xl={12}>
