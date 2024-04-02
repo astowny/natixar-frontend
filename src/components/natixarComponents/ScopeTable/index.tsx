@@ -38,6 +38,7 @@ export type ScopeTableProps = {
 const HEADER_CSS_CLASS = "common-super-class-name"
 const AWESOME_COLUMN: GridColTypeDef = {
   headerClassName: HEADER_CSS_CLASS,
+  hideable: false,
 }
 
 const columnDefinitions: GridColDef[] = [
@@ -45,7 +46,6 @@ const columnDefinitions: GridColDef[] = [
     ...AWESOME_COLUMN,
     field: "category",
     headerName: "Title",
-    sortable: false,
     flex: 1,
     minWidth: 300,
     renderCell: (params) => (
@@ -70,7 +70,6 @@ const columnDefinitions: GridColDef[] = [
     ...AWESOME_COLUMN,
     field: "value",
     headerName: "Value",
-    sortable: false,
     flex: 1,
     minWidth: 300,
     renderCell: (params) => (
@@ -129,9 +128,8 @@ export const ScopeTable = ({ data, ...sxProps }: ScopeTableProps & SxProps) => {
       }}
       rows={data}
       columns={columnDefinitions}
-      disableColumnFilter
-      disableColumnMenu
       checkboxSelection={false}
+      disableColumnMenu={false}
       disableRowSelectionOnClick
       pageSizeOptions={[5, 10, 20]}
     />

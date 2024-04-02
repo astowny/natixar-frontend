@@ -24,7 +24,6 @@ import {
   frCategoryMessages,
   generalCategoryText,
 } from "data/domain/types/emissions/CategoryDescriptions"
-import { filter, groupBy, tidy } from "@tidyjs/tidy"
 import {
   ScopeTable,
   ScopeTableItemProps,
