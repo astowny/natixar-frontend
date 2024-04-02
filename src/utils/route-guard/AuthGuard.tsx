@@ -19,7 +19,8 @@ const AuthGuard = ({ children }: GuardProps) => {
   const location = useLocation()
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (false) {
+      // if (!isAuthenticated) {
       navigate("login", {
         state: {
           from: location.pathname,
