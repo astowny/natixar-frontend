@@ -11,7 +11,7 @@ import AuthLogin from "sections/auth/auth-forms/AuthLogin"
 // ================================|| LOGIN ||================================ //
 
 const Login = () => {
-  const { isLoggedIn } = useAuth()
+  const { isAuthenticated } = useAuth()
 
   return (
     <AuthWrapper>
