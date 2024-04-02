@@ -14,7 +14,6 @@ import {
   groupBy,
   arrange,
   desc,
-  sliceHead,
   map,
 } from "@tidyjs/tidy"
 import { DataGrid, GridColDef, GridColTypeDef } from "@mui/x-data-grid"

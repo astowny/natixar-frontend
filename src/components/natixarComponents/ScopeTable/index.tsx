@@ -43,32 +43,36 @@ const AWESOME_COLUMN: GridColTypeDef = {
 const columnDefinitions: GridColDef[] = [
   {
     ...AWESOME_COLUMN,
-    field: "name",
+    field: "category",
     headerName: "Title",
     sortable: false,
     flex: 1,
+    minWidth: 300,
     renderCell: (params) => (
       <Link
         sx={{
+          width: "100%",
           display: "flex",
           alignItems: "center",
           columnGap: "5px",
           textDecoration: "underline",
           cursor: "pointer",
+          textOverflow: "ellipsis",
         }}
         href={`/contributors/top/scope/${params.row.category.id}`}
       >
-        {params.row.name}
+        {params.row.category.name}
         <LinkOutlined />
       </Link>
     ),
   },
   {
     ...AWESOME_COLUMN,
-    field: "amount",
+    field: "value",
     headerName: "Value",
     sortable: false,
-    flex: 3,
+    flex: 1,
+    minWidth: 300,
     renderCell: (params) => (
       <Stack alignItems="start" sx={{ width: "100%" }}>
         <Typography>{formatEmissionAmount(params.value[0])}</Typography>
