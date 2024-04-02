@@ -53,7 +53,7 @@ const columnDefinitions: GridColDef[] = [
           cursor: "pointer",
           textOverflow: "ellipsis",
         }}
-        href={`/contributors/top/scope/${params.row.category.id}`}
+        href={`/contributors/category-analysis/${params.row.category.id}`}
       >
         {params.row.category.name}
         <LinkOutlined />
@@ -85,7 +85,7 @@ const columnDefinitions: GridColDef[] = [
     headerName: "",
     sortable: false,
     renderCell: (params) => (
-      <NavLink to={`/contributors/analysis/${params.row.id}`}>
+      <NavLink to={`/contributors/top/scope/${params.row.category.id}`}>
         <Button sx={{ color: "primary.contrastText" }} variant="contained">
           Detail
         </Button>

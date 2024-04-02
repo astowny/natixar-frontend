@@ -76,14 +76,18 @@ const EmissionsByScope = memo(
       emissionsGroupByTime(dataPoints, timeWindow, timestampToYear),
     )[0] // We have only one category anyway
 
-    const labels = Object.keys(groupedByTime)
-    const series = [
-      {
-        name: category?.name ?? "Total",
-        type: "bar",
-        data: Object.values(groupedByTime),
-      },
-    ]
+    const labels =
+      typeof groupedByTime === "undefined" ? [] : Object.keys(groupedByTime)
+    const series =
+      typeof groupedByTime === "undefined"
+        ? []
+        : [
+            {
+              name: category?.name ?? "Total",
+              type: "bar",
+              data: Object.values(groupedByTime),
+            },
+          ]
 
     return (
       <Stack spacing={3} sx={{ ...sxProps }}>
