@@ -32,6 +32,10 @@ import { fetcher } from "utils/axios"
 // assets
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons"
 import { preload } from "swr"
+import {
+  FusionAuthLoginButton,
+  FusionAuthRegisterButton,
+} from "@fusionauth/react-sdk"
 
 // ============================|| JWT - LOGIN ||============================ //
 
@@ -215,4 +219,11 @@ const AuthLogin = ({ isDemo = false }: { isDemo?: boolean }) => {
   )
 }
 
-export default AuthLogin
+const LoginButtons = () => (
+  <Stack>
+    <FusionAuthLoginButton />
+    <FusionAuthRegisterButton />
+  </Stack>
+)
+
+export default LoginButtons

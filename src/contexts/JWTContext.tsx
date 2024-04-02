@@ -14,6 +14,7 @@ import axios from "utils/axios"
 import { KeyedObject } from "types/root"
 import { AuthProps, JWTContextType } from "types/auth"
 import { fusionConfig } from "config"
+import { IFusionAuthContext, useFusionAuth } from "@fusionauth/react-sdk"
 
 const chance = new Chance()
 
@@ -47,11 +48,11 @@ const setSession = (serviceToken?: string | null) => {
 
 // ==============================|| JWT CONTEXT & PROVIDER ||============================== //
 
-const JWTContext = createContext<JWTContextType | null>(null)
+const JWTContext = createContext<IFusionAuthContext | null>(null)
 
 export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
   // @ts-ignore
-  const [state, dispatch] = useReducer(authReducer, initialState)
+  // const [state, dispatch] = useReducer(authReducer, initialState)
 
   useEffect(() => {
     const init = async () => {
@@ -84,88 +85,8 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
     init()
   }, [])
 
-  const login = async (email: string, password: string) => {
-    // const response = await axios.post(
-    //   `${fusionConfig.serverUrl}/api/login`,
-    //   {},
-    //   {
-    //     headers: {
-    //       applicationId: fusionConfig.clientID,
-    //       loginId: email,
-    //       password,
-    //     },
-    //   },
-    // )
-    // console.log("Login resulted with: ", response.data)
-    // const { refreshToken, token, serviceToken } = response.data
-    // setSession(serviceToken)
-    // dispatch({
-    // type: LOGIN,
-    // payload: {
-    // isLoggedIn: true,
-    // user,
-    // },
-    // })
-  }
-
-  const register = async () =>
-    // email: string,
-    // password: string,
-    // firstName: string,
-    // lastName: string,
-    {
-      // todo: this flow need to be recode as it not verified
-      // const id = chance.bb_pin()
-      // const response = await axios.post("/api/account/register", {
-      //   id,
-      //   email,
-      //   password,
-      //   firstName,
-      //   lastName,
-      // })
-      // let users = response.data
-      // if (
-      //   window.localStorage.getItem("users") !== undefined &&
-      //   window.localStorage.getItem("users") !== null
-      // ) {
-      //   const localUsers = window.localStorage.getItem("users")
-      //   users = [
-      //     ...JSON.parse(localUsers!),
-      //     {
-      //       id,
-      //       email,
-      //       password,
-      //       name: `${firstName} ${lastName}`,
-      //     },
-      //   ]
-      // }
-      // window.localStorage.setItem("users", JSON.stringify(users))
-    }
-
-  const logout = () => {
-    // setSession(null)
-    // dispatch({ type: LOGOUT })
-  }
-
-  const resetPassword = async (email: string) => {}
-
-  const updateProfile = () => {}
-
-  if (state.isInitialized !== undefined && !state.isInitialized) {
-    return <Loader />
-  }
-
   return (
-    <JWTContext.Provider
-      value={{
-        ...state,
-        login,
-        logout,
-        register,
-        resetPassword,
-        updateProfile,
-      }}
-    >
+    <JWTContext.Provider value={useFusionAuth()}>
       {children}
     </JWTContext.Provider>
   )
