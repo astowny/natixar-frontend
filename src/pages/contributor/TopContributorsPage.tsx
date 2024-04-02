@@ -69,7 +69,7 @@ const TopContributorsPage = () => {
           />
         </Stack>
         <Typography variant="h3" fontWeight="bold">
-          Scope Emissions bar
+          Top contributors of {categoryName}
         </Typography>
         <TopContributorsSection
           categoryId={scopeId}

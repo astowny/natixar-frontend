@@ -18,7 +18,7 @@ import {
 } from "@tidyjs/tidy"
 import { DataGrid, GridColDef, GridColTypeDef } from "@mui/x-data-grid"
 import { NavLink } from "react-router-dom"
-import { Button, LinearProgress, Link } from "@mui/material"
+import { Box, Button, LinearProgress, Link } from "@mui/material"
 import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
 import { LinkOutlined } from "@ant-design/icons"
 
@@ -39,6 +39,7 @@ const columnDefinitions: GridColDef[] = [
     field: "name",
     headerName: "Contributor",
     sortable: false,
+    hideable: false,
     flex: 1,
     renderCell: (params) => (
       <Link
@@ -49,9 +50,9 @@ const columnDefinitions: GridColDef[] = [
           textDecoration: "underline",
           cursor: "pointer",
         }}
-        href={`/contributors/analysis/${params.row.id}`}
+        href={`/contributors/analysis/${params.row.companyId}`}
       >
-        {params.row.name}
+        {params.row.company} - {params.row.country}
         <LinkOutlined />
       </Link>
     ),
@@ -59,32 +60,25 @@ const columnDefinitions: GridColDef[] = [
   {
     ...AWESOME_COLUMN,
     field: "amount",
-    headerName: "Emission",
+    headerName: "Total emissions",
     sortable: false,
+    hideable: false,
     flex: 3,
-    renderCell: (params) => (
-      <Stack alignItems="start" sx={{ width: "100%" }}>
-        <Typography>{formatEmissionAmount(params.value[0])}</Typography>
-        <LinearProgress
-          sx={{ width: "100%" }}
-          variant="determinate"
-          value={(100.0 * params.value[0]) / params.value[1]}
-        />
-      </Stack>
-    ),
-  },
-  {
-    ...AWESOME_COLUMN,
-    field: "id",
-    headerName: "",
-    sortable: false,
-    renderCell: (params) => (
-      <NavLink to={`/contributors/analysis/${params.row.id}`}>
-        <Button sx={{ color: "primary.contrastText" }} variant="contained">
-          Detail
-        </Button>
-      </NavLink>
-    ),
+    renderCell: (params) => {
+      const percentage = (100.0 * params.value[0]) / params.value[1]
+      return (
+        <Box
+          sx={{
+            backgroundColor: "#75D048",
+            color: "primary.contrastText",
+            textAlign: "center",
+            width: `${percentage}%`,
+          }}
+        >
+          <Typography>{formatEmissionAmount(params.value[0])}</Typography>
+        </Box>
+      )
+    },
   },
 ]
 
@@ -117,16 +111,20 @@ const TopContributorsSection = ({
     () =>
       tidy(
         relevantDataPoints,
-        groupBy("companyId", [
-          summarize({ total: sum("totalEmissionAmount") }),
-        ]),
+        groupBy(
+          ["companyId", "countryId"],
+          [summarize({ total: sum("totalEmissionAmount") })],
+        ),
         arrange([desc("total")]),
         map((groupedByCompany) => {
-          const { companyId, total: groupTotal } = groupedByCompany
-          const companyName = indexes.entities[companyId].name
+          const { companyId, countryId, total: groupTotal } = groupedByCompany
+          const companyName = indexes.entities[companyId]?.name ?? ""
+          const countryName = indexes.areas[countryId]?.name ?? ""
           return {
-            id: companyId,
-            name: companyName,
+            id: `${companyId}-${countryId}`,
+            companyId,
+            company: companyName,
+            country: countryName,
             amount: [groupTotal, totalEmission],
           }
         }),
