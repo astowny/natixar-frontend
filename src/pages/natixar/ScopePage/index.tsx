@@ -24,6 +24,7 @@ import {
   frCategoryMessages,
   generalCategoryText,
 } from "data/domain/types/emissions/CategoryDescriptions"
+import { filter, groupBy, tidy } from "@tidyjs/tidy"
 import {
   ScopeTable,
   ScopeTableItemProps,
@@ -103,10 +104,11 @@ const ScopePage = () => {
       const [categoryId, emissionAmount] = idToEmissionPair
       const categoryData = categories[categoryId]
       return {
+        id: categoryData.id,
         category: categoryData,
         description: frCategoryMessages[categoryId] ?? "",
         categoryColor: getColorByCategory(categoryData.era),
-        amount: emissionAmount,
+        value: [emissionAmount, 100],
       }
     })
 

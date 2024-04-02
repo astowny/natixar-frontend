@@ -3,6 +3,7 @@ import { lazy } from "react"
 // project import
 import AuthLayout from "layout/Auth"
 import Loadable from "components/Loadable"
+import { LoginPage } from "pages/login/LoginPage"
 
 // render - login
 const AuthLogin = Loadable(lazy(() => import("pages/auth/login")))
@@ -29,7 +30,7 @@ const LoginRoutes = {
       children: [
         {
           path: "login",
-          element: <AuthLogin />,
+          element: <LoginPage />,
         },
         {
           path: "register",

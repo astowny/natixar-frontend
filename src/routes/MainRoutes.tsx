@@ -59,7 +59,7 @@ const MainRoutes = {
           element: <ContributorsDashboard />,
         },
         {
-          path: "top/:scopeId",
+          path: "top/scope/:scopeId",
           element: <TopContributorsPage />,
         },
         {

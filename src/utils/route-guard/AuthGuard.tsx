@@ -5,7 +5,7 @@
 // import useAuth from "hooks/useAuth"
 
 // types
-import useAuth from "hooks/useAuth"
+import { useFusionAuth } from "@fusionauth/react-sdk"
 import { useEffect } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { GuardProps } from "types/auth"
@@ -13,14 +13,13 @@ import { GuardProps } from "types/auth"
 // ==============================|| AUTH GUARD ||============================== //
 
 const AuthGuard = ({ children }: GuardProps) => {
-  const { isLoggedIn } = useAuth()
+  // const { isLoggedIn } = useAuth()
+  const { login, logout, register, isAuthenticated } = useFusionAuth()
   const navigate = useNavigate()
   const location = useLocation()
 
   useEffect(() => {
-    if (false) {
-      // TODO uncomment
-      // if (!isLoggedIn) {
+    if (!isAuthenticated) {
       navigate("login", {
         state: {
           from: location.pathname,
@@ -28,7 +27,7 @@ const AuthGuard = ({ children }: GuardProps) => {
         replace: true,
       })
     }
-  }, [isLoggedIn, navigate, location])
+  }, [isAuthenticated, navigate, location])
   return children
 }
 

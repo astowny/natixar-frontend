@@ -6,6 +6,7 @@ import {
   LinearProgress,
   Link,
   Stack,
+  SxProps,
   Table,
   TableBody,
   TableCell,
@@ -15,24 +16,86 @@ import {
   Typography,
 } from "@mui/material"
 import { LinkOutlined } from "@ant-design/icons"
-import { useLocation, useNavigate } from "react-router-dom"
+import { NavLink, useLocation, useNavigate } from "react-router-dom"
 import useConfig from "hooks/useConfig"
 import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
 import { EmissionCategory } from "data/domain/types/emissions/EmissionTypes"
+import { DataGrid, GridColDef, GridColTypeDef } from "@mui/x-data-grid"
 
 // ===========================|| DATA WIDGET - PROJECT TABLE CARD ||=========================== //
 export type ScopeTableItemProps = {
+  id: number
   category: EmissionCategory
   description: string
   categoryColor: string
-  amount: number
+  value: [number, number]
 }
 
 export type ScopeTableProps = {
   data: ScopeTableItemProps[]
 }
 
-export const ScopeTable = ({ data }: ScopeTableProps) => {
+const HEADER_CSS_CLASS = "common-super-class-name"
+const AWESOME_COLUMN: GridColTypeDef = {
+  headerClassName: HEADER_CSS_CLASS,
+}
+
+const columnDefinitions: GridColDef[] = [
+  {
+    ...AWESOME_COLUMN,
+    field: "name",
+    headerName: "Title",
+    sortable: false,
+    flex: 1,
+    renderCell: (params) => (
+      <Link
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          columnGap: "5px",
+          textDecoration: "underline",
+          cursor: "pointer",
+        }}
+        href={`/contributors/top/scope/${params.row.category.id}`}
+      >
+        {params.row.name}
+        <LinkOutlined />
+      </Link>
+    ),
+  },
+  {
+    ...AWESOME_COLUMN,
+    field: "amount",
+    headerName: "Value",
+    sortable: false,
+    flex: 3,
+    renderCell: (params) => (
+      <Stack alignItems="start" sx={{ width: "100%" }}>
+        <Typography>{formatEmissionAmount(params.value[0])}</Typography>
+        <LinearProgress
+          sx={{ width: "100%" }}
+          variant="determinate"
+          value={(100.0 * params.value[0]) / params.value[1]}
+        />
+      </Stack>
+    ),
+  },
+  {
+    ...AWESOME_COLUMN,
+    field: "id",
+    headerName: "",
+    sortable: false,
+    renderCell: (params) => (
+      <NavLink to={`/contributors/analysis/${params.row.id}`}>
+        <Button sx={{ color: "primary.contrastText" }} variant="contained">
+          Detail
+        </Button>
+      </NavLink>
+    ),
+  },
+]
+
+export const ScopeTable = ({ data, ...sxProps }: ScopeTableProps & SxProps) => {
   const { setIsShowExtraHeader } = useConfig()
   /*
   const handleOnCategoryClick = (id: string) => {
@@ -41,64 +104,32 @@ export const ScopeTable = ({ data }: ScopeTableProps) => {
   }
   */
 
-  const totalAmount = data.reduce((acc, cur) => acc + cur.amount, 0.0)
-  const thereAreDataPoints = data.find((row) => row.amount > 0)
-
   return (
-    <TableContainer
-      sx={{ border: "1px solid", borderColor: "#e6ebf1", borderRadius: "4px" }}
-    >
-      <Table>
-        <TableHead
-          sx={{
-            border: "none",
-            borderBottom: "1px solid",
-            borderColor: "#e6ebf1",
-          }}
-        >
-          <TableRow sx={{ height: "70px" }}>
-            <TableCell sx={{ width: "500px" }}>
-              <Typography variant="subtitle2">Category</Typography>
-            </TableCell>
-            <TableCell>
-              <Typography variant="subtitle2">Description</Typography>
-            </TableCell>
-            {thereAreDataPoints && (
-              <TableCell>
-                <Typography variant="subtitle2">Value</Typography>
-              </TableCell>
-            )}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {data.map((row) => (
-            <TableRow hover key={row.category.id} sx={{ height: "70px" }}>
-              <TableCell>
-                <Typography align="left">{row.category.name}</Typography>
-              </TableCell>
-              <TableCell>
-                <Typography align="left">{row.description}</Typography>
-              </TableCell>
-              {thereAreDataPoints && (
-                <TableCell>
-                  {row.amount <= 0 ? null : (
-                    <Stack direction="row">
-                      <LinearProgress
-                        sx={{ width: "100%", color: row.categoryColor }}
-                        variant="determinate"
-                        value={(100.0 * row.amount) / totalAmount}
-                      />
-                      <Typography>
-                        {formatEmissionAmount(row.amount)}
-                      </Typography>
-                    </Stack>
-                  )}
-                </TableCell>
-              )}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <DataGrid
+      sx={{
+        width: "100%",
+        "& .MuiDataGrid-cell": {
+          outline: "none !important",
+        },
+        "& .MuiDataGrid-columnHeader": {
+          outline: "none !important",
+        },
+        "& .Mui-error": {
+          backgroundColor: `blue`,
+          color: "#ff4343",
+        },
+        [`& .${HEADER_CSS_CLASS}`]: {
+          backgroundColor: "#FAFAFA",
+        },
+        ...sxProps,
+      }}
+      rows={data}
+      columns={columnDefinitions}
+      disableColumnFilter
+      disableColumnMenu
+      checkboxSelection={false}
+      disableRowSelectionOnClick
+      pageSizeOptions={[5, 10, 20]}
+    />
   )
 }
