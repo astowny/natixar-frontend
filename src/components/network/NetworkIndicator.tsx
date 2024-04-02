@@ -7,7 +7,10 @@ import { useSelector } from "react-redux"
 import { TimeMeasurement } from "data/domain/types/time/TimeRelatedTypes"
 import { selectEmissionRangeRequestParameters } from "data/store/api/EmissionSelectors"
 import formatISO from "date-fns/formatISO"
-import { formatProtocolForRangesEndpoint } from "data/store/features/emissions/ranges/EndpointTypes"
+import {
+  EmissionRangesRequest,
+  formatProtocolForRangesEndpoint,
+} from "data/store/features/emissions/ranges/EndpointTypes"
 import {
   useGetEmissionRangesQuery,
   useLazyGetEmissionRangesQuery,
@@ -15,7 +18,7 @@ import {
 
 const NetworkIndicator = (props: SxProps) => {
   const { ...sxProps } = props
-  const [getEmissionData, { isLoading }] = useLazyGetEmissionRangesQuery()
+  const [getEmissionData] = useLazyGetEmissionRangesQuery()
   const { data, error } = useGetNetworkInformationQuery(undefined, {
     pollingInterval: 2000,
   })
@@ -23,21 +26,22 @@ const NetworkIndicator = (props: SxProps) => {
   const { timeRangeOfInterest, protocol } = useSelector(
     selectEmissionRangeRequestParameters,
   )
-  const scale = `1${TimeMeasurement.MINUTES}`
-  const requestParams = useMemo(
-    () => ({
-      protocol: formatProtocolForRangesEndpoint(protocol),
-      scale,
-      timeRanges: [
-        {
-          start: formatISO(timeRangeOfInterest.start, {
-            representation: "date",
-          }),
-          end: formatISO(timeRangeOfInterest.end, { representation: "date" }),
-          scale,
-        },
-      ],
-    }),
+  const scale: string = `1${TimeMeasurement.MINUTES}`
+  const requestParams: EmissionRangesRequest = useMemo(
+    () =>
+      ({
+        protocol: formatProtocolForRangesEndpoint(protocol),
+        scale,
+        timeRanges: [
+          {
+            start: formatISO(timeRangeOfInterest.start, {
+              representation: "date",
+            }),
+            end: formatISO(timeRangeOfInterest.end, { representation: "date" }),
+            scale,
+          },
+        ],
+      }) as EmissionRangesRequest,
     [protocol, timeRangeOfInterest],
   )
   useGetEmissionRangesQuery(requestParams, {

@@ -17,7 +17,7 @@ import {
   sliceHead,
   map,
 } from "@tidyjs/tidy"
-import { DataGrid, GridColDef } from "@mui/x-data-grid"
+import { DataGrid, GridColDef, GridColTypeDef } from "@mui/x-data-grid"
 import { NavLink } from "react-router-dom"
 import { Button, LinearProgress, Link } from "@mui/material"
 import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
