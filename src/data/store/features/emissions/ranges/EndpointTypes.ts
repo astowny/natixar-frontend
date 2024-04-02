@@ -32,7 +32,7 @@ export type EndpointEmissionProtocol = "ghgprotocol" | "beges" | "begesv5"
 export interface TimeRangeRequest {
   start: string
   end: string
-  scale?: TimeRangeScale
+  scale?: string
 }
 
 export interface EmissionRangesRequest {

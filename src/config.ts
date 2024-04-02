@@ -31,4 +31,10 @@ const configNatixar: DefaultConfigProps = {
   isShowExtraHeader: false,
 }
 
+export const fusionConfig = {
+  clientID: "5e9cba0b-4978-4a24-88c0-0a45b0ed067f",
+  serverUrl: "http://localhost:8011",
+  redirectUri: "http://localhost:3000",
+}
+
 export default configNatixar

@@ -17,6 +17,9 @@ const DocumentUpload = Loadable(lazy(() => import("pages/contributor/upload")))
 const ClimateChangeDashboard = Loadable(
   lazy(() => import("pages/natixar/ClimateChangePage")),
 )
+const TopContributorsPage = Loadable(
+  lazy(() => import("pages/contributor/TopContributorsPage")),
+)
 const ScopePage = Loadable(lazy(() => import("pages/natixar/ScopePage")))
 const ContributorsPage = Loadable(
   lazy(() => import("pages/natixar/ContributorsPage")),
@@ -54,6 +57,10 @@ const MainRoutes = {
         {
           path: "dashboard",
           element: <ContributorsDashboard />,
+        },
+        {
+          path: "top/scope/:scopeId",
+          element: <TopContributorsPage />,
         },
         {
           path: "scope/:id",

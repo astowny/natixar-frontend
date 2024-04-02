@@ -7,7 +7,7 @@ import { SxProps } from "@mui/system"
 
 // project import
 import { APP_DEFAULT_PATH } from "config"
-import useAuth from "hooks/useAuth"
+import { useFusionAuth } from "@fusionauth/react-sdk"
 import Logo from "./LogoMain"
 import LogoIcon from "./LogoIcon"
 
@@ -21,12 +21,12 @@ interface Props {
 }
 
 const LogoSection = ({ isIcon, sx, to }: Props) => {
-  const { isLoggedIn } = useAuth()
+  const { isAuthenticated } = useFusionAuth()
 
   return (
     <ButtonBase
       disableRipple
-      {...(isLoggedIn && {
+      {...(isAuthenticated && {
         component: Link,
         to: !to ? APP_DEFAULT_PATH : to,
         sx,

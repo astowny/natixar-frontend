@@ -17,10 +17,11 @@ import {
   sliceHead,
   map,
 } from "@tidyjs/tidy"
-import { DataGrid, GridColDef } from "@mui/x-data-grid"
+import { DataGrid, GridColDef, GridColTypeDef } from "@mui/x-data-grid"
 import { NavLink } from "react-router-dom"
-import { Button, LinearProgress } from "@mui/material"
+import { Button, LinearProgress, Link } from "@mui/material"
 import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
+import { LinkOutlined } from "@ant-design/icons"
 
 interface TopContributorsSectionParams {
   categoryId: number
@@ -28,14 +29,36 @@ interface TopContributorsSectionParams {
   indexes: AlignedIndexes
 }
 
+const HEADER_CSS_CLASS = "common-super-class-name"
+const AWESOME_COLUMN: GridColTypeDef = {
+  headerClassName: HEADER_CSS_CLASS,
+}
+
 const columnDefinitions: GridColDef[] = [
   {
+    ...AWESOME_COLUMN,
     field: "name",
     headerName: "Contributor",
     sortable: false,
-    flex: 2,
+    flex: 1,
+    renderCell: (params) => (
+      <Link
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          columnGap: "5px",
+          textDecoration: "underline",
+          cursor: "pointer",
+        }}
+        href={`/contributors/analysis/${params.row.id}`}
+      >
+        {params.row.name}
+        <LinkOutlined />
+      </Link>
+    ),
   },
   {
+    ...AWESOME_COLUMN,
     field: "amount",
     headerName: "Emission",
     sortable: false,
@@ -52,20 +75,19 @@ const columnDefinitions: GridColDef[] = [
     ),
   },
   {
+    ...AWESOME_COLUMN,
     field: "id",
     headerName: "",
     sortable: false,
     renderCell: (params) => (
       <NavLink to={`/contributors/analysis/${params.row.id}`}>
         <Button sx={{ color: "primary.contrastText" }} variant="contained">
-          Details
+          Detail
         </Button>
       </NavLink>
     ),
   },
 ]
-
-const maxItemsInTable = 10
 
 const TopContributorsSection = ({
   categoryId,
@@ -109,35 +131,37 @@ const TopContributorsSection = ({
             amount: [groupTotal, totalEmission],
           }
         }),
-        sliceHead(maxItemsInTable),
       ),
     [relevantDataPoints],
   )
 
   return (
-    <Stack sx={{ width: "100%", p: "2rem", ...sxProps }}>
-      <Typography variant="h3" fontWeight="bold">
-        Top contributors
-      </Typography>
-      <DataGrid
-        sx={{
-          width: "100%",
-          "& .MuiDataGrid-cell": {
-            outline: "none !important",
-          },
-          "& .MuiDataGrid-columnHeader": {
-            outline: "none !important",
-          },
-        }}
-        rows={dataToDisplay}
-        columns={columnDefinitions}
-        disableColumnFilter
-        disableColumnMenu
-        hideFooterPagination
-        checkboxSelection={false}
-        disableRowSelectionOnClick
-      />
-    </Stack>
+    <DataGrid
+      sx={{
+        width: "100%",
+        "& .MuiDataGrid-cell": {
+          outline: "none !important",
+        },
+        "& .MuiDataGrid-columnHeader": {
+          outline: "none !important",
+        },
+        "& .Mui-error": {
+          backgroundColor: `blue`,
+          color: "#ff4343",
+        },
+        [`& .${HEADER_CSS_CLASS}`]: {
+          backgroundColor: "#FAFAFA",
+        },
+        ...sxProps,
+      }}
+      rows={dataToDisplay}
+      columns={columnDefinitions}
+      disableColumnFilter
+      disableColumnMenu
+      checkboxSelection={false}
+      disableRowSelectionOnClick
+      pageSizeOptions={[5, 10, 20]}
+    />
   )
 }
 

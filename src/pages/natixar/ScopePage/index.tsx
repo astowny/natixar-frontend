@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Stack, Typography } from "@mui/material"
+import { Button, Grid, Stack, Typography } from "@mui/material"
 import MainCard from "components/MainCard"
 import { ArrowLeftOutlined, RightOutlined } from "@ant-design/icons"
 
@@ -24,6 +24,7 @@ import {
   frCategoryMessages,
   generalCategoryText,
 } from "data/domain/types/emissions/CategoryDescriptions"
+import { filter, groupBy, tidy } from "@tidyjs/tidy"
 import {
   ScopeTable,
   ScopeTableItemProps,
@@ -103,10 +104,11 @@ const ScopePage = () => {
       const [categoryId, emissionAmount] = idToEmissionPair
       const categoryData = categories[categoryId]
       return {
+        id: categoryData.id,
         category: categoryData,
         description: frCategoryMessages[categoryId] ?? "",
         categoryColor: getColorByCategory(categoryData.era),
-        amount: emissionAmount,
+        value: [emissionAmount, 100],
       }
     })
 
@@ -130,7 +132,6 @@ const ScopePage = () => {
                 Back
               </Button>
             </NavLink>
-            {/*             
             <Breadcrumb
               custom
               title={false}
@@ -139,7 +140,7 @@ const ScopePage = () => {
               sx={{
                 mb: "0px !important",
               }}
-            /> */}
+            />
           </Stack>
         </Grid>
         <Grid item xs={12} md={12} xl={12}>

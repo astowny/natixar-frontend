@@ -13,6 +13,7 @@ import Loader from "components/Loader"
 import axios from "utils/axios"
 import { KeyedObject } from "types/root"
 import { AuthProps, JWTContextType } from "types/auth"
+import { fusionConfig } from "config"
 
 const chance = new Chance()
 
@@ -84,57 +85,66 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
   }, [])
 
   const login = async (email: string, password: string) => {
-    const response = await axios.post("/api/account/login", { email, password })
-    const { serviceToken, user } = response.data
-    setSession(serviceToken)
-    dispatch({
-      type: LOGIN,
-      payload: {
-        isLoggedIn: true,
-        user,
-      },
-    })
+    // const response = await axios.post(
+    //   `${fusionConfig.serverUrl}/api/login`,
+    //   {},
+    //   {
+    //     headers: {
+    //       applicationId: fusionConfig.clientID,
+    //       loginId: email,
+    //       password,
+    //     },
+    //   },
+    // )
+    // console.log("Login resulted with: ", response.data)
+    // const { refreshToken, token, serviceToken } = response.data
+    // setSession(serviceToken)
+    // dispatch({
+    // type: LOGIN,
+    // payload: {
+    // isLoggedIn: true,
+    // user,
+    // },
+    // })
   }
 
-  const register = async (
-    email: string,
-    password: string,
-    firstName: string,
-    lastName: string,
-  ) => {
-    // todo: this flow need to be recode as it not verified
-    const id = chance.bb_pin()
-    const response = await axios.post("/api/account/register", {
-      id,
-      email,
-      password,
-      firstName,
-      lastName,
-    })
-    let users = response.data
-
-    if (
-      window.localStorage.getItem("users") !== undefined &&
-      window.localStorage.getItem("users") !== null
-    ) {
-      const localUsers = window.localStorage.getItem("users")
-      users = [
-        ...JSON.parse(localUsers!),
-        {
-          id,
-          email,
-          password,
-          name: `${firstName} ${lastName}`,
-        },
-      ]
+  const register = async () =>
+    // email: string,
+    // password: string,
+    // firstName: string,
+    // lastName: string,
+    {
+      // todo: this flow need to be recode as it not verified
+      // const id = chance.bb_pin()
+      // const response = await axios.post("/api/account/register", {
+      //   id,
+      //   email,
+      //   password,
+      //   firstName,
+      //   lastName,
+      // })
+      // let users = response.data
+      // if (
+      //   window.localStorage.getItem("users") !== undefined &&
+      //   window.localStorage.getItem("users") !== null
+      // ) {
+      //   const localUsers = window.localStorage.getItem("users")
+      //   users = [
+      //     ...JSON.parse(localUsers!),
+      //     {
+      //       id,
+      //       email,
+      //       password,
+      //       name: `${firstName} ${lastName}`,
+      //     },
+      //   ]
+      // }
+      // window.localStorage.setItem("users", JSON.stringify(users))
     }
 
-    window.localStorage.setItem("users", JSON.stringify(users))
-  }
-
   const logout = () => {
-    setSession(null)
-    dispatch({ type: LOGOUT })
+    // setSession(null)
+    // dispatch({ type: LOGOUT })
   }
 
   const resetPassword = async (email: string) => {}
