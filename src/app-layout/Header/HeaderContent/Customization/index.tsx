@@ -15,7 +15,6 @@ import {
 // project import
 import MainCard from "components/MainCard"
 import IconButton from "components/@extended/IconButton"
-import AnimateButton from "components/@extended/AnimateButton"
 import SimpleBar from "components/third-party/SimpleBar"
 import useConfig from "hooks/useConfig"
 
@@ -25,13 +24,11 @@ import {
   HighlightOutlined,
   BorderInnerOutlined,
   BgColorsOutlined,
-  SettingOutlined,
   CloseCircleOutlined,
   FontColorsOutlined,
 } from "@ant-design/icons"
 
 // types
-import { ThemeMode } from "types/config"
 import ThemeMenuLayout from "./ThemeMenuLayout"
 import ThemeWidth from "./ThemeWidth"
 
@@ -54,9 +51,6 @@ const Customization = () => {
   const handleToggle = () => {
     setOpen(!open)
   }
-
-  const iconBackColorOpen =
-    theme.palette.mode === ThemeMode.DARK ? "background.default" : "grey.100"
 
   return (
     <Drawer

@@ -18,7 +18,6 @@ import {
 // types
 import { KeyedObject } from "types/root"
 import { ThemeMode } from "types/config"
-import Highlighter from "./third-party/Highlighter"
 
 // header style
 const headerSX = {
@@ -143,17 +142,6 @@ const MainCard = forwardRef(
         {/* card content */}
         {content && <CardContent sx={contentSX}>{children}</CardContent>}
         {!content && children}
-
-        {/* card footer - clipboard & highlighter  */}
-        {codeString && (
-          <>
-            <Divider sx={{ borderStyle: "dashed" }} />
-            <Highlighter
-              codeString={codeString}
-              codeHighlight={codeHighlight}
-            />
-          </>
-        )}
       </Card>
     )
   },

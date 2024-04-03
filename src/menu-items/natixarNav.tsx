@@ -14,8 +14,8 @@ import {
 
 // type
 import { NavItemType } from "types/menu"
-import { LCAIcon } from "../assets/images/icons/IconComponents/LCAIcon"
-import { MapIcon } from "../assets/images/icons/IconComponents/MapIcon"
+import { LCAIcon } from "../assets/icons/LCAIcon"
+import { MapIcon } from "../assets/icons/MapIcon"
 
 // icons
 const icons = {

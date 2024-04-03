@@ -1,5 +1,5 @@
 {
-  "name": "mantis-react-ts",
+  "name": "natixar-saas",
   "version": "3.1.0",
   "private": true,
   "dependencies": {
@@ -128,8 +128,7 @@
     "vite": "^4.4.11",
     "vite-tsconfig-paths": "^4.2.1",
     "web-vitals": "^3.4.0",
-    "yup": "^1.2.0",
-    "zod": "^3.22.4"
+    "yup": "^1.2.0"
   },
   "scripts": {
     "start": "vite",

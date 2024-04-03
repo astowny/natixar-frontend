@@ -179,11 +179,6 @@ const AreaControlForm = memo(
           value={selectedAreaLabels}
           renderValue={multiSelectJoiner}
           multiple
-          sx={{
-            "& .MuiList-root": {
-              padding: "12px",
-            },
-          }}
         >
           {areaCheckboxes}
         </Select>
