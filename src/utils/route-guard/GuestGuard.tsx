@@ -5,17 +5,16 @@ import { GuardProps } from "types/auth"
 
 // ==============================|| AUTH GUARD ||============================== //
 
-const AuthGuard = ({ children }: GuardProps) => {
+const GuestGuard = ({ children }: GuardProps) => {
   const { isAuthenticated } = useFusionAuth()
   const navigate = useNavigate()
   const location = useLocation()
-
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate("authentication/login")
+    if (isAuthenticated) {
+      navigate("/")
     }
   }, [isAuthenticated, navigate, location])
   return children
 }
 
-export default AuthGuard
+export default GuestGuard

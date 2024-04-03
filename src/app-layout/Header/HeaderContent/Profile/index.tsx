@@ -23,7 +23,6 @@ import Avatar from "components/@extended/Avatar"
 import MainCard from "components/MainCard"
 import Transitions from "components/@extended/Transitions"
 import IconButton from "components/@extended/IconButton"
-import useAuth from "hooks/useAuth"
 
 // assets
 import avatar1 from "assets/images/users/avatar-1.png"
@@ -35,6 +34,7 @@ import {
 
 // types
 import { ThemeMode } from "types/config"
+import { useFusionAuth } from "@fusionauth/react-sdk"
 import SettingTab from "./SettingTab"
 import ProfileTab from "./ProfileTab"
 
@@ -76,11 +76,11 @@ const Profile = () => {
   const theme = useTheme()
   const navigate = useNavigate()
 
-  const { logout, user } = useAuth()
+  const { logout, user } = useFusionAuth()
   const handleLogout = async () => {
     try {
       await logout()
-      navigate(`/login`, {
+      navigate(`/authentication/login`, {
         state: {
           from: "",
         },

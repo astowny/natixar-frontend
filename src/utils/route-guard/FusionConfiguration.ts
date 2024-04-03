@@ -1,0 +1,11 @@
+export interface FusionConfigParams {
+  clientID: string
+  serverUrl: string
+  redirectUri: string
+}
+
+export const getFusionConfig = (): FusionConfigParams => ({
+  clientID: import.meta.env.VITE_FUSION_AUTH_CLIENT_KEY,
+  serverUrl: import.meta.env.VITE_FUSION_AUTH_SERVER_URL,
+  redirectUri: import.meta.env.VITE_FUSION_AUTH_REDIRECT_URL,
+})

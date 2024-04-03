@@ -8,7 +8,6 @@ import { enqueueSnackbar } from "notistack"
 
 // project import
 import MainCard from "components/MainCard"
-import { handlerDense } from "api/snackbar"
 
 // ==============================|| NOTISTACK - DENSE ||============================== //
 
