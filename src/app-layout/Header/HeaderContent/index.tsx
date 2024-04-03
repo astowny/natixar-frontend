@@ -17,7 +17,14 @@ const HeaderContent = () => {
       {!downLG && <Box sx={{ width: "100%" }} />}
       {downLG && <Box sx={{ width: "100%", ml: 1 }} />}
 
-      <Stack direction="row" alignItems="center" gap={1}>
+      <Stack
+        direction="row"
+        alignItems="center"
+        gap={1}
+        sx={{
+          px: 1,
+        }}
+      >
         {/* <Notification /> */}
         <Customization />
         <NetworkIndicator />

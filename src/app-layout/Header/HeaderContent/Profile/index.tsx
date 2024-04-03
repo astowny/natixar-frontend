@@ -17,6 +17,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material"
+import VerifiedUserIcon from "@mui/icons-material/VerifiedUser"
 
 // project import
 import Avatar from "components/@extended/Avatar"
@@ -113,7 +114,7 @@ const Profile = () => {
     theme.palette.mode === ThemeMode.DARK ? "background.default" : "grey.100"
 
   return (
-    <Box sx={{ flexShrink: 0, ml: 0.75 }}>
+    <Box sx={{ flexShrink: 0, ml: 0.75, pr: 0.75 }}>
       <ButtonBase
         sx={{
           p: 0.25,
@@ -143,8 +144,11 @@ const Profile = () => {
           sx={{ p: 0.5 }}
         >
           <Avatar alt="profile user" src={avatar1} size="sm" />
-          <Typography variant="subtitle1" sx={{ textTransform: "capitalize" }}>
-            {user?.name}
+          <Typography
+            variant="subtitle1"
+            sx={{ textTransform: "capitalize", textOverflow: "ellipsis" }}
+          >
+            {user?.given_name} {user?.family_name}
           </Typography>
         </Stack>
       </ButtonBase>
@@ -204,10 +208,17 @@ const Profile = () => {
                             src={avatar1}
                             sx={{ width: 32, height: 32 }}
                           />
-                          <Stack>
-                            <Typography variant="h6">{user?.name}</Typography>
+                          <Stack direction="column">
+                            <Typography variant="h6">
+                              {user?.given_name} {user.family_name}
+                            </Typography>
                             <Typography variant="body2" color="textSecondary">
-                              UI/UX Designer
+                              {user.email}{" "}
+                              {user.email_verified && (
+                                <Tooltip title="Email verified">
+                                  <VerifiedUserIcon color="success" />
+                                </Tooltip>
+                              )}
                             </Typography>
                           </Stack>
                         </Stack>
