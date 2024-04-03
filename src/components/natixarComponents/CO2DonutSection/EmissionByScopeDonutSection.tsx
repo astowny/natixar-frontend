@@ -10,14 +10,12 @@ import {
 import { expandId } from "data/domain/transformers/StructuralTransformers"
 import {
   AlignedIndexes,
-  EmissionCategory,
   EmissionDataPoint,
 } from "data/domain/types/emissions/EmissionTypes"
 import { selectRequestEmissionProtocol } from "data/store/api/EmissionSelectors"
 import { memo, useMemo, useState } from "react"
 import ReactApexChart from "react-apexcharts"
 import { useSelector } from "react-redux"
-import { defaultOptions } from "sections/charts/apexchart/ApexDonutChart/constants"
 import { getColorByCategory } from "utils/CategoryColors"
 import useAsyncWork from "hooks/useAsyncWork"
 import LabelBox from "./LabelBox"
@@ -64,16 +62,17 @@ const totalTextOptions = {
   fontWeight: "bold",
 }
 
-const configurableOptions = (
-  totalEmission: number,
-  scopes: EmissionCategory[],
-): ApexOptions => {
+const configurableOptions = (totalEmission: number): ApexOptions => {
   const formattedEmission = formatEmissionAmount(totalEmission).split(" ")
 
   return {
+    legend: {
+      show: false,
+    },
     plotOptions: {
       pie: {
         donut: {
+          size: "50%",
           labels: {
             show: true,
             name: {
@@ -87,7 +86,7 @@ const configurableOptions = (
               label: formattedEmission[0],
               ...totalTextOptions,
               // eslint-disable-next-line no-unused-vars
-              formatter(w) {
+              formatter() {
                 return formattedEmission[1]
               },
             },
@@ -150,9 +149,8 @@ const EmissionByCategorySection = ({
       <Box sx={ChartContainerStyles}>
         <ReactApexChart
           options={{
-            ...defaultOptions,
             ...optionsOverrides,
-            ...configurableOptions(totalEmission, scopes),
+            ...configurableOptions(totalEmission),
             labels,
             colors,
           }}
