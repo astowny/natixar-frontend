@@ -21,8 +21,6 @@ import {
   TransitionBar,
 } from "sections/components-overview/notistack"
 
-import { openSnackbar } from "api/snackbar"
-
 // types
 import { SnackbarProps } from "types/snackbar"
 
