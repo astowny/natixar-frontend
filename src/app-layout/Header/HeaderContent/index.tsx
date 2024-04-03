@@ -5,7 +5,6 @@ import { Box, Stack, useMediaQuery } from "@mui/material"
 // project import
 import NetworkIndicator from "components/network/NetworkIndicator"
 import Profile from "./Profile"
-import Notification from "./Notification"
 import Customization from "./Customization"
 import MobileSection from "./MobileSection"
 
