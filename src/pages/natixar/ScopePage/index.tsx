@@ -24,7 +24,6 @@ import {
   frCategoryMessages,
   generalCategoryText,
 } from "data/domain/types/emissions/CategoryDescriptions"
-import { filter, groupBy, tidy } from "@tidyjs/tidy"
 import {
   ScopeTable,
   ScopeTableItemProps,
@@ -94,6 +93,9 @@ const ScopePage = () => {
     }
   })
   // Then just sum them and send to the scope table
+  const totalEmission = Object.values(dataPointsByCategory)
+    .flatMap((points) => points)
+    .reduce((acc, cur) => acc + cur.totalEmissionAmount, 0)
 
   const rows: ScopeTableItemProps[] = Object.entries(dataPointsByCategory)
     .map((entry) => [
@@ -101,14 +103,14 @@ const ScopePage = () => {
       entry[1].reduce((acc, cur) => acc + cur.totalEmissionAmount, 0),
     ])
     .map((idToEmissionPair) => {
-      const [categoryId, emissionAmount] = idToEmissionPair
+      const [categoryId, emissionAmountForThisCategory] = idToEmissionPair
       const categoryData = categories[categoryId]
       return {
         id: categoryData.id,
         category: categoryData,
         description: frCategoryMessages[categoryId] ?? "",
         categoryColor: getColorByCategory(categoryData.era),
-        value: [emissionAmount, 100],
+        value: [emissionAmountForThisCategory, totalEmission],
       }
     })
 

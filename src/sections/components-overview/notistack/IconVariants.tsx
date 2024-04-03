@@ -14,7 +14,6 @@ import { enqueueSnackbar } from "notistack"
 
 // project import
 import MainCard from "components/MainCard"
-import { handlerIconVariants } from "api/snackbar"
 
 // ==============================|| NOTISTACK - CUSTOM ICON ||============================== //
 

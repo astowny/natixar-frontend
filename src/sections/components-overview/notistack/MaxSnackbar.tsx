@@ -8,7 +8,6 @@ import { enqueueSnackbar } from "notistack"
 
 // project import
 import MainCard from "components/MainCard"
-import { handlerIncrease, useGetSnackbar } from "api/snackbar"
 
 // asset
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons"

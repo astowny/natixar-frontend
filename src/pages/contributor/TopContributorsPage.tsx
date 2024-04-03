@@ -7,7 +7,7 @@ import {
   selectAlignedIndexes,
   selectVisiblePoints,
 } from "data/store/api/EmissionSelectors"
-import TopContributorsSection from "sections/contributor/emissions-by-scope/EmissionsByScopeSection"
+import TopContributorsSection from "sections/contributor/emissions-by-scope/TopContributorsSection"
 import Breadcrumb from "../../components/@extended/Breadcrumbs"
 
 const TopContributorsPage = () => {
@@ -69,7 +69,7 @@ const TopContributorsPage = () => {
           />
         </Stack>
         <Typography variant="h3" fontWeight="bold">
-          Scope Emissions bar
+          Top contributors of {categoryName}
         </Typography>
         <TopContributorsSection
           categoryId={scopeId}

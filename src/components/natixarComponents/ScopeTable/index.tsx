@@ -1,22 +1,14 @@
 // material-ui
 import {
-  Box,
   Button,
-  Grid,
   LinearProgress,
   Link,
   Stack,
   SxProps,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Typography,
 } from "@mui/material"
 import { LinkOutlined } from "@ant-design/icons"
-import { NavLink, useLocation, useNavigate } from "react-router-dom"
+import { NavLink } from "react-router-dom"
 import useConfig from "hooks/useConfig"
 import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
 import { EmissionCategory } from "data/domain/types/emissions/EmissionTypes"
@@ -38,37 +30,44 @@ export type ScopeTableProps = {
 const HEADER_CSS_CLASS = "common-super-class-name"
 const AWESOME_COLUMN: GridColTypeDef = {
   headerClassName: HEADER_CSS_CLASS,
+  hideable: false,
 }
 
 const columnDefinitions: GridColDef[] = [
   {
     ...AWESOME_COLUMN,
-    field: "name",
+    field: "category",
     headerName: "Title",
-    sortable: false,
     flex: 1,
+    minWidth: 300,
+    sortComparator: (categoryA, categoryB) =>
+      categoryA.name.localeCompare(categoryB.name),
     renderCell: (params) => (
       <Link
         sx={{
+          width: "100%",
           display: "flex",
           alignItems: "center",
           columnGap: "5px",
           textDecoration: "underline",
           cursor: "pointer",
+          textOverflow: "ellipsis",
         }}
-        href={`/contributors/top/scope/${params.row.category.id}`}
+        href={`/contributors/category-analysis/${params.row.category.id}`}
       >
-        {params.row.name}
+        {params.row.category.name}
         <LinkOutlined />
       </Link>
     ),
   },
   {
     ...AWESOME_COLUMN,
-    field: "amount",
+    field: "value",
     headerName: "Value",
-    sortable: false,
-    flex: 3,
+    flex: 1,
+    minWidth: 300,
+    sortComparator: (emissionDataA, emissionDataB) =>
+      emissionDataA[0] - emissionDataB[0],
     renderCell: (params) => (
       <Stack alignItems="start" sx={{ width: "100%" }}>
         <Typography>{formatEmissionAmount(params.value[0])}</Typography>
@@ -86,7 +85,7 @@ const columnDefinitions: GridColDef[] = [
     headerName: "",
     sortable: false,
     renderCell: (params) => (
-      <NavLink to={`/contributors/analysis/${params.row.id}`}>
+      <NavLink to={`/contributors/top/scope/${params.row.category.id}`}>
         <Button sx={{ color: "primary.contrastText" }} variant="contained">
           Detail
         </Button>
@@ -95,41 +94,30 @@ const columnDefinitions: GridColDef[] = [
   },
 ]
 
-export const ScopeTable = ({ data, ...sxProps }: ScopeTableProps & SxProps) => {
-  const { setIsShowExtraHeader } = useConfig()
-  /*
-  const handleOnCategoryClick = (id: string) => {
-    setIsShowExtraHeader(true)
-    navigate(`/contributor/category-analysis/${id}?scopeID=${scopeID}`)
-  }
-  */
-
-  return (
-    <DataGrid
-      sx={{
-        width: "100%",
-        "& .MuiDataGrid-cell": {
-          outline: "none !important",
-        },
-        "& .MuiDataGrid-columnHeader": {
-          outline: "none !important",
-        },
-        "& .Mui-error": {
-          backgroundColor: `blue`,
-          color: "#ff4343",
-        },
-        [`& .${HEADER_CSS_CLASS}`]: {
-          backgroundColor: "#FAFAFA",
-        },
-        ...sxProps,
-      }}
-      rows={data}
-      columns={columnDefinitions}
-      disableColumnFilter
-      disableColumnMenu
-      checkboxSelection={false}
-      disableRowSelectionOnClick
-      pageSizeOptions={[5, 10, 20]}
-    />
-  )
-}
+export const ScopeTable = ({ data, ...sxProps }: ScopeTableProps & SxProps) => (
+  <DataGrid
+    sx={{
+      width: "100%",
+      "& .MuiDataGrid-cell": {
+        outline: "none !important",
+      },
+      "& .MuiDataGrid-columnHeader": {
+        outline: "none !important",
+      },
+      "& .Mui-error": {
+        backgroundColor: `blue`,
+        color: "#ff4343",
+      },
+      [`& .${HEADER_CSS_CLASS}`]: {
+        backgroundColor: "#FAFAFA",
+      },
+      ...sxProps,
+    }}
+    rows={data}
+    columns={columnDefinitions}
+    checkboxSelection={false}
+    disableColumnMenu={false}
+    disableRowSelectionOnClick
+    pageSizeOptions={[5, 10, 20]}
+  />
+)

@@ -1,4 +1,4 @@
-import { Box, Drawer } from "@mui/material"
+import { Box } from "@mui/material"
 
 import { filter, sum, summarize, tidy } from "@tidyjs/tidy"
 import { ApexOptions } from "apexcharts"
@@ -14,11 +14,10 @@ import {
   EmissionDataPoint,
 } from "data/domain/types/emissions/EmissionTypes"
 import { selectRequestEmissionProtocol } from "data/store/api/EmissionSelectors"
-import { memo, useCallback, useMemo, useState } from "react"
+import { memo, useMemo, useState } from "react"
 import ReactApexChart from "react-apexcharts"
 import { useSelector } from "react-redux"
 import { defaultOptions } from "sections/charts/apexchart/ApexDonutChart/constants"
-import TopContributorsSection from "sections/contributor/emissions-by-scope/EmissionsByScopeSection"
 import { getColorByCategory } from "utils/CategoryColors"
 import useAsyncWork from "hooks/useAsyncWork"
 import LabelBox from "./LabelBox"
@@ -70,7 +69,6 @@ const configurableOptions = (
   scopes: EmissionCategory[],
 ): ApexOptions => {
   const formattedEmission = formatEmissionAmount(totalEmission).split(" ")
-  const scopeIds = scopes.map((scope) => scope.id)
 
   return {
     plotOptions: {

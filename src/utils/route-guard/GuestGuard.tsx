@@ -1,34 +1,19 @@
+import { useFusionAuth } from "@fusionauth/react-sdk"
 import { useEffect } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
-
-// project import
-import { APP_DEFAULT_PATH } from "config"
-import useAuth from "hooks/useAuth"
-
-// types
 import { GuardProps } from "types/auth"
 
-// ==============================|| GUEST GUARD ||============================== //
+// ==============================|| AUTH GUARD ||============================== //
 
 const GuestGuard = ({ children }: GuardProps) => {
-  const { isLoggedIn } = useAuth()
+  const { isAuthenticated } = useFusionAuth()
   const navigate = useNavigate()
   const location = useLocation()
-
   useEffect(() => {
-    if (isLoggedIn) {
-      navigate(
-        location?.state?.from ? location?.state?.from : APP_DEFAULT_PATH,
-        {
-          state: {
-            from: "",
-          },
-          replace: true,
-        },
-      )
+    if (isAuthenticated) {
+      navigate("/")
     }
-  }, [isLoggedIn, navigate, location])
-
+  }, [isAuthenticated, navigate, location])
   return children
 }
 
