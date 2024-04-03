@@ -1,5 +1,4 @@
 import { useRef, useState, ReactNode, SyntheticEvent } from "react"
-import { useNavigate } from "react-router"
 
 // material-ui
 import { useTheme } from "@mui/material/styles"
@@ -75,17 +74,11 @@ function a11yProps(index: number) {
 
 const Profile = () => {
   const theme = useTheme()
-  const navigate = useNavigate()
 
   const { logout, user } = useFusionAuth()
   const handleLogout = async () => {
     try {
       await logout()
-      navigate(`/authentication/login`, {
-        state: {
-          from: "",
-        },
-      })
     } catch (err) {
       console.error(err)
     }
