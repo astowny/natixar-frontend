@@ -40,8 +40,6 @@ const MaintenanceComingSoon = Loadable(
   lazy(() => import("pages/maintenance/coming-soon")),
 )
 
-const AppContactUS = Loadable(lazy(() => import("pages/contact-us")))
-
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {
@@ -122,10 +120,6 @@ const MainRoutes = {
           element: <MaintenanceComingSoon />,
         },
       ],
-    },
-    {
-      path: "contact-us",
-      element: <AppContactUS />,
     },
   ],
 }

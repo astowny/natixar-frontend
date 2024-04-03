@@ -11,13 +11,10 @@ import AccordionSummary from "./AccordionSummary"
 import Alert from "./Alert"
 import AlertTitle from "./AlertTitle"
 import Autocomplete from "./Autocomplete"
-import Badge from "./Badge"
 import Button from "./Button"
 import ButtonBase from "./ButtonBase"
 import ButtonGroup from "./ButtonGroup"
 import CardContent from "./CardContent"
-import Checkbox from "./Checkbox"
-import Chip from "./Chip"
 import Dialog from "./Dialog"
 import DialogContentText from "./DialogContentText"
 import DialogTitle from "./DialogTitle"
@@ -33,10 +30,7 @@ import ListItemIcon from "./ListItemIcon"
 import LoadingButton from "./LoadingButton"
 import OutlinedInput from "./OutlinedInput"
 import Pagination from "./Pagination"
-import PaginationItem from "./PaginationItem"
 import Popover from "./Popover"
-import Radio from "./Radio"
-import Slider from "./Slider"
 import Switch from "./Switch"
 import Tab from "./Tab"
 import TableBody from "./TableBody"
@@ -61,13 +55,10 @@ export default function ComponentsOverrides(theme: Theme) {
     Alert(theme),
     AlertTitle(),
     Autocomplete(),
-    Badge(theme),
     Button(theme),
     ButtonBase(),
     ButtonGroup(),
     CardContent(),
-    Checkbox(theme),
-    Chip(theme),
     Dialog(),
     DialogContentText(theme),
     DialogTitle(),
@@ -83,10 +74,7 @@ export default function ComponentsOverrides(theme: Theme) {
     LoadingButton(),
     OutlinedInput(theme),
     Pagination(),
-    PaginationItem(theme),
     Popover(theme),
-    Radio(theme),
-    Slider(theme),
     Switch(theme),
     Tab(theme),
     TableBody(theme),

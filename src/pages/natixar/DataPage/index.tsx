@@ -1,6 +1,5 @@
 import { Grid, Typography } from "@mui/material"
 
-import RecentTickets from "sections/widget/data/RecentTickets"
 import UnknownMappings from "sections/data-health/UnknownMappingsSection"
 import SourcesTable from "./SourcesTable"
 

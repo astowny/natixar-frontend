@@ -1,4 +1,4 @@
-import { RouterProvider, useNavigate } from "react-router-dom"
+import { RouterProvider } from "react-router-dom"
 
 // project import
 import router from "routes"
@@ -8,8 +8,6 @@ import ThemeCustomization from "themes"
 import Locales from "components/Locales"
 import RTLLayout from "components/RTLLayout"
 import ScrollTop from "components/ScrollTop"
-import Snackbar from "components/@extended/Snackbar"
-import Notistack from "components/third-party/Notistack"
 import { LocalizationProvider } from "@mui/x-date-pickers"
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
 
@@ -17,7 +15,6 @@ import { store } from "data/store"
 import { Provider } from "react-redux"
 
 // auth-provider
-import { JWTProvider as AuthProvider } from "contexts/JWTContext"
 import { FusionAuthProvider } from "@fusionauth/react-sdk"
 import { getFusionConfig } from "utils/route-guard/FusionConfiguration"
 
@@ -37,12 +34,7 @@ const App = () => {
                   serverUrl={authConfig.serverUrl}
                   redirectUri={authConfig.redirectUri}
                 >
-                  {/* <AuthProvider> */}
-                  <Notistack>
-                    <RouterProvider router={router} />
-                    <Snackbar />
-                  </Notistack>
-                  {/* </AuthProvider> */}
+                  <RouterProvider router={router} />
                 </FusionAuthProvider>
               </ScrollTop>
             </LocalizationProvider>

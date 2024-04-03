@@ -6,7 +6,6 @@ import { SnackbarProvider } from "notistack"
 
 // project import
 import Loader from "components/Loader"
-import { useGetSnackbar } from "api/snackbar"
 
 // assets
 import {
@@ -38,30 +37,9 @@ const StyledSnackbarProvider = styled(SnackbarProvider)(({ theme }) => ({
 // ===========================|| SNACKBAR - NOTISTACK ||=========================== //
 
 const Notistack = ({ children }: any) => {
-  const { snackbar } = useGetSnackbar()
   const iconSX = { marginRight: 8, fontSize: "1.15rem" }
 
-  if (snackbar === undefined) return <Loader />
-
-  return (
-    <StyledSnackbarProvider
-      maxSnack={snackbar.maxStack}
-      dense={snackbar.dense}
-      iconVariant={
-        snackbar.iconVariant === "useemojis"
-          ? {
-              success: <CheckCircleOutlined style={iconSX} />,
-              error: <CloseCircleOutlined style={iconSX} />,
-              warning: <WarningOutlined style={iconSX} />,
-              info: <InfoCircleOutlined style={iconSX} />,
-            }
-          : undefined
-      }
-      hideIconVariant={snackbar.iconVariant === "hide"}
-    >
-      {children}
-    </StyledSnackbarProvider>
-  )
+  return { children }
 }
 
 export default Notistack
