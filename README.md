@@ -1,3 +1,11 @@
-# mantis-react-ts
+# Natixar SaaS
 
-Web theme with name as 'Natixar'. Its name of insect but we derived it from two popular UI framework, Material-UI and Ant Design (M-Ant-is). It provides best features from each. Follows design principle of AntDesign and uses the Component of Material-UI.
+## Configure
+You can run the scripts configure .bat / .sh or the commands, listed there
+
+## Build
+`npm run build`
+
+## Run 
+`npm run dev` -- for the development environment
+`npm run preview` -- for the production environment
