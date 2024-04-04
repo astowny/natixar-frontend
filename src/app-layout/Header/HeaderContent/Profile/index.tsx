@@ -72,6 +72,35 @@ function a11yProps(index: number) {
 
 // ==============================|| HEADER CONTENT - PROFILE ||============================== //
 
+function stringToColor(string: string) {
+  let hash = 0
+  let i
+
+  /* eslint-disable no-bitwise */
+  for (i = 0; i < string.length; i += 1) {
+    hash = string.charCodeAt(i) + ((hash << 5) - hash)
+  }
+
+  let color = "#"
+
+  for (i = 0; i < 3; i += 1) {
+    const value = (hash >> (i * 8)) & 0xff
+    color += `00${value.toString(16)}`.slice(-2)
+  }
+  /* eslint-enable no-bitwise */
+
+  return color
+}
+
+function stringAvatar(name: string) {
+  return {
+    sx: {
+      bgcolor: stringToColor(name),
+    },
+    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
+  }
+}
+
 const Profile = () => {
   const theme = useTheme()
 
@@ -105,6 +134,10 @@ const Profile = () => {
 
   const iconBackColorOpen =
     theme.palette.mode === ThemeMode.DARK ? "background.default" : "grey.100"
+  const userName =
+    user?.given_name && user?.family_name
+      ? `${user?.given_name} ${user?.family_name}`
+      : "Natixar User"
 
   return (
     <Box sx={{ flexShrink: 0, ml: 0.75, pr: 0.75 }}>
@@ -136,12 +169,12 @@ const Profile = () => {
           alignItems="center"
           sx={{ p: 0.5 }}
         >
-          <Avatar alt="profile user" src={avatar1} size="sm" />
+          <Avatar {...stringAvatar(userName)} />
           <Typography
             variant="subtitle1"
             sx={{ textTransform: "capitalize", textOverflow: "ellipsis" }}
           >
-            {user?.given_name} {user?.family_name}
+            {userName}
           </Typography>
         </Stack>
       </ButtonBase>
@@ -196,15 +229,8 @@ const Profile = () => {
                           spacing={1.25}
                           alignItems="center"
                         >
-                          <Avatar
-                            alt="profile user"
-                            src={avatar1}
-                            sx={{ width: 32, height: 32 }}
-                          />
                           <Stack direction="column">
-                            <Typography variant="h6">
-                              {user?.given_name} {user.family_name}
-                            </Typography>
+                            <Typography variant="h6">{userName}</Typography>
                             <Typography variant="body2" color="textSecondary">
                               {user.email}{" "}
                               {user.email_verified && (
