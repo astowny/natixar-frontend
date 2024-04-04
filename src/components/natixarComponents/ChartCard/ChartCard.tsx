@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   Grid,
   Stack,
@@ -8,10 +7,8 @@ import {
   Typography,
 } from "@mui/material"
 import { Dispatch, ReactNode, SetStateAction } from "react"
-import _ from "lodash"
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp"
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown"
-import { jsx } from "@emotion/react"
 
 type ChartCardProps = {
   children: ReactNode
@@ -142,7 +139,7 @@ export const ChartCard = ({
             justifyContent="end"
             gap="7px"
           >
-            <Typography>Detail by</Typography>
+            <Typography whiteSpace="nowrap">Detail by</Typography>
             {slots && (
               <ToggleButtonGroup
                 exclusive
@@ -158,6 +155,8 @@ export const ChartCard = ({
                       px: 2,
                       py: 0.5,
                       color: "#000000",
+                      textTransform: "capitalize",
+                      whiteSpace: "nowrap",
                       "&.MuiToggleButton-root.Mui-selected": {
                         color: "#FFFFFF",
                         backgroundColor: "#1890FF",
@@ -165,7 +164,7 @@ export const ChartCard = ({
                       },
                     }}
                   >
-                    {_.capitalize(timeDetailSlot)}
+                    {timeDetailSlot}
                   </ToggleButton>
                 ))}
               </ToggleButtonGroup>
