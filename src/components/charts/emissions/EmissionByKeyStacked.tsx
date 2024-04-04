@@ -86,7 +86,7 @@ const EmissionByKeyStacked = ({
         const categoryIndex = categories.indexOf(category)
         return {
           name: category,
-          color: getOpaqueColorByCategory(category),
+          color: getOpaqueColorByCategory(category, 0.48),
           data: byKeyData[categoryIndex],
         }
       },

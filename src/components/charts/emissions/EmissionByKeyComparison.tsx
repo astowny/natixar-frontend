@@ -88,7 +88,7 @@ const produceSeries = (
       name: `${category} (${groupName})`,
       group: groupName,
       color: useOpaqueColor
-        ? getOpaqueColorByCategory(category)
+        ? getOpaqueColorByCategory(category, 0.48)
         : getColorByCategory(category),
       data: byKeyData[categoryIndex],
     }
