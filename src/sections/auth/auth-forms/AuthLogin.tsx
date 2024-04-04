@@ -1,13 +1,13 @@
 // material-ui
-import { Stack } from "@mui/material"
+import { Stack, SxProps } from "@mui/material"
 
 import {
   FusionAuthLoginButton,
   FusionAuthRegisterButton,
 } from "@fusionauth/react-sdk"
 
-const LoginButtons = () => (
-  <Stack>
+const LoginButtons = ({ ...sxProps }: SxProps) => (
+  <Stack sx={{ minWidth: "20rem", gap: ".5rem", ...sxProps }}>
     <FusionAuthLoginButton />
     <FusionAuthRegisterButton />
   </Stack>
