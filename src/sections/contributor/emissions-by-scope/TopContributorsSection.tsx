@@ -1,5 +1,5 @@
 import Typography from "@mui/material/Typography"
-import { Stack, SxProps } from "@mui/system"
+import { SxProps } from "@mui/system"
 import { expandId } from "data/domain/transformers/StructuralTransformers"
 import {
   AlignedIndexes,
@@ -17,8 +17,7 @@ import {
   map,
 } from "@tidyjs/tidy"
 import { DataGrid, GridColDef, GridColTypeDef } from "@mui/x-data-grid"
-import { NavLink } from "react-router-dom"
-import { Box, Button, LinearProgress, Link } from "@mui/material"
+import { Box, Link } from "@mui/material"
 import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
 import { LinkOutlined } from "@ant-design/icons"
 
@@ -59,26 +58,45 @@ const columnDefinitions: GridColDef[] = [
   },
   {
     ...AWESOME_COLUMN,
-    field: "amount",
-    headerName: "Total emissions",
+    field: "contribution",
+    headerName: "Contribution",
     sortable: false,
     hideable: false,
-    flex: 3,
+    flex: 2,
     renderCell: (params) => {
       const percentage = (100.0 * params.value[0]) / params.value[1]
       return (
         <Box
           sx={{
-            backgroundColor: "#75D048",
-            color: "primary.contrastText",
-            textAlign: "center",
-            width: `${percentage}%`,
+            width: "100%",
+            height: "100%",
+            py: 1.5,
           }}
         >
-          <Typography>{formatEmissionAmount(params.value[0])}</Typography>
+          <Box
+            sx={{
+              backgroundColor: "#75D048",
+              color: "primary.contrastText",
+              textAlign: "center",
+              height: "100%",
+              minWidth: `${percentage}%`,
+              width: `${percentage}%`,
+            }}
+          />
         </Box>
       )
     },
+  },
+  {
+    ...AWESOME_COLUMN,
+    field: "amount",
+    headerName: "Emission",
+    sortable: false,
+    hideable: false,
+    flex: 1,
+    renderCell: (params) => (
+      <Typography>{formatEmissionAmount(params.value)}</Typography>
+    ),
   },
 ]
 
@@ -125,7 +143,8 @@ const TopContributorsSection = ({
             companyId,
             company: companyName,
             country: countryName,
-            amount: [groupTotal, totalEmission],
+            contribution: [groupTotal, totalEmission],
+            amount: groupTotal,
           }
         }),
       ),

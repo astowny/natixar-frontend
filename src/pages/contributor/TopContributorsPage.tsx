@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux"
-import { NavLink, useParams } from "react-router-dom"
+import { NavLink, useNavigate, useParams } from "react-router-dom"
 import { ArrowLeftOutlined, RightOutlined } from "@ant-design/icons"
 import { Button, Stack, Typography } from "@mui/material"
 import MainCard from "components/MainCard"
@@ -8,6 +8,8 @@ import {
   selectVisiblePoints,
 } from "data/store/api/EmissionSelectors"
 import TopContributorsSection from "sections/contributor/emissions-by-scope/TopContributorsSection"
+import { useAppDispatch } from "data/store"
+import { clearFilterSelection } from "data/store/features/emissions/ranges/EmissionRangesSlice"
 import Breadcrumb from "../../components/@extended/Breadcrumbs"
 
 const TopContributorsPage = () => {
@@ -16,7 +18,12 @@ const TopContributorsPage = () => {
 
   const alignedIndexes = useSelector(selectAlignedIndexes)
   const dataPointsForThisCompany = useSelector(selectVisiblePoints)
-  console.log("We are here123")
+  const dispatch = useAppDispatch()
+  const navigate = useNavigate()
+  const goToContributors = () => {
+    dispatch(clearFilterSelection())
+    navigate(`/contributors/dashboard`)
+  }
 
   if (!Number.isFinite(scopeId)) {
     console.log(`Unable to parse category id ${idStr}`)
@@ -46,15 +53,14 @@ const TopContributorsPage = () => {
           width="100%"
           position="relative"
         >
-          <NavLink to="/">
-            <Button
-              sx={{ color: "primary.contrastText" }}
-              variant="contained"
-              startIcon={<ArrowLeftOutlined color="primary.contrastText" />}
-            >
-              Back
-            </Button>
-          </NavLink>
+          <Button
+            onClick={() => navigate(-1)}
+            sx={{ color: "primary.contrastText" }}
+            variant="contained"
+            startIcon={<ArrowLeftOutlined color="primary.contrastText" />}
+          >
+            Back
+          </Button>
           <Breadcrumb
             custom
             title={false}
@@ -76,6 +82,13 @@ const TopContributorsPage = () => {
           indexes={alignedIndexes}
           dataPoints={dataPointsForThisCompany}
         />
+        <Button
+          sx={{ color: "primary.contrastText", alignSelf: "center" }}
+          variant="contained"
+          onClick={goToContributors}
+        >
+          Go to Contributors page
+        </Button>
       </Stack>
     </MainCard>
   )
