@@ -35,6 +35,7 @@ import {
 // types
 import { ThemeMode } from "types/config"
 import { useFusionAuth } from "@fusionauth/react-sdk"
+import { getFusionConfig } from "utils/route-guard/FusionConfiguration"
 import SettingTab from "./SettingTab"
 import ProfileTab from "./ProfileTab"
 
@@ -105,7 +106,11 @@ const Profile = () => {
   const theme = useTheme()
 
   const { logout, user } = useFusionAuth()
+  const { enabled: isFusionEnabled } = getFusionConfig()
   const handleLogout = async () => {
+    if (!isFusionEnabled || isFusionEnabled === "false") {
+      return
+    }
     try {
       await logout()
     } catch (err) {
@@ -292,7 +297,7 @@ const Profile = () => {
                             style={{ marginBottom: 0, marginRight: "10px" }}
                           />
                         }
-                        label="Setting"
+                        label="Settings"
                         {...a11yProps(1)}
                       />
                     </Tabs>

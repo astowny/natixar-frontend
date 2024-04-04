@@ -37,7 +37,7 @@ const columnDefinitions: GridColDef[] = [
   {
     ...AWESOME_COLUMN,
     field: "category",
-    headerName: "Title",
+    headerName: "Category name",
     flex: 1,
     minWidth: 300,
     sortComparator: (categoryA, categoryB) =>
@@ -53,7 +53,7 @@ const columnDefinitions: GridColDef[] = [
           cursor: "pointer",
           textOverflow: "ellipsis",
         }}
-        href={`/contributors/category-analysis/${params.row.category.id}`}
+        href={`/contributors/top/scope/${params.row.category.id}`}
       >
         {params.row.category.name}
         <LinkOutlined />

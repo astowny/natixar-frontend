@@ -9,7 +9,6 @@ import {
 } from "data/domain/transformers/EmissionTransformers"
 import EmissionByKeyComparison from "components/charts/emissions/EmissionByKeyComparison"
 import useAsyncWork from "hooks/useAsyncWork"
-import { execPath } from "process"
 import { TotalEmissionByTimeProps } from "./TotalEmissionByTimeSection"
 
 const EmissionByTimeCompareToPreviousSection = ({
