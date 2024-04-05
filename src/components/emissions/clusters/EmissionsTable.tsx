@@ -12,7 +12,6 @@ import { CategoryLabel } from "components/categories/CategoriesLegend"
 import _ from "lodash"
 import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
 import { EmissionDataPoint } from "data/domain/types/emissions/EmissionTypes"
-import { EmissionsByClusterProps } from "./types"
 
 const tableLayout = {
   CONTRIBUTOR: "company",
@@ -20,9 +19,6 @@ const tableLayout = {
   EMISSIONS: (amount: number) => formatEmissionAmount(amount),
   "TYPE OF EMISSIONS": "category",
 }
-
-const getCompanyUrl = (companyName: string): string =>
-  import.meta.env.VITE_COMPANY_LINK_TEMPLATE + companyName
 
 const VirtuosoTableComponents: TableComponents<EmissionDataPoint> = {
   Scroller: React.forwardRef<HTMLDivElement>((props, ref) => (
@@ -59,7 +55,9 @@ function rowContent(_index: number, row: EmissionDataPoint) {
   return (
     <>
       <TableCell key="company">
-        <Link href={getCompanyUrl(row.companyName)}>{row.companyName}</Link>
+        <Link href={`/contributors/analysis/${row.companyId}`}>
+          {row.companyName}
+        </Link>
       </TableCell>
       <TableCell key="data-source">ERP</TableCell>
       <TableCell key="emissionAmount" align="right">
@@ -72,8 +70,12 @@ function rowContent(_index: number, row: EmissionDataPoint) {
   )
 }
 
-const EmissionsByClusterTable = ({ cluster }: EmissionsByClusterProps) => {
-  const data = [...cluster.dataPoints]
+const EmissionsByClusterTable = ({
+  cluster,
+}: {
+  cluster: EmissionDataPoint[]
+}) => {
+  const data = [...cluster]
   const sortedEmissions = data.sort(
     (a, b) => b.totalEmissionAmount - a.totalEmissionAmount,
   )

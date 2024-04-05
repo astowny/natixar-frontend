@@ -13,8 +13,12 @@ const zoom: number = 8
 
 const ClusteredMap = ({
   dataPoints,
+  onClusterPointsSelect,
   ...sxProps
-}: { dataPoints: EmissionDataPoint[] } & SxProps) => (
+}: {
+  dataPoints: EmissionDataPoint[]
+  onClusterPointsSelect?: (points: EmissionDataPoint[]) => void
+} & SxProps) => (
   <Box
     sx={{
       width: "100%",
@@ -38,7 +42,10 @@ const ClusteredMap = ({
       {/*
         I will leave the default map here, just in case if it's necessary
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="© <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors" /> */}
-      <ClusterByCategoryLayer dataPoints={dataPoints} />
+      <ClusterByCategoryLayer
+        dataPoints={dataPoints}
+        onClusterPointsSelect={onClusterPointsSelect}
+      />
     </MapContainer>
   </Box>
 )

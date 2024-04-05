@@ -2,7 +2,7 @@ import { Stack, Typography } from "@mui/material"
 
 import ByCompanySection from "sections/charts/emissions/ByCompanySection"
 import ByCountrySection from "sections/charts/emissions/ByCountrySection"
-import ClusteredMapSection from "sections/maps-leaflet/clusters-map"
+import ClusteredMapSection from "sections/maps-leaflet/clusters-map/ContributorsDashboardPage"
 
 const ContributorDashboardPage = () => (
   <Stack spacing="22px">

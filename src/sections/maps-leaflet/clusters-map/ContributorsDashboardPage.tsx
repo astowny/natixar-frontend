@@ -6,18 +6,20 @@ import EmissionsByCluster from "components/emissions/clusters/EmissionsByCluster
 import {
   selectVisiblePoints as pointsSelector,
   selectAllVisibleCategoryEras,
-  selectSelectedCluster,
 } from "data/store/api/EmissionSelectors"
 
 import { useSelector } from "react-redux"
-import { clearSelectedCluster } from "data/store/features/coordinates/ClusterSlice"
 import { useAppDispatch } from "data/store"
+import { EmissionDataPoint } from "data/domain/types/emissions/EmissionTypes"
 
 const ClusteredMapSection = ({ ...sxProps }: SxProps) => {
   const dispatch = useAppDispatch()
   const [tableCloseVeto, setTableCloseVeto] = useState(false)
+  const [selectedClusterPoints, setSelectedClusterPoints] = useState<
+    EmissionDataPoint[]
+  >([])
   const onAnimationEndListener = useCallback(() => {
-    dispatch(clearSelectedCluster())
+    setSelectedClusterPoints([])
     setTableCloseVeto(false)
   }, [dispatch, setTableCloseVeto])
 
@@ -25,7 +27,7 @@ const ClusteredMapSection = ({ ...sxProps }: SxProps) => {
     () => setTableCloseVeto(true),
     [setTableCloseVeto],
   )
-  const selectedCluster = useSelector(selectSelectedCluster)
+
   let categories = useSelector(selectAllVisibleCategoryEras)
   const dataPoints = useSelector(pointsSelector)
 
@@ -34,7 +36,7 @@ const ClusteredMapSection = ({ ...sxProps }: SxProps) => {
     categories = [...categories, "cluster"]
   }
 
-  const thereAreDataPoints = selectedCluster.dataPoints.length > 0
+  const thereAreDataPoints = selectedClusterPoints.length > 0
 
   return (
     <Box
@@ -54,7 +56,10 @@ const ClusteredMapSection = ({ ...sxProps }: SxProps) => {
           height: "100%",
         }}
       >
-        <ClusteredMap dataPoints={dataPoints} />
+        <ClusteredMap
+          dataPoints={dataPoints}
+          onClusterPointsSelect={setSelectedClusterPoints}
+        />
         <Fade in={categories.length > 0} timeout={300}>
           <Card
             sx={{
@@ -90,7 +95,7 @@ const ClusteredMapSection = ({ ...sxProps }: SxProps) => {
           zIndex={1101}
         >
           <EmissionsByCluster
-            cluster={selectedCluster}
+            cluster={selectedClusterPoints}
             onClose={onTableClose}
           />
         </Box>

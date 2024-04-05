@@ -9,7 +9,6 @@ import {
 import { IndexOf } from "data/domain/types/structures/StructuralTypes"
 import { TimeWindow } from "data/domain/types/time/TimeRelatedTypes"
 import { RootState } from "data/store"
-import { SelectedCluster } from "../features/coordinates/Types"
 
 export const selectEmissionFilter = (state: RootState): EmissionFilterState =>
   state.emissionRanges.emissionFilterState
@@ -55,6 +54,3 @@ export const selectVisibleEmissionsByCompany = (state: RootState) =>
 
 export const selectCoordinatesByCountry = (state: RootState) =>
   state.emissionRanges.visibleData.emissionsByCountry
-
-export const selectSelectedCluster = (state: RootState): SelectedCluster =>
-  state.selectedCluster
