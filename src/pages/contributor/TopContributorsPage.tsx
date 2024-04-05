@@ -14,7 +14,7 @@ import Breadcrumb from "../../components/@extended/Breadcrumbs"
 
 const TopContributorsPage = () => {
   const { scopeId: idStr } = useParams()
-  const scopeId = parseInt(idStr!, 10)
+  const categoryId = parseInt(idStr!, 10)
 
   const alignedIndexes = useSelector(selectAlignedIndexes)
   const dataPointsForThisCompany = useSelector(selectVisiblePoints)
@@ -25,17 +25,22 @@ const TopContributorsPage = () => {
     navigate(`/contributors/dashboard`)
   }
 
-  if (!Number.isFinite(scopeId)) {
+  if (!Number.isFinite(categoryId)) {
     console.log(`Unable to parse category id ${idStr}`)
     return null
   }
 
-  const categoryName = alignedIndexes.categories[scopeId]?.name
+  const categoryName = alignedIndexes.categories[categoryId]?.name
+  const scopeId = alignedIndexes.categories[categoryId]?.parent
 
   const links = [
     {
       title: "Dashboard",
       to: "/",
+    },
+    {
+      title: `${categoryName ?? "Total "} details`,
+      to: `/contributors/scope/${scopeId}`,
     },
     {
       title: `${categoryName ?? "Total "} top contributors`,
@@ -78,7 +83,7 @@ const TopContributorsPage = () => {
           Top contributors of {categoryName}
         </Typography>
         <TopContributorsSection
-          categoryId={scopeId}
+          categoryId={categoryId}
           indexes={alignedIndexes}
           dataPoints={dataPointsForThisCompany}
         />
