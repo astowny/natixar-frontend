@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 import L from "leaflet"
 import MarkerClusterGroup from "react-leaflet-cluster"
@@ -64,6 +64,7 @@ const createClusterCustomIcon = (cluster) => {
 // eslint-disable-next-line react/prop-types
 const ClusterByCategoryLayer = ({ dataPoints, onClusterPointsSelect }) => {
   const clusterGroupRef = useRef()
+  const [initialSnap, setInitialSnap] = useState(true)
 
   const map = useMap()
 
@@ -104,13 +105,14 @@ const ClusterByCategoryLayer = ({ dataPoints, onClusterPointsSelect }) => {
           return marker
         })
 
-      if (acceptTransformation) {
+      if (initialSnap && acceptTransformation) {
         const clusterGr = clusterGroupRef.current
         clusterGr.clearLayers()
         clusterGr.addLayers(markers)
         map.fitBounds(clusterGr.getBounds().pad(0.5), {
           animate: true,
         })
+        setInitialSnap(false)
       }
     }
 
@@ -119,7 +121,7 @@ const ClusterByCategoryLayer = ({ dataPoints, onClusterPointsSelect }) => {
     return () => {
       acceptTransformation = false
     }
-  }, [dataPoints])
+  }, [dataPoints, setInitialSnap])
 
   return (
     <MarkerClusterGroup
