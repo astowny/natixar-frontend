@@ -1,7 +1,8 @@
-import { memo, useMemo } from "react"
+import { memo, useState } from "react"
 import { Box, Button, Paper, Stack, SxProps, Typography } from "@mui/material"
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"
 import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
+import useAsyncWork from "hooks/useAsyncWork"
 import EmissionsByClusterTable from "./EmissionsTable"
 
 import { EmissionsByClusterProps } from "./types"
@@ -11,14 +12,19 @@ const EmissionsByClusterSection = ({
   onClose,
   ...sxProps
 }: EmissionsByClusterProps & SxProps) => {
-  const totalEmission = useMemo(() => {
-    const totalAmount = cluster.dataPoints.reduce(
-      (accumulator, currentValue) =>
-        accumulator + currentValue.totalEmissionAmount,
-      0,
-    )
-    return formatEmissionAmount(totalAmount)
-  }, [cluster])
+  const [totalEmission, setTotalEmission] = useState("")
+  useAsyncWork(
+    () => {
+      const totalAmount = cluster.dataPoints.reduce(
+        (accumulator, currentValue) =>
+          accumulator + currentValue.totalEmissionAmount,
+        0,
+      )
+      return formatEmissionAmount(totalAmount)
+    },
+    setTotalEmission,
+    [cluster, formatEmissionAmount],
+  )
 
   return (
     <Paper
