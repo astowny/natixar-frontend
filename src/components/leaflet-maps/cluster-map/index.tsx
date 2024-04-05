@@ -17,7 +17,7 @@ const ClusteredMap = ({
   ...sxProps
 }: {
   dataPoints: EmissionDataPoint[]
-  onClusterPointsSelect: (points: EmissionDataPoint[]) => void
+  onClusterPointsSelect?: (points: EmissionDataPoint[]) => void
 } & SxProps) => (
   <Box
     sx={{

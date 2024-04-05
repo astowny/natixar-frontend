@@ -12,7 +12,6 @@ import { CategoryLabel } from "components/categories/CategoriesLegend"
 import _ from "lodash"
 import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
 import { EmissionDataPoint } from "data/domain/types/emissions/EmissionTypes"
-import { EmissionsByClusterProps } from "./types"
 
 const tableLayout = {
   CONTRIBUTOR: "company",
