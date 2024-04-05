@@ -3,9 +3,13 @@ import { Box, Button, Paper, Stack, SxProps, Typography } from "@mui/material"
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"
 import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
 import useAsyncWork from "hooks/useAsyncWork"
+import { EmissionDataPoint } from "data/domain/types/emissions/EmissionTypes"
 import EmissionsByClusterTable from "./EmissionsTable"
 
-import { EmissionsByClusterProps } from "./types"
+export interface EmissionsByClusterProps {
+  cluster: EmissionDataPoint[]
+  onClose?: Function
+}
 
 const EmissionsByClusterSection = ({
   cluster,
@@ -15,7 +19,7 @@ const EmissionsByClusterSection = ({
   const [totalEmission, setTotalEmission] = useState("")
   useAsyncWork(
     () => {
-      const totalAmount = cluster.dataPoints.reduce(
+      const totalAmount = cluster.reduce(
         (accumulator, currentValue) =>
           accumulator + currentValue.totalEmissionAmount,
         0,

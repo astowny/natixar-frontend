@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef } from "react"
-import { useSelector } from "react-redux"
 
 import L from "leaflet"
 import MarkerClusterGroup from "react-leaflet-cluster"
@@ -9,9 +8,7 @@ import MapMarker from "components/third-party/map/MapMarker"
 import "leaflet/dist/leaflet.css"
 import "./map-style.css"
 
-import { useAppDispatch } from "data/store"
 import { formatAmount } from "data/domain/transformers/EmissionTransformers"
-import { selectClusterPoints } from "data/store/features/coordinates/ClusterSlice"
 import { getColorByCategory } from "utils/CategoryColors"
 
 const customIcon = new L.Icon({
@@ -65,22 +62,24 @@ const createClusterCustomIcon = (cluster) => {
 }
 
 // eslint-disable-next-line react/prop-types
-const ClusterByCategoryLayer = ({ dataPoints }) => {
+const ClusterByCategoryLayer = ({ dataPoints, onClusterPointsSelect }) => {
   const clusterGroupRef = useRef()
-  const dispatch = useAppDispatch()
 
   const map = useMap()
 
   const onClusterClick = useCallback(
     (e) => {
+      if (!onClusterPointsSelect) {
+        return
+      }
       const childMarkers = e.layer.getAllChildMarkers()
       // eslint-disable-next-line @typescript-eslint/no-shadow
       const dataPoints = childMarkers.map(
         (cluster) => cluster.options.dataPoint,
       )
-      dispatch(selectClusterPoints(dataPoints))
+      onClusterPointsSelect(dataPoints)
     },
-    [dispatch, dataPoints],
+    [onClusterPointsSelect, dataPoints],
   )
 
   useEffect(() => {

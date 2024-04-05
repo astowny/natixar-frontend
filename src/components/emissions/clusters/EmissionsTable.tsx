@@ -71,8 +71,12 @@ function rowContent(_index: number, row: EmissionDataPoint) {
   )
 }
 
-const EmissionsByClusterTable = ({ cluster }: EmissionsByClusterProps) => {
-  const data = [...cluster.dataPoints]
+const EmissionsByClusterTable = ({
+  cluster,
+}: {
+  cluster: EmissionDataPoint[]
+}) => {
+  const data = [...cluster]
   const sortedEmissions = data.sort(
     (a, b) => b.totalEmissionAmount - a.totalEmissionAmount,
   )
