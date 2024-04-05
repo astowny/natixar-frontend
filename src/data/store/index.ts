@@ -3,7 +3,6 @@ import { setupListeners } from "@reduxjs/toolkit/query"
 import { useDispatch } from "react-redux"
 
 import EmissionRangesSlice from "./features/emissions/ranges/EmissionRangesSlice"
-import ClusterSlice from "./features/coordinates/ClusterSlice"
 import UnknownCodeMappingsSlice from "./features/codemappings/UnknownCodeMappingsSlice"
 import MappingToEditSlice from "./features/codemappings/MappingEditSlice"
 import { emissionRangesApi } from "./features/emissions/ranges/EmissionRangesClient"
@@ -17,7 +16,6 @@ export const store = configureStore({
     emissionRanges: EmissionRangesSlice,
     unknownCodeMappings: UnknownCodeMappingsSlice,
     mappingToEdit: MappingToEditSlice,
-    selectedCluster: ClusterSlice,
     [emissionRangesApi.reducerPath]: emissionRangesApi.reducer,
     [unknownMappingsApi.reducerPath]: unknownMappingsApi.reducer,
     [networkCheckApi.reducerPath]: networkCheckApi.reducer,
