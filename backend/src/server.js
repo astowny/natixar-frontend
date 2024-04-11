@@ -77,7 +77,9 @@ app.post("/files", upload.array("files", 12), async (req, res) => {
     return;
   }
 
-  res.sendStatus(200);
+  const fileNames = files.map(file => file.originalname).join(", ")
+
+  res.status(200).send(`We received: ${fileNames}`);
 });
 
 app.post("/reports", express.json(), (req, res) => {
