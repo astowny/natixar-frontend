@@ -20,6 +20,15 @@ export const endpoints = {
 
 export function useGetMenu() {
 /*
+// TEMPORARY CHANGE: Network fetching has been disabled for this component due to persistent 404 errors.
+// This decision was made to prevent unnecessary load and errors on the backend as the current endpoint
+// does not exist. The fetched data was not really useful. useGetMenu is only used in one location.
+//
+// Future developers should either:
+// 1. Update the endpoint to a valid URL if network functionality needs to be restored.
+// 2. Remove related code if the decision is made to permanently disable dynamic fetching for this component.
+// This code change was implemented as a quick fix and should be revisited for a more permanent solution.
+
   const { data, isLoading, error, isValidating } = useSWR(
     endpoints.key + endpoints.dashboard,
     fetcher,
@@ -30,7 +39,7 @@ export function useGetMenu() {
     },
   )
 */
-  const data = { dashboard: null }
+  const data = { dashboard: {} as NavItemType, length: 0 }
   const error = true;
   const isValidating = false;
   const isLoading = false;
