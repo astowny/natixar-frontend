@@ -41,6 +41,9 @@ const MultiFileUpload = ({
     fileRejections,
   } = useDropzone({
     multiple: true,
+    minSize: 0,
+    maxSize: 1048576,
+    noKeyboard: true,
     onDrop: (acceptedFiles: CustomFile[]) => {
       if (files) {
         setFieldValue("files", [
@@ -140,7 +143,12 @@ const MultiFileUpload = ({
           >
             Remove all
           </Button>
-          <Button size="small" variant="contained" onClick={onUpload}>
+          <Button
+            size="small"
+            sx={{ color: "primary.contrastText" }}
+            variant="contained"
+            onClick={onUpload}
+          >
             Upload files
           </Button>
         </Stack>
