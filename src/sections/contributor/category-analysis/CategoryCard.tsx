@@ -20,11 +20,23 @@ import { ThemeMode } from "types/config"
 import { useSelector } from "react-redux"
 import {
   selectAlignedIndexes,
-  selectAllVisibleCategories,
+  selectAllPoints,
 } from "data/store/api/EmissionSelectors"
 import { frCategoryMessages } from "data/domain/types/emissions/CategoryDescriptions"
 import { getColorByCategory } from "utils/CategoryColors"
 import { detectScope } from "data/domain/transformers/DataDetectors"
+import { expandId } from "data/domain/transformers/StructuralTransformers"
+import { filter, sum, summarize, tidy } from "@tidyjs/tidy"
+import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
+import { EmissionCategory } from "data/domain/types/emissions/EmissionTypes"
+import useAsyncWork from "hooks/useAsyncWork"
+
+interface CardState {
+  scope?: EmissionCategory
+  category?: EmissionCategory
+  description?: string
+  formattedEmissionAmount: string
+}
 
 export const CategoryCard = ({
   categoryId,
@@ -33,16 +45,50 @@ export const CategoryCard = ({
   categoryId: number
 } & SxProps) => {
   const theme = useTheme()
+  const [cardState, setCardState] = useState<CardState>({
+    formattedEmissionAmount: "",
+  })
   const [selectedIndex, setSelectedIndex] = useState(0)
-  const indexes = useSelector(selectAlignedIndexes)
 
-  const currentCategory = indexes.categories[categoryId]
-  const scope = detectScope(currentCategory, indexes)
-  const description = frCategoryMessages[categoryId]
+  const indexes = useSelector(selectAlignedIndexes)
+  const allEmissions = useSelector(selectAllPoints)
+
+  useAsyncWork(
+    () => {
+      const currentCategory = indexes.categories[categoryId]
+      const scope = currentCategory
+        ? detectScope(currentCategory, indexes)
+        : undefined
+      const description = frCategoryMessages[categoryId]
+      const relevantCategories = categoryId
+        ? expandId([categoryId], indexes.categoryHierarchy)
+        : []
+      const { totalCategoryEmissions } = tidy(
+        allEmissions,
+        filter((edp) => relevantCategories.includes(edp.categoryId)),
+        summarize({ totalCategoryEmissions: sum("totalEmissionAmount") }),
+      )[0]
+
+      const formattedEmissionAmount = formatEmissionAmount(
+        totalCategoryEmissions,
+      )
+
+      return {
+        scope,
+        category: currentCategory,
+        description,
+        formattedEmissionAmount,
+      }
+    },
+    setCardState,
+    [indexes, allEmissions],
+  )
 
   const handleListItemClick = (index: number) => {
     setSelectedIndex(index)
   }
+
+  const { scope, category, description, formattedEmissionAmount } = cardState
 
   return (
     <MainCard sx={{ padding: 0, ...sxProps }}>
@@ -66,12 +112,14 @@ export const CategoryCard = ({
             )}
           </Typography>
           <Box sx={{ paddingLeft: "5px" }}>
-            <Typography
-              sx={{ marginBottom: "15px", fontWeight: 400 }}
-              variant="h3"
-            >
-              {currentCategory.name}
-            </Typography>
+            {category && (
+              <Typography
+                sx={{ marginBottom: "15px", fontWeight: 400 }}
+                variant="h3"
+              >
+                {category.name}
+              </Typography>
+            )}
             {description && (
               <Typography color="secondary">
                 Description: {description}
@@ -95,7 +143,7 @@ export const CategoryCard = ({
             Total Emissions
           </Typography>
           <Typography sx={{ padding: 0.5, fontWeight: 800 }} variant="h5">
-            2749 (t) CO2e
+            {formattedEmissionAmount}
           </Typography>
         </Box>
         <Box>
