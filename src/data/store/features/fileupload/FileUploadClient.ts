@@ -5,15 +5,17 @@ export const fileUploadApi = createApi({
   reducerPath: "fileUpload",
   baseQuery: backupBackendBaseQuery(),
   endpoints: (builder) => ({
-    sendFiles: builder.mutation<string, string>({
-      query: (payload) => ({
-        url: "/files",
-        method: "POST",
-        body: payload,
-        headers: {
-          "Content-type": "text/plain; charset=UTF-8",
-        },
-      }),
+    sendFiles: builder.mutation<string, File[]>({
+      query: (payload) => {
+        const formData = new FormData()
+        payload.forEach((file) => formData.append("files", file))
+
+        return {
+          url: "/files",
+          method: "POST",
+          body: formData,
+        }
+      },
     }),
   }),
 })

@@ -9,7 +9,6 @@ import {
 } from "@mui/material"
 import { LinkOutlined } from "@ant-design/icons"
 import { NavLink } from "react-router-dom"
-import useConfig from "hooks/useConfig"
 import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
 import { EmissionCategory } from "data/domain/types/emissions/EmissionTypes"
 import { DataGrid, GridColDef, GridColTypeDef } from "@mui/x-data-grid"
@@ -53,7 +52,7 @@ const columnDefinitions: GridColDef[] = [
           cursor: "pointer",
           textOverflow: "ellipsis",
         }}
-        href={`/contributors/top/scope/${params.row.category.id}`}
+        href={`/contributors/category-analysis/${params.row.category.id}`}
       >
         {params.row.category.name}
         <LinkOutlined />

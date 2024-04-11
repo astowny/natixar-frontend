@@ -7,6 +7,7 @@ import {
   EmissionCategory,
   EmissionProtocol,
 } from "../types/emissions/EmissionTypes"
+import { frCategoryMessages } from "../types/emissions/CategoryDescriptions"
 
 export const detectCompany = (
   entityId: number,
@@ -40,21 +41,28 @@ export const detectCountry = (
   return area
 }
 
-const PROTOCOLS: string[] = Object.entries(EmissionProtocol).map(
-  (entry) => entry[1],
-)
+const PROTOCOLS: string[] = Object.entries(EmissionProtocol)
+  .map((entry) => entry[1])
+  .map((protocol) => protocol.toLowerCase())
 export const detectScope = (
   category: EmissionCategory,
   indexes: AlignedIndexes,
 ): EmissionCategory => {
-  if (category.parent === undefined || PROTOCOLS.includes(category.name)) {
+  if (
+    category.parent === undefined ||
+    PROTOCOLS.includes(category.name.toLowerCase())
+  ) {
     return category
   }
 
   const parent = indexes.categories[category.parent]
-  if (PROTOCOLS.includes(parent.name)) {
+  if (PROTOCOLS.includes(parent.name.toLowerCase())) {
     return category
   }
 
   return detectScope(parent, indexes)
 }
+
+// Can be replaced with i18n later
+export const getCategoryDescription = (categoryId: number) =>
+  frCategoryMessages[categoryId]

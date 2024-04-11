@@ -20,11 +20,6 @@ const ContributorUpload = () => {
   const theme = useTheme()
   const [sendFiles, { isLoading: isUpdating }] = useSendFilesMutation()
 
-  const sendSomeData = () => {
-    console.log("Sending data...")
-    sendFiles("Some data")
-  }
-
   return (
     <>
       <Typography variant="h5" sx={{ marginBottom: "30px" }}>
@@ -58,11 +53,8 @@ const ContributorUpload = () => {
             <Formik
               initialValues={{ files: null }}
               onSubmit={(values: any) => {
-                // submit form
+                sendFiles(values.files)
               }}
-              validationSchema={yup.object().shape({
-                files: yup.mixed().required("Avatar is a required."),
-              })}
             >
               {({ values, handleSubmit, setFieldValue, touched, errors }) => (
                 <form onSubmit={handleSubmit}>
@@ -74,7 +66,7 @@ const ContributorUpload = () => {
                           setFieldValue={setFieldValue}
                           files={values.files}
                           error={touched.files && !!errors.files}
-                          onUpload={sendSomeData}
+                          onUpload={handleSubmit}
                         />
                       </Stack>
                       {touched.files && errors.files && (
@@ -92,46 +84,6 @@ const ContributorUpload = () => {
             </Formik>
           </MainCard>
         </Grid>
-        {/* <Grid item xs={12}>
-          <MainCard
-            title="Upload a single file"
-            sx={{ bgcolor: theme.palette.grey.A100 }}
-          >
-            <Formik
-              initialValues={{ files: null }}
-              onSubmit={(values: any) => {
-                // submit form
-              }}
-              validationSchema={yup.object().shape({
-                files: yup.mixed().required("Avatar is a required."),
-              })}
-            >
-              {({ values, handleSubmit, setFieldValue, touched, errors }) => (
-                <form onSubmit={handleSubmit}>
-                  <Grid container spacing={3}>
-                    <Grid item xs={12}>
-                      <Stack spacing={1.5} alignItems="center">
-                        <UploadSingleFile
-                          setFieldValue={setFieldValue}
-                          file={values.files}
-                          error={touched.files && !!errors.files}
-                        />
-                      </Stack>
-                      {touched.files && errors.files && (
-                        <FormHelperText
-                          error
-                          id="standard-weight-helper-text-password-login"
-                        >
-                          {errors.files as string}
-                        </FormHelperText>
-                      )}
-                    </Grid>
-                  </Grid>
-                </form>
-              )}
-            </Formik>
-          </MainCard>
-        </Grid> */}
       </Grid>
     </>
   )
