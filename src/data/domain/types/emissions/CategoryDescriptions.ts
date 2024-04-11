@@ -70,5 +70,49 @@ export const frCategoryMessages: Record<number, string> = {
   "55": "Émissions associées aux produits ou équipements loués aux clients par l'organisation.",
   "56": "Émissions dues aux trajets des employés entre leur domicile et leur lieu de travail.",
 
-  /// /// BEGES v5 (TODO)
+  /// /// BEGES v5
+  "86": "Emissions directes de GES",
+  "87": "Ces émissions proviennent de la combustion de carburants dans des installations fixes telles que chaudières et fours.",
+  "88": "Émissions issues de la combustion de carburants dans des véhicules ou équipements mobiles appartenant à l'organisation.",
+  "89": "Émissions générées par des procédés industriels spécifiques qui ne sont pas liées à la combustion d'énergie.",
+  "90": "Émissions involontaires ou accidentelles de gaz à effet de serre, comme les fuites de gaz naturel ou de réfrigérants.",
+  "91": "Émissions ou absorptions de CO2 liées à l'utilisation et à la conversion des terres forestières ou agricoles.",
+
+  "92": "Emissions Indirectes Associées à l'Énergie",
+  "93": "Émissions résultant de la production d'électricité achetée et consommée par l'organisation.",
+  "94": "Émissions dues à la consommation de ces énergies lorsqu'elles sont produites en dehors de l'organisation.",
+
+  "95": "Emissions Indirectes Associées au Transport",
+  "96": "Émissions liées au transport des matières premières et autres biens vers l'organisation.",
+  "97": "Émissions résultant du transport des produits finis de l'organisation vers les clients.",
+  "98": "Émissions dues aux trajets effectués par les employés entre leur domicile et leur lieu de travail.",
+  "99": "Émissions générées par le transport des visiteurs et clients se rendant à l'organisation.",
+  "100":
+    "Émissions liées aux voyages d'affaires effectués par les employés pour le compte de l'organisation.",
+
+  "101": "Emissions Indirectes Associées aux Produits Achetés",
+  "102":
+    "Émissions liées à la production des biens matériels achetés par l'organisation.",
+  "103":
+    "Émissions associées à la production et à l'achat d'actifs corporels fixes.",
+  "104":
+    "Émissions résultant du traitement des déchets produits par l'organisation.",
+  "105":
+    "Émissions liées aux biens loués par l'organisation pour ses activités.",
+  "106":
+    "Émissions associées à la prestation de services achetés par l'organisation.",
+
+  "107": "Emissions Indirectes Associées aux Produits Vendus",
+  "108":
+    "Émissions générées par l'utilisation des produits vendus par l'organisation par les consommateurs finaux.",
+  "109":
+    "Émissions liées aux produits ou équipements loués aux clients après leur vente.",
+  "110":
+    "Émissions découlant du traitement des produits en fin de vie, incluant le recyclage et l'élimination.",
+  "111":
+    "Émissions liées aux investissements de l'organisation dans d'autres entités.",
+
+  "112": "Autres Emissions Indirectes",
+  "113":
+    "Cette catégorie englobe toutes les autres émissions indirectes non classées dans les catégories précédentes, offrant une flexibilité pour comptabiliser des sources d'émissions diverses et émergentes.",
 }

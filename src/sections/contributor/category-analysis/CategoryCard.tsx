@@ -22,9 +22,11 @@ import {
   selectAlignedIndexes,
   selectAllPoints,
 } from "data/store/api/EmissionSelectors"
-import { frCategoryMessages } from "data/domain/types/emissions/CategoryDescriptions"
 import { getColorByCategory } from "utils/CategoryColors"
-import { detectScope } from "data/domain/transformers/DataDetectors"
+import {
+  detectScope,
+  getCategoryDescription,
+} from "data/domain/transformers/DataDetectors"
 import { expandId } from "data/domain/transformers/StructuralTransformers"
 import { filter, sum, summarize, tidy } from "@tidyjs/tidy"
 import { formatEmissionAmount } from "data/domain/transformers/EmissionTransformers"
@@ -59,7 +61,7 @@ export const CategoryCard = ({
       const scope = currentCategory
         ? detectScope(currentCategory, indexes)
         : undefined
-      const description = frCategoryMessages[categoryId]
+      const description = getCategoryDescription(categoryId)
       const relevantCategories = categoryId
         ? expandId([categoryId], indexes.categoryHierarchy)
         : []

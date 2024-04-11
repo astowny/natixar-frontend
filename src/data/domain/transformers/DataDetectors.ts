@@ -7,6 +7,7 @@ import {
   EmissionCategory,
   EmissionProtocol,
 } from "../types/emissions/EmissionTypes"
+import { frCategoryMessages } from "../types/emissions/CategoryDescriptions"
 
 export const detectCompany = (
   entityId: number,
@@ -61,3 +62,7 @@ export const detectScope = (
 
   return detectScope(parent, indexes)
 }
+
+// Can be replaced with i18n later
+export const getCategoryDescription = (categoryId: number) =>
+  frCategoryMessages[categoryId]

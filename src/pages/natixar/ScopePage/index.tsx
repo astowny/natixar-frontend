@@ -20,10 +20,8 @@ import {
 } from "data/domain/transformers/StructuralTransformers"
 import { getColorByCategory } from "utils/CategoryColors"
 import { useMemo } from "react"
-import {
-  frCategoryMessages,
-  generalCategoryText,
-} from "data/domain/types/emissions/CategoryDescriptions"
+import { generalCategoryText } from "data/domain/types/emissions/CategoryDescriptions"
+import { getCategoryDescription } from "data/domain/transformers/DataDetectors"
 import {
   ScopeTable,
   ScopeTableItemProps,
@@ -108,7 +106,7 @@ const ScopePage = () => {
       return {
         id: categoryData.id,
         category: categoryData,
-        description: frCategoryMessages[categoryId] ?? "",
+        description: getCategoryDescription(categoryId),
         categoryColor: getColorByCategory(categoryData.era),
         value: [emissionAmountForThisCategory, totalEmission],
       }
@@ -149,7 +147,7 @@ const ScopePage = () => {
           <Stack gap=".5rem">
             <Typography variant="h3">Protocol {currentProtocol}</Typography>
             <Typography variant="h4">
-              {`${scope?.name} - ${frCategoryMessages[scopeId] ?? ""}`}
+              {`${scope?.name} - ${getCategoryDescription(scopeId) ?? ""}`}
             </Typography>
             <Typography variant="h6">{generalCategoryText}</Typography>
           </Stack>
