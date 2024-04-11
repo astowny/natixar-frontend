@@ -8,6 +8,7 @@ import {
   List,
   ListItemButton,
   ListItemText,
+  SxProps,
 } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
 
@@ -16,44 +17,66 @@ import MainCard from "components/MainCard"
 
 // types
 import { ThemeMode } from "types/config"
+import { useSelector } from "react-redux"
+import {
+  selectAlignedIndexes,
+  selectAllVisibleCategories,
+} from "data/store/api/EmissionSelectors"
+import { frCategoryMessages } from "data/domain/types/emissions/CategoryDescriptions"
+import { getColorByCategory } from "utils/CategoryColors"
+import { detectScope } from "data/domain/transformers/DataDetectors"
 
-export const FactoryCard = () => {
+export const CategoryCard = ({
+  categoryId,
+  ...sxProps
+}: {
+  categoryId: number
+} & SxProps) => {
   const theme = useTheme()
   const [selectedIndex, setSelectedIndex] = useState(0)
+  const indexes = useSelector(selectAlignedIndexes)
+
+  const currentCategory = indexes.categories[categoryId]
+  const scope = detectScope(currentCategory, indexes)
+  const description = frCategoryMessages[categoryId]
 
   const handleListItemClick = (index: number) => {
     setSelectedIndex(index)
   }
 
   return (
-    <MainCard sx={{ padding: 0 }}>
+    <MainCard sx={{ padding: 0, ...sxProps }}>
       <Stack spacing={6}>
         <Box sx={{ width: "100%" }}>
           <Typography
             sx={{ marginBottom: "15px", fontWeight: 400 }}
             variant="body2"
           >
-            <Box
-              sx={{
-                bgcolor: theme.palette.grey[100],
-                px: "7px",
-                borderRadius: "3px",
-                width: "fit-content",
-              }}
-            >
-              Scope 3
-            </Box>
+            {scope && (
+              <Box
+                sx={{
+                  bgcolor: getColorByCategory(scope.era),
+                  px: "7px",
+                  borderRadius: "3px",
+                  width: "fit-content",
+                }}
+              >
+                {scope.name}
+              </Box>
+            )}
           </Typography>
           <Box sx={{ paddingLeft: "5px" }}>
             <Typography
               sx={{ marginBottom: "15px", fontWeight: 400 }}
               variant="h3"
             >
-              Milan Factory Ltd
+              {currentCategory.name}
             </Typography>
-            <Typography color="secondary">
-              Description: This category includes all...
-            </Typography>
+            {description && (
+              <Typography color="secondary">
+                Description: {description}
+              </Typography>
+            )}
           </Box>
         </Box>
         <Box
