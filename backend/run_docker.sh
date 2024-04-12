@@ -1,1 +1,1 @@
-docker run -d --rm -p 8000:8000 naxitar-mockup-backend
+docker run -d --rm -p 8001:8000 naxitar-mockup-backend
