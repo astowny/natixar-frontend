@@ -1,1 +1,1 @@
-docker build -t naxitar-mockup-backend -f deploy/Dockerfile .
+docker build -t natixar-mockup-backend -f deploy/Dockerfile .
