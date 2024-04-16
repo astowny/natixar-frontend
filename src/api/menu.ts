@@ -19,6 +19,7 @@ export const endpoints = {
 }
 
 export function useGetMenu() {
+/*
   const { data, isLoading, error, isValidating } = useSWR(
     endpoints.key + endpoints.dashboard,
     fetcher,
@@ -28,7 +29,11 @@ export function useGetMenu() {
       revalidateOnReconnect: false,
     },
   )
-
+*/
+  const data = { dashboard: null }
+  const error = true;
+  const isValidating = false;
+  const isLoading = false;
   const memoizedValue = useMemo(
     () => ({
       menu: data?.dashboard as NavItemType,
