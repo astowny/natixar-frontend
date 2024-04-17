@@ -138,7 +138,9 @@ const Profile = () => {
   }
 
   const iconBackColorOpen =
-    theme.palette.mode === ThemeMode.DARK ? "background.default" : "primary.light"
+    theme.palette.mode === ThemeMode.DARK
+      ? "background.default"
+      : "primary.light"
   const userName =
     user?.given_name && user?.family_name
       ? `${user?.given_name} ${user?.family_name}`
@@ -149,7 +151,7 @@ const Profile = () => {
       <ButtonBase
         sx={{
           p: 0.25,
-          bgcolor: open ? iconBackColorOpen : "transparent",
+          bgcolor: "primary.main",
           borderRadius: 1,
           "&:hover": {
             bgcolor:
@@ -177,7 +179,11 @@ const Profile = () => {
           <Avatar {...stringAvatar(userName)} />
           <Typography
             variant="subtitle1"
-            sx={{ textTransform: "capitalize", textOverflow: "ellipsis", color: 'common.white' }}
+            sx={{
+              textTransform: "capitalize",
+              textOverflow: "ellipsis",
+              color: "common.white",
+            }}
           >
             {userName}
           </Typography>

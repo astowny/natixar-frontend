@@ -13,11 +13,6 @@ const router = createBrowserRouter([
     children: [MainRoutes],
   },
   LoginRoutes,
-  // LandingPage 
-  {
-    path: '/landing',
-    element: <PagesLanding />
-  }
 ])
 
 export default router
