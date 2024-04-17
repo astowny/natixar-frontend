@@ -1,12 +1,8 @@
-import {
-  Box,
-  Button,
-  Stack,
-} from "@mui/material"
-import { Dispatch, ReactNode, SetStateAction, } from "react"
+import { Box, Button, Stack } from "@mui/material"
+import { Dispatch, ReactNode, SetStateAction } from "react"
 import { DownloadOutlined } from "@ant-design/icons"
 import { NatixarSectionTitle } from "components/natixarComponents/ChartCard/NatixarSectionTitle"
-import { CompareIcon } from "assets/images/icons/IconComponents/CompareIcon"
+import { CompareIcon } from "assets/icons/CompareIcon"
 
 type ChartCardProps = {
   children: ReactNode
@@ -28,34 +24,49 @@ export const NatixarChartCard = ({
   compare,
   setCompare,
 }: ChartCardProps) => {
-  const isMonth = slot == 'month'
-  const isYear = slot == 'year'
-  const isQuarter = slot == 'quarter'
+  const isMonth = slot == "month"
+  const isYear = slot == "year"
+  const isQuarter = slot == "quarter"
 
   return (
-    <Stack direction={'column'}>
-      <Stack direction='row' flexWrap='wrap' gap={2} mb={4}>
+    <Stack direction={"column"}>
+      <Stack direction="row" flexWrap="wrap" gap={2} mb={4}>
         <Button
-          variant={isMonth ? "contained" : 'outlined'}
-          color={isMonth ? "success" : 'primary'}
-          sx={{ marginRight: 2, fontSize: '18px', minWidth: 110, color: isMonth ? '#fff' : '' }}
-          onClick={() => setSlot('month')}
+          variant={isMonth ? "contained" : "outlined"}
+          color={isMonth ? "success" : "primary"}
+          sx={{
+            marginRight: 2,
+            fontSize: "18px",
+            minWidth: 110,
+            color: isMonth ? "#fff" : "",
+          }}
+          onClick={() => setSlot("month")}
         >
           Month
         </Button>
         <Button
-          variant={isQuarter ? "contained" : 'outlined'}
-          color={isQuarter ? "success" : 'primary'}
-          sx={{ marginRight: 2, fontSize: '18px', minWidth: 110, color: isQuarter ? '#fff' : '' }}
-          onClick={() => setSlot('quarter')}
+          variant={isQuarter ? "contained" : "outlined"}
+          color={isQuarter ? "success" : "primary"}
+          sx={{
+            marginRight: 2,
+            fontSize: "18px",
+            minWidth: 110,
+            color: isQuarter ? "#fff" : "",
+          }}
+          onClick={() => setSlot("quarter")}
         >
           Quarter
         </Button>
         <Button
-          variant={isYear ? "contained" : 'outlined'}
-          color={isYear ? "success" : 'primary'}
-          sx={{ marginRight: 2, fontSize: '18px', minWidth: 110, color: isYear ? '#fff' : '' }}
-          onClick={() => setSlot('year')}
+          variant={isYear ? "contained" : "outlined"}
+          color={isYear ? "success" : "primary"}
+          sx={{
+            marginRight: 2,
+            fontSize: "18px",
+            minWidth: 110,
+            color: isYear ? "#fff" : "",
+          }}
+          onClick={() => setSlot("year")}
         >
           Year
         </Button>
@@ -64,7 +75,7 @@ export const NatixarChartCard = ({
           <Button
             variant="contained"
             color="primary"
-            sx={{ fontSize: '18px', fontWeight: 'bold' }}
+            sx={{ fontSize: "18px", fontWeight: "bold" }}
             onClick={() => setCompare(!compare)}
           >
             <CompareIcon sx={{ marginRight: 1 }} />
@@ -74,9 +85,11 @@ export const NatixarChartCard = ({
         <Button
           variant="contained"
           color="primary"
-          sx={{ fontSize: '18px', fontWeight: 'bold' }}
+          sx={{ fontSize: "18px", fontWeight: "bold" }}
         >
-          <DownloadOutlined style={{ color: "#fff", fontSize: 22, marginRight: '8px' }} />
+          <DownloadOutlined
+            style={{ color: "#fff", fontSize: 22, marginRight: "8px" }}
+          />
           Export
         </Button>
       </Stack>
@@ -90,6 +103,6 @@ export const NatixarChartCard = ({
         <NatixarSectionTitle>Total Emissions</NatixarSectionTitle>
       </Box>
       {children}
-    </Stack >
+    </Stack>
   )
 }
