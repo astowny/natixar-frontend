@@ -55,5 +55,32 @@ const Login = () => (
     </Box>
   </Stack>
 )
+// const Login = () => {
+//   const { isLoggedIn } = useAuth()
+
+//   return (
+//     <AuthWrapper>
+//       <Grid container spacing={3}>
+//         <Grid item xs={12}>
+//           <Stack
+//             direction="row"
+//             justifyContent="space-between"
+//             alignItems="baseline"
+//             sx={{ mb: { xs: -0.5, sm: 0.5 } }}
+//           >
+//             <Typography variant="h3" sx={{
+//               fontWeight: '800',
+//               fontFamily: 'Urbanist',
+//               color: '#30698E'
+//             }}>Sign in</Typography>
+//           </Stack>
+//         </Grid>
+//         <Grid item xs={12}>
+//           <AuthLogin isDemo={isLoggedIn} />
+//         </Grid>
+//       </Grid>
+//     </AuthWrapper>
+//   )
+// }
 
 export default Login
