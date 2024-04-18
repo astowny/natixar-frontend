@@ -27,6 +27,7 @@ import {
 import _ from "lodash"
 import { useState } from "react"
 import EmissionByCategorySection from "../../components/natixarComponents/CO2DonutSection/EmissionByScopeDonutSection"
+import { NatixarSectionTitle } from "components/natixarComponents/ChartCard/NatixarSectionTitle"
 
 // ==============================|| WIDGET - CHARTS ||============================== //
 
@@ -44,8 +45,22 @@ const detailUnitLayout: Record<
   Year: [timestampToYear, (a, b) => a.localeCompare(b)],
 }
 
+enum View {
+  SCOPES = "scopes-emissions",
+  EMISSIONS = "total-emissions",
+}
 const NatixarChart = () => {
-  const [totalUnit, setTotalUnit] = useState("Month")
+  const [view, setView] = useState("scopes-emissions")
+
+  const handleClickView = () => {
+    if (view == View.SCOPES) {
+      setView(View.EMISSIONS)
+    } else {
+      setView(View.SCOPES)
+    }
+  }
+
+  // const [totalUnit, setTotalUnit] = useState("Month")
   const [comparisonUnit, setComparisonUnit] = useState("Month")
 
   const alignedIndexes = useSelector(indexSelector)
@@ -66,18 +81,18 @@ const NatixarChart = () => {
 
   return (
     <Grid container rowSpacing={4.5} columnSpacing={3}>
-      <Grid item xs={12} md={12} xl={12}>
-        <MainCard>
-          <Typography variant="h5" sx={{ marginBottom: "15px" }}>
-            Scope Emissions
-          </Typography>
-          <EmissionByCategorySection
-            allDataPoints={allPoints}
-            alignedIndexes={alignedIndexes}
-          />
-        </MainCard>
-      </Grid>
-      <Grid item xs={12} md={12} lg={12}>
+      {view == View.SCOPES && (
+        <Grid item xs={12} md={12} xl={12}>
+          <MainCard>
+            <NatixarSectionTitle>Scope Emissions</NatixarSectionTitle>
+            <EmissionByCategorySection
+              allDataPoints={allPoints}
+              alignedIndexes={alignedIndexes}
+            />
+          </MainCard>
+        </Grid>
+      )}
+      {/* <Grid item xs={12} md={12} lg={12}>
         <TotalEmissionByTimeSection
           emissionPoints={allPoints}
           unitLayout={detailUnitLayout}
@@ -86,17 +101,26 @@ const NatixarChart = () => {
           timeDetailUnit={totalUnit}
           setTimeDetailUnit={setTotalUnit}
         />
-      </Grid>
-      <Grid item xs={12} md={12} lg={12}>
-        <EmissionByTimeCompareToPreviousSection
-          emissionPoints={allPoints}
-          unitLayout={detailUnitLayout}
-          startDate={minDate}
-          endDate={maxDate}
-          timeDetailUnit={comparisonUnit}
-          setTimeDetailUnit={setComparisonUnit}
-        />
-      </Grid>
+      </Grid> */}
+      {view == View.EMISSIONS && (
+        <Grid item xs={12} md={12} lg={12}>
+          <EmissionByTimeCompareToPreviousSection
+            emissionPoints={allPoints}
+            unitLayout={detailUnitLayout}
+            startDate={minDate}
+            endDate={maxDate}
+            timeDetailUnit={comparisonUnit}
+            setTimeDetailUnit={setComparisonUnit}
+          />
+        </Grid>
+      )}
+
+      <Typography
+        sx={{ marginTop: 6, textDecoration: "underline", cursor: "pointer" }}
+        onClick={handleClickView}
+      >
+        {view == View.SCOPES ? "See Total Emissions" : "See Scopes"}
+      </Typography>
     </Grid>
   )
 }
