@@ -236,13 +236,12 @@ const CategoriesControlForm = memo(
         </MenuItem>
       ))
 
-    const theme = useTheme()
     return (
       <FormControl sx={{ mt: -3, width: 120 }}>
         <Typography sx={StyleLabel}>
           <BarChartIcon
             sx={{ position: "relative", top: 3, marginRight: 1 }}
-            color={theme.palette.primary.main}
+            color="primary"
           />
           Scope
         </Typography>
