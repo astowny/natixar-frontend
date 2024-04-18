@@ -79,14 +79,26 @@ export const defaultOptions: ChartProps = {
     show: false,
   },
   tooltip: {
-    custom: function ({ series, seriesIndex, dataPointIndex, w }) {
-      return '<div class="arrow_box">' +
+    custom: function ({
+      series,
+      seriesIndex,
+      dataPointIndex,
+      w,
+    }: {
+      series: any
+      seriesIndex: any
+      dataPointIndex: any
+      w: any
+    }) {
+      return (
+        '<div class="arrow_box">' +
         "<span>" +
         w.globals.labels[seriesIndex] +
         ": " +
         series[seriesIndex] +
         "</span>" +
         "</div>"
+      )
     },
   },
 }

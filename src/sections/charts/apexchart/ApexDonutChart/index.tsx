@@ -11,7 +11,7 @@ const ApexDonatChart = ({ data, totalLabel }: ApexPieChartProps) => {
   return (
     <ReactApexChart
       options={defaultOptions}
-      series={data.map((a) => a.value)}
+      series={data.map((a: any) => a.value)}
       type="donut"
       width={500}
     />

@@ -15,7 +15,10 @@ import { StackProps, SxProps } from "@mui/system"
 import React from "react"
 import { useNavigate } from "react-router-dom"
 
-import { scopeColor, scopeTextColor } from "../CO2DonutSection"
+import {
+  scopeColor,
+  scopeTextColor,
+} from "../CO2DonutSection/EmissionByScopeDonutSection"
 import { RightArrowIcon } from "assets/icons/RightArrowIcon"
 import { UpArrowIcon } from "assets/icons/UpArrowIcon"
 import { DownArrowIcon } from "assets/icons/DownArrowIcon"
