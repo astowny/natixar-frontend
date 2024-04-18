@@ -298,7 +298,7 @@ const EmissionByCategorySection = ({
             data={getRows(scope.id)}
             index={index}
             title={scope.name}
-            key={index}
+            key={scope.id + "-" + index}
             onRowClicked={() => handleRowClicked(scope.id)}
             active={scope.active}
             textColor={scope.textColor}
