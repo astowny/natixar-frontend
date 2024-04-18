@@ -128,9 +128,10 @@ const StyleLabel = () => ({
   fontFamily: "Urbanist",
   fontWeight: 600,
   marginLeft: 2,
+  mt: 1,
   fontSize: "16px",
   lineHeight: "24px",
-  marginBottom: 0.5,
+  marginBottom: 0.3,
 })
 const EntityControlForm = memo(
   ({
@@ -154,7 +155,7 @@ const EntityControlForm = memo(
     )
     const theme = useTheme()
     return (
-      <FormControl sx={{ width: 220 }}>
+      <FormControl sx={{ mt: -3, width: 220 }}>
         <Typography sx={StyleLabel}>
           <FactoryIcon
             sx={{ position: "relative", top: 3, marginRight: 1 }}
@@ -194,7 +195,7 @@ const AreaControlForm = memo(
     const theme = useTheme()
 
     return (
-      <FormControl sx={{ width: 190 }}>
+      <FormControl sx={{ mt: -3, width: 190 }}>
         <Typography sx={StyleLabel}>
           <PinIcon
             sx={{ position: "relative", top: 3, marginRight: 1 }}
@@ -237,7 +238,7 @@ const CategoriesControlForm = memo(
 
     const theme = useTheme()
     return (
-      <FormControl sx={{ width: 120 }}>
+      <FormControl sx={{ mt: -3, width: 120 }}>
         <Typography sx={StyleLabel}>
           <BarChartIcon
             sx={{ position: "relative", top: 3, marginRight: 1 }}
